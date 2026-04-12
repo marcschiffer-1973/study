@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — TU Berlin Study Portal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #c0392b;
+      --dark:   #1a1a1a;
+      --gray:   #4a4a4a;
+      --light:  #f5f5f5;
+      --border: #ddd;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: 2rem;
+      text-decoration: none;
+    }
+
+    .tu-badge {
+      background: var(--red);
+      color: #fff;
+      font-size: .85rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 5px;
+      letter-spacing: .04em;
+    }
+
+    .logo-text {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,.1);
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: color .2s, border-bottom .2s;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tab.active {
+      color: var(--red);
+      border-bottom-color: var(--red);
+    }
+
+    .form-body {
+      padding: 2rem;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .form-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: .3rem;
+    }
+
+    .form-subtitle {
+      font-size: .83rem;
+      color: var(--gray);
+      margin-bottom: 1.6rem;
+    }
+
+    .field {
+      margin-bottom: 1.1rem;
+    }
+
+    label {
+      display: block;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: .35rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: .65rem .9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-size: .92rem;
+      color: var(--dark);
+      outline: none;
+      transition: border-color .2s;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: var(--red);
+    }
+
+    .btn {
+      width: 100%;
+      padding: .75rem;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: .5rem;
+      transition: background .2s, transform .1s;
+    }
+
+    .btn:hover { background: #a93226; }
+    .btn:active { transform: scale(.98); }
+
+    .error-msg {
+      background: #fdf0f0;
+      border: 1px solid #f5c6c6;
+      color: #c0392b;
+      border-radius: 7px;
+      padding: .65rem .9rem;
+      font-size: .83rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .error-msg.show { display: block; }
+
+    .success-msg {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      border-radius: 7px;
+      padding: .65rem .9rem;
+      font-size: .83rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .success-msg.show { display: block; }
+
+    .hint {
+      font-size: .78rem;
+      color: #aaa;
+      text-align: center;
+      margin-top: 1.2rem;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: .78rem;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="logo" href="#">
+    <span class="tu-badge">TU</span>
+    <span class="logo-text">MSc Information System Management</span>
+  </a>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <div class="form-body">
+
+      <!-- LOGIN -->
+      <div class="panel active" id="panel-login">
+        <div class="form-title">Welcome back</div>
+        <div class="form-subtitle">Sign in to your study portal</div>
+
+        <div class="error-msg" id="login-error"></div>
+
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" />
+        </div>
+        <button class="btn" onclick="doLogin()">Sign In</button>
+        <p class="hint">No account yet? Click <strong>Create Account</strong> above.</p>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="panel" id="panel-register">
+        <div class="form-title">Create account</div>
+        <div class="form-subtitle">Set up your personal study portal</div>
+
+        <div class="error-msg" id="reg-error"></div>
+        <div class="success-msg" id="reg-success">Account created! You can now sign in.</div>
+
+        <div class="field">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="Marc Müller" />
+        </div>
+        <div class="field">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="At least 6 characters" />
+        </div>
+        <div class="field">
+          <label for="reg-password2">Confirm Password</label>
+          <input type="password" id="reg-password2" placeholder="Repeat password" />
+        </div>
+        <button class="btn" onclick="doRegister()">Create Account</button>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>TU Berlin Study Portal &nbsp;·&nbsp; Data stored locally in your browser</footer>
+
+  <script>
+    // ── If already logged in, go straight to dashboard ──
+    if (sessionStorage.getItem('ism_user')) {
+      window.location.href = 'index.html';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+      });
+      document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+      document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+    }
+
+    // ── Simple hash (not cryptographic — data is local only) ──
+    async function hashPassword(pw) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('ism_users') || '{}');
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('ism_users', JSON.stringify(users));
+    }
+
+    async function doRegister() {
+      const name  = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim().toLowerCase();
+      const pw1   = document.getElementById('reg-password').value;
+      const pw2   = document.getElementById('reg-password2').value;
+      const err   = document.getElementById('reg-error');
+      const ok    = document.getElementById('reg-success');
+
+      err.classList.remove('show');
+      ok.classList.remove('show');
+
+      if (!name || !email || !pw1 || !pw2) { err.textContent = 'Please fill in all fields.'; err.classList.add('show'); return; }
+      if (pw1.length < 6)                  { err.textContent = 'Password must be at least 6 characters.'; err.classList.add('show'); return; }
+      if (pw1 !== pw2)                     { err.textContent = 'Passwords do not match.'; err.classList.add('show'); return; }
+
+      const users = getUsers();
+      if (users[email])                    { err.textContent = 'An account with this email already exists.'; err.classList.add('show'); return; }
+
+      const hash = await hashPassword(pw1);
+      users[email] = { name, email, hash, createdAt: new Date().toISOString() };
+      saveUsers(users);
+
+      ok.classList.add('show');
+      setTimeout(() => switchTab('login'), 1500);
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('login-email').value.trim().toLowerCase();
+      const pw    = document.getElementById('login-password').value;
+      const err   = document.getElementById('login-error');
+
+      err.classList.remove('show');
+
+      if (!email || !pw) { err.textContent = 'Please enter your email and password.'; err.classList.add('show'); return; }
+
+      const users = getUsers();
+      const user  = users[email];
+      if (!user)  { err.textContent = 'No account found for this email.'; err.classList.add('show'); return; }
+
+      const hash = await hashPassword(pw);
+      if (hash !== user.hash) { err.textContent = 'Incorrect password.'; err.classList.add('show'); return; }
+
+      sessionStorage.setItem('ism_user', JSON.stringify({ name: user.name, email: user.email }));
+      window.location.href = 'index.html';
+    }
+
+    // Allow Enter key to submit
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const active = document.querySelector('.panel.active').id;
+        active === 'panel-login' ? doLogin() : doRegister();
+      }
+    });
+  </script>
+
+</body>
+</html>

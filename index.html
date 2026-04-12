@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MSc Information System Management — TU Berlin</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --tu-red:    #c0392b;
+      --tu-dark:   #1a1a1a;
+      --tu-gray:   #4a4a4a;
+      --tu-light:  #f5f5f5;
+      --tu-border: #e0e0e0;
+      --s1: #e74c3c;
+      --s2: #2980b9;
+      --s3: #27ae60;
+      --s4: #8e44ad;
+      --radius: 8px;
+      --shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--tu-dark);
+      background: #fff;
+      line-height: 1.6;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      border-bottom: 3px solid var(--tu-red);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 60px;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--tu-dark);
+      text-decoration: none;
+    }
+
+    .nav-brand .tu-badge {
+      background: var(--tu-red);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: .05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--tu-gray);
+      font-size: .9rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--tu-red); }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, var(--tu-dark) 0%, #2c2c2c 60%, #3a1010 100%);
+      color: #fff;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+    }
+
+    .hero-subtitle {
+      font-size: .85rem;
+      font-weight: 600;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: #e8a0a0;
+      margin-bottom: .8rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 span { color: var(--tu-red); }
+
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      color: #ccc;
+      font-size: 1.05rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .2rem;
+    }
+
+    .hero-meta-item .value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .hero-meta-item .label {
+      font-size: .78rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--tu-dark);
+    }
+
+    .section-title p {
+      color: var(--tu-gray);
+      margin-top: .5rem;
+    }
+
+    /* ── Timeline / Semester overview ── */
+    #overview {
+      padding: 4rem 2rem;
+      background: var(--tu-light);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .timeline-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      border-top: 4px solid var(--color);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .timeline-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 24px rgba(0,0,0,.12);
+    }
+
+    .timeline-card .sem-label {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--color);
+      margin-bottom: .4rem;
+    }
+
+    .timeline-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .6rem;
+    }
+
+    .timeline-card p {
+      font-size: .85rem;
+      color: var(--tu-gray);
+    }
+
+    .timeline-card a {
+      display: inline-block;
+      margin-top: .8rem;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--color);
+      text-decoration: none;
+    }
+
+    .timeline-card a:hover { text-decoration: underline; }
+
+    /* ── Semester sections ── */
+    .semester-section {
+      padding: 4rem 2rem;
+    }
+
+    .semester-section:nth-child(even) {
+      background: var(--tu-light);
+    }
+
+    .semester-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .semester-badge {
+      background: var(--color);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 800;
+      padding: .35rem .9rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .semester-header h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .module-card {
+      background: #fff;
+      border: 1px solid var(--tu-border);
+      border-left: 4px solid var(--color);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      transition: box-shadow .2s;
+    }
+
+    .semester-section:nth-child(even) .module-card {
+      background: #fff;
+    }
+
+    .module-card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .module-card .module-type {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--color);
+      margin-bottom: .3rem;
+    }
+
+    .module-card h4 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .4rem;
+    }
+
+    .module-card p {
+      font-size: .82rem;
+      color: var(--tu-gray);
+      line-height: 1.5;
+    }
+
+    .module-card .credits {
+      display: inline-block;
+      margin-top: .6rem;
+      font-size: .75rem;
+      background: var(--tu-light);
+      color: var(--tu-gray);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      max-width: 1000px;
+      margin: 0 auto 2rem;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .8rem;
+      color: var(--tu-gray);
+      margin-bottom: .4rem;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--tu-border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color);
+      border-radius: 3px;
+      width: var(--pct);
+      transition: width 1s ease;
+    }
+
+    /* ── Skills section ── */
+    #skills {
+      padding: 4rem 2rem;
+      background: var(--tu-dark);
+      color: #fff;
+    }
+
+    #skills .section-title h2 { color: #fff; }
+    #skills .section-title p  { color: #aaa; }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .skill-tag {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      padding: .9rem 1.2rem;
+      font-size: .88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .skill-tag .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--c);
+      flex-shrink: 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #111;
+      color: #888;
+      text-align: center;
+      padding: 2rem;
+      font-size: .82rem;
+    }
+
+    footer a { color: var(--tu-red); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hero { padding: 3rem 1.2rem 2.5rem; }
+      .hero-meta { gap: 1.2rem; }
+    }
+  /* ── User avatar in nav ── */
+  .nav-user {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+  }
+
+  .nav-user .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--tu-red);
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-user .user-name {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--tu-dark);
+  }
+
+  .btn-signout {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--tu-gray);
+    background: none;
+    border: 1.5px solid var(--tu-border);
+    border-radius: 6px;
+    padding: .3rem .75rem;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+  }
+
+  .btn-signout:hover {
+    color: var(--tu-red);
+    border-color: var(--tu-red);
+  }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a class="nav-brand" href="#">
+    <span class="tu-badge">TU</span>
+    MSc Information System Management
+  </a>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#sem1">Semester 1</a></li>
+    <li><a href="#sem2">Semester 2</a></li>
+    <li><a href="#sem3">Semester 3</a></li>
+    <li><a href="#sem4">Semester 4</a></li>
+    <li><a href="#skills">Skills</a></li>
+  </ul>
+  <div class="nav-user">
+    <div class="avatar" id="nav-avatar"></div>
+    <span class="user-name" id="nav-name"></span>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<header class="hero">
+  <p class="hero-subtitle">Technische Universität Berlin</p>
+  <h1>Master of Science<br><span>Information System Management</span></h1>
+  <p>A 4-semester program at the intersection of information technology, business strategy, and digital transformation.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="value">4</span>
+      <span class="label">Semesters</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="value">120</span>
+      <span class="label">ECTS Credits</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="value">2 yrs</span>
+      <span class="label">Duration</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="value">Berlin</span>
+      <span class="label">Location</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── Semester Overview ── -->
+<section id="overview">
+  <div class="section-title">
+    <h2>Program Overview</h2>
+    <p>Four semesters building from foundations to mastery</p>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-card" style="--color: var(--s1)">
+      <div class="sem-label">Semester 1</div>
+      <h3>Foundations</h3>
+      <p>Core concepts in information systems, data management, and business informatics.</p>
+      <a href="#sem1">View modules →</a>
+    </div>
+    <div class="timeline-card" style="--color: var(--s2)">
+      <div class="sem-label">Semester 2</div>
+      <h3>Advanced Topics</h3>
+      <p>IT strategy, enterprise architecture, and data analytics methods.</p>
+      <a href="#sem2">View modules →</a>
+    </div>
+    <div class="timeline-card" style="--color: var(--s3)">
+      <div class="sem-label">Semester 3</div>
+      <h3>Specialisation</h3>
+      <p>Digital transformation, IT security, project management and electives.</p>
+      <a href="#sem3">View modules →</a>
+    </div>
+    <div class="timeline-card" style="--color: var(--s4)">
+      <div class="sem-label">Semester 4</div>
+      <h3>Thesis &amp; Capstone</h3>
+      <p>Master's thesis, seminar, and final colloquium presentation.</p>
+      <a href="#sem4">View modules →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Semester 1 ── -->
+<section id="sem1" class="semester-section" style="--color: var(--s1)">
+  <div class="semester-header">
+    <span class="semester-badge">Semester 1</span>
+    <h2>Foundations of Information Systems</h2>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Credit progress</span><span>30 / 120 ECTS</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="--pct: 25%"></div></div>
+  </div>
+
+  <div class="modules-grid">
+    <div class="module-card" style="--color: var(--s1)">
+      <div class="module-type">Core</div>
+      <h4>Information Management</h4>
+      <p>Principles of managing information as a strategic resource within organisations.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s1)">
+      <div class="module-type">Core</div>
+      <h4>Database Systems &amp; Data Modelling</h4>
+      <p>Relational and non-relational databases, ER modelling, SQL, and query optimisation.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s1)">
+      <div class="module-type">Core</div>
+      <h4>Business Process Management</h4>
+      <p>BPMN, process analysis, redesign and automation techniques.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s1)">
+      <div class="module-type">Core</div>
+      <h4>Quantitative Methods &amp; Statistics</h4>
+      <p>Statistical foundations, probability, regression, and data-driven decision making.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s1)">
+      <div class="module-type">Elective</div>
+      <h4>Programming for Data Science</h4>
+      <p>Python fundamentals, data wrangling with pandas, and introductory visualisation.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Semester 2 ── -->
+<section id="sem2" class="semester-section" style="--color: var(--s2)">
+  <div class="semester-header">
+    <span class="semester-badge">Semester 2</span>
+    <h2>Advanced Topics &amp; Analytics</h2>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Credit progress</span><span>60 / 120 ECTS</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="--pct: 50%"></div></div>
+  </div>
+
+  <div class="modules-grid">
+    <div class="module-card" style="--color: var(--s2)">
+      <div class="module-type">Core</div>
+      <h4>IT Strategy &amp; Governance</h4>
+      <p>Aligning IT investments with business objectives; COBIT and ITIL frameworks.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s2)">
+      <div class="module-type">Core</div>
+      <h4>Enterprise Architecture</h4>
+      <p>TOGAF, Zachman framework, and systematic landscape management.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s2)">
+      <div class="module-type">Core</div>
+      <h4>Business Intelligence &amp; Analytics</h4>
+      <p>Data warehousing, OLAP, dashboard design, and KPI frameworks.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s2)">
+      <div class="module-type">Core</div>
+      <h4>Software Engineering &amp; Agile Methods</h4>
+      <p>SDLC, Scrum, Kanban, DevOps practices, and software quality assurance.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s2)">
+      <div class="module-type">Elective</div>
+      <h4>Cloud Computing &amp; Infrastructure</h4>
+      <p>IaaS, PaaS, SaaS architectures; AWS/Azure fundamentals and cost management.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Semester 3 ── -->
+<section id="sem3" class="semester-section" style="--color: var(--s3)">
+  <div class="semester-header">
+    <span class="semester-badge">Semester 3</span>
+    <h2>Specialisation &amp; Digital Transformation</h2>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Credit progress</span><span>90 / 120 ECTS</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="--pct: 75%"></div></div>
+  </div>
+
+  <div class="modules-grid">
+    <div class="module-card" style="--color: var(--s3)">
+      <div class="module-type">Core</div>
+      <h4>Digital Transformation Management</h4>
+      <p>Strategies and leadership approaches for digital change in organisations.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s3)">
+      <div class="module-type">Core</div>
+      <h4>IT Security &amp; Risk Management</h4>
+      <p>Threat modelling, ISO 27001, GDPR compliance, and incident response.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s3)">
+      <div class="module-type">Core</div>
+      <h4>Project &amp; Change Management</h4>
+      <p>PMI/PRINCE2 methodologies, stakeholder management, and organisational change.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s3)">
+      <div class="module-type">Elective</div>
+      <h4>Machine Learning for Business</h4>
+      <p>Supervised and unsupervised learning applied to business problems.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s3)">
+      <div class="module-type">Elective</div>
+      <h4>E-Commerce &amp; Platform Ecosystems</h4>
+      <p>Platform business models, digital marketplaces, and network effects.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Semester 4 ── -->
+<section id="sem4" class="semester-section" style="--color: var(--s4)">
+  <div class="semester-header">
+    <span class="semester-badge">Semester 4</span>
+    <h2>Master's Thesis &amp; Capstone</h2>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Credit progress</span><span>120 / 120 ECTS</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="--pct: 100%"></div></div>
+  </div>
+
+  <div class="modules-grid">
+    <div class="module-card" style="--color: var(--s4)">
+      <div class="module-type">Mandatory</div>
+      <h4>Master's Thesis</h4>
+      <p>Independent research on a chosen topic in information system management, supervised by faculty.</p>
+      <span class="credits">30 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s4)">
+      <div class="module-type">Mandatory</div>
+      <h4>Research Seminar</h4>
+      <p>Presentation of thesis progress, peer feedback, and academic writing workshop.</p>
+      <span class="credits">6 ECTS</span>
+    </div>
+    <div class="module-card" style="--color: var(--s4)">
+      <div class="module-type">Mandatory</div>
+      <h4>Thesis Colloquium</h4>
+      <p>Final oral defence before an examination committee — presentation and Q&amp;A.</p>
+      <span class="credits">keine / pass</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Skills ── -->
+<section id="skills">
+  <div class="section-title">
+    <h2>Skills &amp; Competencies</h2>
+    <p>What you'll master across the four semesters</p>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-tag"><span class="dot" style="--c:#e74c3c"></span> Data Modelling &amp; SQL</div>
+    <div class="skill-tag"><span class="dot" style="--c:#e74c3c"></span> Business Process Analysis</div>
+    <div class="skill-tag"><span class="dot" style="--c:#2980b9"></span> IT Strategy &amp; Governance</div>
+    <div class="skill-tag"><span class="dot" style="--c:#2980b9"></span> Enterprise Architecture</div>
+    <div class="skill-tag"><span class="dot" style="--c:#2980b9"></span> Business Intelligence</div>
+    <div class="skill-tag"><span class="dot" style="--c:#27ae60"></span> Digital Transformation</div>
+    <div class="skill-tag"><span class="dot" style="--c:#27ae60"></span> IT Security &amp; Compliance</div>
+    <div class="skill-tag"><span class="dot" style="--c:#27ae60"></span> Agile &amp; Project Management</div>
+    <div class="skill-tag"><span class="dot" style="--c:#8e44ad"></span> Machine Learning</div>
+    <div class="skill-tag"><span class="dot" style="--c:#8e44ad"></span> Academic Research</div>
+    <div class="skill-tag"><span class="dot" style="--c:#e74c3c"></span> Python / Data Science</div>
+    <div class="skill-tag"><span class="dot" style="--c:#2980b9"></span> Cloud Infrastructure</div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>
+    Technische Universität Berlin &nbsp;·&nbsp;
+    Faculty IV – Electrical Engineering and Computer Science &nbsp;·&nbsp;
+    <a href="https://www.tu.berlin" target="_blank" rel="noopener">tu.berlin</a>
+  </p>
+  <p style="margin-top:.5rem">MSc Information System Management &nbsp;·&nbsp; Berlin, Germany</p>
+</footer>
+
+
+<script>
+  // ── Auth guard ──
+  const raw = sessionStorage.getItem('ism_user');
+  if (!raw) {
+    window.location.href = 'login.html';
+  } else {
+    const user = JSON.parse(raw);
+    const initials = user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    document.getElementById('nav-avatar').textContent = initials;
+    document.getElementById('nav-name').textContent = user.name;
+  }
+
+  function signOut() {
+    sessionStorage.removeItem('ism_user');
+    window.location.href = 'login.html';
+  }
+</script>
+</body>
+</html>
