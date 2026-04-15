@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(osascript:*)",
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "WebSearch",
+      "WebFetch(domain:www.tu.berlin)",
+      "WebFetch(domain:web.ml.tu-berlin.de)",
+      "WebFetch(domain:moseskonto.tu-berlin.de)",
+      "WebFetch(domain:marcschiffer-1973.github.io)",
+      "Bash(curl:*)"
+    ]
+  }
+}
