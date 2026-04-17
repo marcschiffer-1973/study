@@ -388,6 +388,72 @@
     footer a { color: var(--tu-red); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
+    /* ── Timetable ── */
+    #timetable { padding: 4rem 2rem; }
+
+    .tt-outer { max-width: 1000px; margin: 0 auto; overflow-x: auto; }
+
+    .tt-wrap { display: flex; min-width: 600px; }
+
+    .tt-timecol { width: 46px; flex-shrink: 0; }
+    .tt-spacer  { height: 38px; }
+    .tt-timebody { position: relative; height: 480px; }
+    .tt-timebody span {
+      position: absolute; right: 6px;
+      font-size: .68rem; color: #bbb;
+      transform: translateY(-50%); white-space: nowrap;
+    }
+
+    .tt-days { display: flex; flex: 1; gap: 3px; }
+    .tt-day  { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    .tt-dayhdr {
+      height: 38px; display: flex; align-items: center; justify-content: center;
+      font-size: .82rem; font-weight: 700; color: var(--tu-gray);
+      background: var(--tu-light); border-radius: 6px 6px 0 0;
+      border-bottom: 2px solid var(--tu-border);
+    }
+
+    .tt-daybody {
+      position: relative; height: 480px;
+      background: var(--tu-light); border-radius: 0 0 6px 6px;
+      background-image: repeating-linear-gradient(
+        to bottom, transparent 0, transparent 59px,
+        var(--tu-border) 59px, var(--tu-border) 60px
+      );
+    }
+
+    .tt-ev {
+      position: absolute; left: 3px; right: 3px;
+      background: var(--c); border-radius: 4px;
+      padding: 5px 6px; color: #fff;
+      display: flex; flex-direction: column; gap: 1px;
+      overflow: hidden; transition: filter .15s; z-index: 1;
+    }
+    .tt-ev:hover { filter: brightness(1.15); z-index: 2; }
+    .tt-ev b    { font-size: .73rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tt-ev span { font-size: .63rem; opacity: .88; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .tt-ev-l { right: calc(50% + 2px); border-radius: 4px 0 0 4px; }
+    .tt-ev-r { left:  calc(50% + 2px); border-radius: 0 4px 4px 0; }
+
+    .tt-ev-opt { opacity: .62; }
+    .tt-ev-opt::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 4px; border: 2px dashed rgba(255,255,255,.45);
+      pointer-events: none;
+    }
+
+    .tt-legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-top: 1rem; font-size: .78rem; color: var(--tu-gray); }
+    .tt-leg    { display: flex; align-items: center; gap: .35rem; }
+    .tt-leg i  { width: 11px; height: 11px; border-radius: 3px; display: inline-block; flex-shrink: 0; background: var(--c); }
+
+    .tt-note {
+      margin-top: .7rem; padding: .55rem 1rem;
+      background: #fdf2f2; border: 1px solid #f5c6c6; border-radius: 6px;
+      font-size: .79rem; color: #a93226;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .nav-links { display: none; }
@@ -448,6 +514,7 @@
   </a>
   <ul class="nav-links">
     <li><a href="#overview">Overview</a></li>
+    <li><a href="#timetable">Timetable</a></li>
     <li><a href="#sem1">Semester 1</a></li>
     <li><a href="#sem2">Semester 2</a></li>
     <li><a href="#sem3">Semester 3</a></li>
@@ -518,6 +585,155 @@
       <p>Master's thesis, seminar, and final colloquium presentation.</p>
       <a href="#sem4">View modules →</a>
     </div>
+  </div>
+</section>
+
+<!-- ── Timetable ── -->
+<section id="timetable">
+  <div class="section-title">
+    <h2>Weekly Timetable</h2>
+    <p>Semester 2 — Summer 2026</p>
+  </div>
+
+  <div class="tt-outer">
+    <div class="tt-wrap">
+
+      <!-- Time labels -->
+      <div class="tt-timecol">
+        <div class="tt-spacer"></div>
+        <div class="tt-timebody">
+          <span style="top:0">10:00</span>
+          <span style="top:60px">11:00</span>
+          <span style="top:120px">12:00</span>
+          <span style="top:180px">13:00</span>
+          <span style="top:240px">14:00</span>
+          <span style="top:300px">15:00</span>
+          <span style="top:360px">16:00</span>
+          <span style="top:420px">17:00</span>
+          <span style="top:480px">18:00</span>
+        </div>
+      </div>
+
+      <div class="tt-days">
+
+        <!-- MON -->
+        <div class="tt-day">
+          <div class="tt-dayhdr">Mon</div>
+          <div class="tt-daybody">
+            <div class="tt-ev" style="--c:#c0392b;top:0;height:120px">
+              <b>Data Protection Law</b>
+              <span>10:00–12:00</span>
+              <span>H 0107</span>
+            </div>
+            <div class="tt-ev tt-ev-opt" style="--c:#8e44ad;top:375px;height:90px">
+              <b>Python for ML</b>
+              <span>16:15–17:45</span>
+              <span>MA 043 · not weekly</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TUE -->
+        <div class="tt-day">
+          <div class="tt-dayhdr">Tue</div>
+          <div class="tt-daybody">
+            <div class="tt-ev" style="--c:#2980b9;top:0;height:120px">
+              <b>NLP</b>
+              <span>10:00–12:00</span>
+              <span>MA 001 / online</span>
+            </div>
+            <div class="tt-ev tt-ev-l" style="--c:#27ae60;top:240px;height:120px">
+              <b>DST ⚠</b>
+              <span>14:00–16:00</span>
+              <span>H 0110</span>
+            </div>
+            <div class="tt-ev tt-ev-r" style="--c:#16a085;top:240px;height:120px">
+              <b>ISDA ⚠</b>
+              <span>14:00–16:00</span>
+              <span>HE 101</span>
+            </div>
+            <div class="tt-ev tt-ev-opt" style="--c:#27ae60;top:360px;height:120px">
+              <b>DST Übung</b>
+              <span>16:00–18:00</span>
+              <span>H 0110 · biweekly</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- WED -->
+        <div class="tt-day">
+          <div class="tt-dayhdr">Wed</div>
+          <div class="tt-daybody">
+            <div class="tt-ev" style="--c:#e67e22;top:360px;height:120px">
+              <b>SENA</b>
+              <span>16:00–18:00</span>
+              <span>H 0112</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- THU -->
+        <div class="tt-day">
+          <div class="tt-dayhdr">Thu</div>
+          <div class="tt-daybody">
+            <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
+              <b>SENA Übung A</b>
+              <span>10:00–12:00</span>
+              <span>H 0111</span>
+            </div>
+            <div class="tt-ev tt-ev-l" style="--c:#c0392b;top:240px;height:120px">
+              <b>DPL ⚠</b>
+              <span>14:00–16:00</span>
+              <span>H 0107</span>
+            </div>
+            <div class="tt-ev tt-ev-r" style="--c:#16a085;top:240px;height:120px">
+              <b>ISDA Üb. ⚠</b>
+              <span>14:00–16:00</span>
+              <span>MA 651</span>
+            </div>
+            <div class="tt-ev" style="--c:#2c3e50;top:360px;height:120px">
+              <b>AMLS</b>
+              <span>16:00–18:00</span>
+              <span>BH-N 243</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FRI -->
+        <div class="tt-day">
+          <div class="tt-dayhdr">Fri</div>
+          <div class="tt-daybody">
+            <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
+              <b>SENA Übung B</b>
+              <span>10:00–12:00</span>
+              <span>Online</span>
+            </div>
+            <div class="tt-ev" style="--c:#8e44ad;top:360px;height:120px">
+              <b>Python Tutorial</b>
+              <span>16:00–18:00</span>
+              <span>MAR 0.009</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.tt-days -->
+    </div><!-- /.tt-wrap -->
+
+    <div class="tt-legend">
+      <div class="tt-leg"><i style="--c:#2980b9"></i> NLP</div>
+      <div class="tt-leg"><i style="--c:#8e44ad"></i> Python for ML</div>
+      <div class="tt-leg"><i style="--c:#c0392b"></i> Data Protection Law</div>
+      <div class="tt-leg"><i style="--c:#27ae60"></i> Data Science Toolbox</div>
+      <div class="tt-leg"><i style="--c:#e67e22"></i> SENA</div>
+      <div class="tt-leg"><i style="--c:#16a085"></i> ISDA</div>
+      <div class="tt-leg"><i style="--c:#2c3e50"></i> AMLS</div>
+      <div class="tt-leg"><i style="--c:#aaa"></i> Dashed = optional / biweekly</div>
+    </div>
+
+    <div class="tt-note">
+      ⚠ <strong>Zeitkonflikt:</strong> DST und ISDA überschneiden sich Di 14:00–16:00 &nbsp;·&nbsp; DPL (2. Session) und ISDA Übung überschneiden sich Do 14:00–16:00
+    </div>
+
   </div>
 </section>
 
