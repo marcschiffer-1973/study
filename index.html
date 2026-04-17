@@ -733,7 +733,7 @@
               <span>HE 101</span>
             </div>
             <div class="tt-ev tt-ev-opt" style="--c:#27ae60;top:360px;height:120px">
-              <b>Data Science Toolbox Übung</b>
+              <b>Data Science Toolbox Exercise</b>
               <span>16:00–18:00</span>
               <span>H 0110 · biweekly</span>
             </div>
@@ -757,7 +757,7 @@
           <div class="tt-dayhdr">Thu</div>
           <div class="tt-daybody">
             <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
-              <b>Social &amp; Econ. Network Analysis Übung A</b>
+              <b>Social &amp; Econ. Network Analysis Exercise A</b>
               <span>10:00–12:00</span>
               <span>H 0111</span>
             </div>
@@ -767,7 +767,7 @@
               <span>H 0107</span>
             </div>
             <div class="tt-ev tt-ev-r" style="--c:#16a085;top:240px;height:120px">
-              <b>Informationssysteme &amp; Datenanalyse Übung ⚠</b>
+              <b>Informationssysteme &amp; Datenanalyse Exercise ⚠</b>
               <span>14:00–16:00</span>
               <span>MA 651</span>
             </div>
@@ -784,7 +784,7 @@
           <div class="tt-dayhdr">Fri</div>
           <div class="tt-daybody">
             <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
-              <b>Social &amp; Econ. Network Analysis Übung B</b>
+              <b>Social &amp; Econ. Network Analysis Exercise B</b>
               <span>10:00–12:00</span>
               <span>Online</span>
             </div>
@@ -807,11 +807,11 @@
       <div class="tt-leg"><i style="--c:#e67e22"></i> Social &amp; Economic Network Analysis</div>
       <div class="tt-leg"><i style="--c:#16a085"></i> Informationssysteme &amp; Datenanalyse</div>
       <div class="tt-leg"><i style="--c:#2c3e50"></i> Architecture of Machine Learning Systems</div>
-      <div class="tt-leg"><i style="--c:#aaa"></i> Gestrichelt = optional / biweekly</div>
+      <div class="tt-leg"><i style="--c:#aaa"></i> Dashed = optional / biweekly</div>
     </div>
 
     <div class="tt-note">
-      ⚠ <strong>Zeitkonflikt:</strong> Data Science Toolbox und Informationssysteme &amp; Datenanalyse überschneiden sich Di 14:00–16:00 &nbsp;·&nbsp; Data Protection Law (2. Session) und ISDA Übung überschneiden sich Do 14:00–16:00
+      ⚠ <strong>Schedule conflict:</strong> Data Science Toolbox and Informationssysteme &amp; Datenanalyse both run Tue 14:00–16:00 &nbsp;·&nbsp; Data Protection Law (2nd session) and ISDA Exercise both run Thu 14:00–16:00
     </div>
 
   </div>
@@ -821,7 +821,7 @@
 <section id="exams">
   <div class="section-title">
     <h2>Exam Countdown</h2>
-    <p>Prüfungsplan — Semester 2, Summer 2026</p>
+    <p>Exam Schedule — Semester 2, Summer 2026</p>
   </div>
 
   <div class="exam-grid" id="exam-grid">
@@ -1134,7 +1134,7 @@
     const semWeek = offset + 1;
 
     document.getElementById('tt-week-text').textContent =
-      `Semesterwoche ${semWeek} · KW ${kw}`;
+      `Semester Week ${semWeek} · CW ${kw}`;
     document.getElementById('tt-week-dates').textContent =
       `${fmtDate(mon)} – ${fmtDate(fri)} ${fri.getFullYear()}`;
 
@@ -1168,17 +1168,17 @@
 
   // ── Exam countdown ──
   const EXAMS = [
-    { course:'Data Protection Law',    label:'Prüfung 1', date:'2026-07-22T10:00', room:'H 0105',  color:'#c0392b', deadline:'Anmeldung bis 15. Jul · Abmeldung bis 19. Jul' },
-    { course:'Natural Language Processing', label:'Prüfung 1', date:'2026-07-29T11:00', room:'H 0104', color:'#2980b9', deadline:'Anmeldung bis 22. Jul' },
-    { course:'Social & Economic Network Analysis', label:'Prüfung 1', date:'2026-07-29T11:00', room:'H 0104', color:'#e67e22', deadline:'Anmeldung bis 22. Jul' },
-    { course:'Data Science Toolbox',   label:'Prüfung 1', date:'2026-07-30T11:00', room:'H 0104',  color:'#27ae60', deadline:'Anmeldung bis 23. Jul' },
-    { course:'Python for Machine Learning', label:'Prüfung 1', date:'2026-08-05T14:30', room:'HE 101', color:'#8e44ad', deadline:'' },
-    { course:'Architecture of Machine Learning Systems', label:'Prüfung 1 (Klausur)', date:'2026-08-01T00:00', room:'TBA', color:'#2c3e50', deadline:'Pflichtprojekt vor Anmeldung' },
-    { course:'Data Science Toolbox',   label:'Prüfung 2', date:'2026-09-21T10:30', room:'EB 301',  color:'#27ae60', deadline:'Anmeldung bis 14. Sep' },
-    { course:'Data Protection Law',    label:'Prüfung 2', date:'2026-09-28T14:00', room:'H 0105',  color:'#c0392b', deadline:'Anmeldung bis 21. Sep · Abmeldung bis 25. Sep' },
-    { course:'Python for Machine Learning', label:'Prüfung 2', date:'2026-10-06T10:30', room:'HE 101', color:'#8e44ad', deadline:'' },
-    { course:'Natural Language Processing', label:'Prüfung 2', date:'2026-10-07T14:30', room:'A 151',  color:'#2980b9', deadline:'Anmeldung bis 30. Sep' },
-    { course:'Social & Economic Network Analysis', label:'Prüfung 2', date:'2026-10-07T14:30', room:'A 151', color:'#e67e22', deadline:'Anmeldung bis 30. Sep' },
+    { course:'Data Protection Law',    label:'Exam 1', date:'2026-07-22T10:00', room:'H 0105',  color:'#c0392b', deadline:'Register by 15 Jul · Withdraw by 19 Jul' },
+    { course:'Natural Language Processing', label:'Exam 1', date:'2026-07-29T11:00', room:'H 0104', color:'#2980b9', deadline:'Register by 22 Jul' },
+    { course:'Social & Economic Network Analysis', label:'Exam 1', date:'2026-07-29T11:00', room:'H 0104', color:'#e67e22', deadline:'Register by 22 Jul' },
+    { course:'Data Science Toolbox',   label:'Exam 1', date:'2026-07-30T11:00', room:'H 0104',  color:'#27ae60', deadline:'Register by 23 Jul' },
+    { course:'Python for Machine Learning', label:'Exam 1', date:'2026-08-05T14:30', room:'HE 101', color:'#8e44ad', deadline:'' },
+    { course:'Architecture of Machine Learning Systems', label:'Exam 1 (Written)', date:'2026-08-01T00:00', room:'TBA', color:'#2c3e50', deadline:'Mandatory project required before registration' },
+    { course:'Data Science Toolbox',   label:'Exam 2', date:'2026-09-21T10:30', room:'EB 301',  color:'#27ae60', deadline:'Register by 14 Sep' },
+    { course:'Data Protection Law',    label:'Exam 2', date:'2026-09-28T14:00', room:'H 0105',  color:'#c0392b', deadline:'Register by 21 Sep · Withdraw by 25 Sep' },
+    { course:'Python for Machine Learning', label:'Exam 2', date:'2026-10-06T10:30', room:'HE 101', color:'#8e44ad', deadline:'' },
+    { course:'Natural Language Processing', label:'Exam 2', date:'2026-10-07T14:30', room:'A 151',  color:'#2980b9', deadline:'Register by 30 Sep' },
+    { course:'Social & Economic Network Analysis', label:'Exam 2', date:'2026-10-07T14:30', room:'A 151', color:'#e67e22', deadline:'Register by 30 Sep' },
   ];
 
   (function buildExams() {
@@ -1191,9 +1191,9 @@
       const past = days < 0;
       const soon = days >= 0 && days <= 14;
 
-      const fmt = examDate.toLocaleDateString('de-DE', { weekday:'short', day:'numeric', month:'long', year:'numeric' });
-      const time = ex.date.includes('T00:00') ? 'Zeit TBA' :
-        examDate.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' }) + ' Uhr';
+      const fmt = examDate.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'long', year:'numeric' });
+      const time = ex.date.includes('T00:00') ? 'Time TBA' :
+        examDate.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 
       const card = document.createElement('div');
       card.className = 'exam-card' + (past ? ' past' : '') + (soon ? ' soon' : '');
@@ -1205,7 +1205,7 @@
         <div class="ec-detail">🕐 ${time} &nbsp;·&nbsp; 📍 ${ex.room}</div>
         <div class="ec-countdown">
           <span class="ec-days">${past ? '–' : days}</span>
-          <span class="ec-days-label">${past ? 'vergangen' : 'Tage noch'}</span>
+          <span class="ec-days-label">${past ? 'passed' : 'days left'}</span>
         </div>
         ${ex.deadline ? `<div class="ec-deadline">⏰ ${ex.deadline}</div>` : ''}
       `;
