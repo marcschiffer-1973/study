@@ -1276,7 +1276,7 @@
   document.querySelectorAll('.tt-ev').forEach(ev => {
     ev.addEventListener('click', e => {
       e.stopPropagation();
-      const rawTitle = ev.querySelector('b').textContent.replace(' ⚠', '').trim();
+      const rawTitle = ev.querySelector('b').textContent.replace(/\s*⚠.*$/, '').trim();
       const spans = [...ev.querySelectorAll('span')].map(s => s.textContent).filter(Boolean);
       const color = ev.style.getPropertyValue('--c') || '#333';
       const info = TT_INFO[rawTitle] || {};
