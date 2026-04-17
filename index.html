@@ -454,6 +454,76 @@
       font-size: .79rem; color: #a93226;
     }
 
+    /* ── Week navigator ── */
+    .tt-week-nav {
+      display: flex; align-items: center; justify-content: center; gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .tt-week-nav button {
+      background: none; border: 1.5px solid var(--tu-border); border-radius: 6px;
+      width: 32px; height: 32px; font-size: 1rem; cursor: pointer;
+      color: var(--tu-gray); transition: border-color .2s, color .2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tt-week-nav button:hover { border-color: var(--s2); color: var(--s2); }
+    .tt-week-nav button:disabled { opacity: .3; cursor: default; }
+    .tt-week-label {
+      font-size: .92rem; font-weight: 700; color: var(--tu-dark);
+      min-width: 240px; text-align: center;
+    }
+    .tt-week-label small { display: block; font-size: .75rem; font-weight: 400; color: var(--tu-gray); margin-top: .1rem; }
+
+    /* ── Day highlight (today) ── */
+    .tt-day.is-today .tt-dayhdr { background: var(--s2); color: #fff; }
+
+    /* ── Exam countdown ── */
+    #exams { padding: 4rem 2rem; background: var(--tu-light); }
+
+    .exam-grid {
+      max-width: 1000px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .exam-card {
+      background: #fff; border-radius: var(--radius);
+      border-left: 4px solid var(--c);
+      box-shadow: var(--shadow); padding: 1.1rem 1.3rem;
+      display: flex; flex-direction: column; gap: .35rem;
+    }
+
+    .exam-card .ec-course {
+      font-size: .72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--c);
+    }
+
+    .exam-card .ec-label {
+      font-size: .88rem; font-weight: 700; color: var(--tu-dark);
+    }
+
+    .exam-card .ec-detail {
+      font-size: .78rem; color: var(--tu-gray);
+    }
+
+    .exam-card .ec-countdown {
+      margin-top: .4rem; display: flex; align-items: baseline; gap: .35rem;
+    }
+
+    .exam-card .ec-days {
+      font-size: 1.6rem; font-weight: 800; color: var(--c); line-height: 1;
+    }
+
+    .exam-card .ec-days-label {
+      font-size: .75rem; color: var(--tu-gray);
+    }
+
+    .exam-card .ec-deadline {
+      font-size: .72rem; color: #e67e22; margin-top: .1rem; font-weight: 600;
+    }
+
+    .exam-card.past { opacity: .45; }
+    .exam-card.soon .ec-days { color: #c0392b; }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .nav-links { display: none; }
@@ -515,6 +585,7 @@
   <ul class="nav-links">
     <li><a href="#overview">Overview</a></li>
     <li><a href="#timetable">Timetable</a></li>
+    <li><a href="#exams">Exams</a></li>
     <li><a href="#sem1">Semester 1</a></li>
     <li><a href="#sem2">Semester 2</a></li>
     <li><a href="#sem3">Semester 3</a></li>
@@ -595,6 +666,15 @@
     <p>Semester 2 — Summer 2026</p>
   </div>
 
+  <div class="tt-week-nav">
+    <button id="tt-prev" onclick="changeWeek(-1)">&#8592;</button>
+    <div class="tt-week-label">
+      <span id="tt-week-text"></span>
+      <small id="tt-week-dates"></small>
+    </div>
+    <button id="tt-next" onclick="changeWeek(1)">&#8594;</button>
+  </div>
+
   <div class="tt-outer">
     <div class="tt-wrap">
 
@@ -617,7 +697,7 @@
       <div class="tt-days">
 
         <!-- MON -->
-        <div class="tt-day">
+        <div class="tt-day" id="tt-mon">
           <div class="tt-dayhdr">Mon</div>
           <div class="tt-daybody">
             <div class="tt-ev" style="--c:#c0392b;top:0;height:120px">
@@ -626,7 +706,7 @@
               <span>H 0107</span>
             </div>
             <div class="tt-ev tt-ev-opt" style="--c:#8e44ad;top:375px;height:90px">
-              <b>Python for ML</b>
+              <b>Python for Machine Learning</b>
               <span>16:15–17:45</span>
               <span>MA 043 · not weekly</span>
             </div>
@@ -634,11 +714,11 @@
         </div>
 
         <!-- TUE -->
-        <div class="tt-day">
+        <div class="tt-day" id="tt-tue">
           <div class="tt-dayhdr">Tue</div>
           <div class="tt-daybody">
             <div class="tt-ev" style="--c:#2980b9;top:0;height:120px">
-              <b>NLP</b>
+              <b>Natural Language Processing</b>
               <span>10:00–12:00</span>
               <span>MA 001 / online</span>
             </div>
@@ -648,7 +728,7 @@
               <span>H 0110</span>
             </div>
             <div class="tt-ev tt-ev-r" style="--c:#16a085;top:240px;height:120px">
-              <b>ISDA ⚠</b>
+              <b>Informationssysteme &amp; Datenanalyse ⚠</b>
               <span>14:00–16:00</span>
               <span>HE 101</span>
             </div>
@@ -661,11 +741,11 @@
         </div>
 
         <!-- WED -->
-        <div class="tt-day">
+        <div class="tt-day" id="tt-wed">
           <div class="tt-dayhdr">Wed</div>
           <div class="tt-daybody">
             <div class="tt-ev" style="--c:#e67e22;top:360px;height:120px">
-              <b>SENA</b>
+              <b>Social &amp; Economic Network Analysis</b>
               <span>16:00–18:00</span>
               <span>H 0112</span>
             </div>
@@ -673,26 +753,26 @@
         </div>
 
         <!-- THU -->
-        <div class="tt-day">
+        <div class="tt-day" id="tt-thu">
           <div class="tt-dayhdr">Thu</div>
           <div class="tt-daybody">
             <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
-              <b>SENA Übung A</b>
+              <b>Social &amp; Econ. Network Analysis Übung A</b>
               <span>10:00–12:00</span>
               <span>H 0111</span>
             </div>
             <div class="tt-ev tt-ev-l" style="--c:#c0392b;top:240px;height:120px">
-              <b>DPL ⚠</b>
+              <b>Data Protection Law ⚠</b>
               <span>14:00–16:00</span>
               <span>H 0107</span>
             </div>
             <div class="tt-ev tt-ev-r" style="--c:#16a085;top:240px;height:120px">
-              <b>ISDA Üb. ⚠</b>
+              <b>Informationssysteme &amp; Datenanalyse Übung ⚠</b>
               <span>14:00–16:00</span>
               <span>MA 651</span>
             </div>
             <div class="tt-ev" style="--c:#2c3e50;top:360px;height:120px">
-              <b>AMLS</b>
+              <b>Architecture of Machine Learning Systems</b>
               <span>16:00–18:00</span>
               <span>BH-N 243</span>
             </div>
@@ -700,16 +780,16 @@
         </div>
 
         <!-- FRI -->
-        <div class="tt-day">
+        <div class="tt-day" id="tt-fri">
           <div class="tt-dayhdr">Fri</div>
           <div class="tt-daybody">
             <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
-              <b>SENA Übung B</b>
+              <b>Social &amp; Econ. Network Analysis Übung B</b>
               <span>10:00–12:00</span>
               <span>Online</span>
             </div>
             <div class="tt-ev" style="--c:#8e44ad;top:360px;height:120px">
-              <b>Python Tutorial</b>
+              <b>Python for Machine Learning Tutorial</b>
               <span>16:00–18:00</span>
               <span>MAR 0.009</span>
             </div>
@@ -720,20 +800,32 @@
     </div><!-- /.tt-wrap -->
 
     <div class="tt-legend">
-      <div class="tt-leg"><i style="--c:#2980b9"></i> NLP</div>
-      <div class="tt-leg"><i style="--c:#8e44ad"></i> Python for ML</div>
+      <div class="tt-leg"><i style="--c:#2980b9"></i> Natural Language Processing</div>
+      <div class="tt-leg"><i style="--c:#8e44ad"></i> Python for Machine Learning</div>
       <div class="tt-leg"><i style="--c:#c0392b"></i> Data Protection Law</div>
-      <div class="tt-leg"><i style="--c:#27ae60"></i> Data Science Toolbox (DST)</div>
-      <div class="tt-leg"><i style="--c:#e67e22"></i> SENA</div>
-      <div class="tt-leg"><i style="--c:#16a085"></i> ISDA</div>
-      <div class="tt-leg"><i style="--c:#2c3e50"></i> AMLS</div>
-      <div class="tt-leg"><i style="--c:#aaa"></i> Dashed = optional / biweekly</div>
+      <div class="tt-leg"><i style="--c:#27ae60"></i> Data Science Toolbox</div>
+      <div class="tt-leg"><i style="--c:#e67e22"></i> Social &amp; Economic Network Analysis</div>
+      <div class="tt-leg"><i style="--c:#16a085"></i> Informationssysteme &amp; Datenanalyse</div>
+      <div class="tt-leg"><i style="--c:#2c3e50"></i> Architecture of Machine Learning Systems</div>
+      <div class="tt-leg"><i style="--c:#aaa"></i> Gestrichelt = optional / biweekly</div>
     </div>
 
     <div class="tt-note">
-      ⚠ <strong>Zeitkonflikt:</strong> DST und ISDA überschneiden sich Di 14:00–16:00 &nbsp;·&nbsp; DPL (2. Session) und ISDA Übung überschneiden sich Do 14:00–16:00
+      ⚠ <strong>Zeitkonflikt:</strong> Data Science Toolbox und Informationssysteme &amp; Datenanalyse überschneiden sich Di 14:00–16:00 &nbsp;·&nbsp; Data Protection Law (2. Session) und ISDA Übung überschneiden sich Do 14:00–16:00
     </div>
 
+  </div>
+</section>
+
+<!-- ── Exam Countdown ── -->
+<section id="exams">
+  <div class="section-title">
+    <h2>Exam Countdown</h2>
+    <p>Prüfungsplan — Semester 2, Summer 2026</p>
+  </div>
+
+  <div class="exam-grid" id="exam-grid">
+    <!-- filled by JS -->
   </div>
 </section>
 
@@ -1018,6 +1110,109 @@
 
 
 <script>
+  // ── Week navigator ──
+  const SEM_START = new Date('2026-04-13T00:00:00');
+  const SEM_END_WEEK = 25; // ~26 weeks
+  let weekOffset = 0;
+
+  function isoWeek(d) {
+    const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+    return Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+  }
+
+  function fmtDate(d) {
+    return d.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
+  }
+
+  function renderWeek(offset) {
+    const mon = new Date(SEM_START);
+    mon.setDate(mon.getDate() + offset * 7);
+    const fri = new Date(mon); fri.setDate(fri.getDate() + 4);
+    const kw = isoWeek(mon);
+    const semWeek = offset + 1;
+
+    document.getElementById('tt-week-text').textContent =
+      `Semesterwoche ${semWeek} · KW ${kw}`;
+    document.getElementById('tt-week-dates').textContent =
+      `${fmtDate(mon)} – ${fmtDate(fri)} ${fri.getFullYear()}`;
+
+    document.getElementById('tt-prev').disabled = offset === 0;
+    document.getElementById('tt-next').disabled = offset >= SEM_END_WEEK;
+
+    // highlight today's column
+    const days = ['tt-mon','tt-tue','tt-wed','tt-thu','tt-fri'];
+    days.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('is-today'); });
+    const today = new Date();
+    const startOfMon = new Date(mon); startOfMon.setHours(0,0,0,0);
+    const diffDays = Math.round((today - startOfMon) / 86400000);
+    if (diffDays >= 0 && diffDays <= 4) {
+      const el = document.getElementById(days[diffDays]);
+      if (el) el.classList.add('is-today');
+    }
+  }
+
+  function changeWeek(delta) {
+    weekOffset = Math.max(0, Math.min(weekOffset + delta, SEM_END_WEEK));
+    renderWeek(weekOffset);
+  }
+
+  // init: jump to current week
+  (function() {
+    const now = new Date(); now.setHours(0,0,0,0);
+    const diff = Math.floor((now - SEM_START) / (7 * 86400000));
+    weekOffset = Math.max(0, Math.min(diff, SEM_END_WEEK));
+    renderWeek(weekOffset);
+  })();
+
+  // ── Exam countdown ──
+  const EXAMS = [
+    { course:'Data Protection Law',    label:'Prüfung 1', date:'2026-07-22T10:00', room:'H 0105',  color:'#c0392b', deadline:'Anmeldung bis 15. Jul · Abmeldung bis 19. Jul' },
+    { course:'Natural Language Processing', label:'Prüfung 1', date:'2026-07-29T11:00', room:'H 0104', color:'#2980b9', deadline:'Anmeldung bis 22. Jul' },
+    { course:'Social & Economic Network Analysis', label:'Prüfung 1', date:'2026-07-29T11:00', room:'H 0104', color:'#e67e22', deadline:'Anmeldung bis 22. Jul' },
+    { course:'Data Science Toolbox',   label:'Prüfung 1', date:'2026-07-30T11:00', room:'H 0104',  color:'#27ae60', deadline:'Anmeldung bis 23. Jul' },
+    { course:'Python for Machine Learning', label:'Prüfung 1', date:'2026-08-05T14:30', room:'HE 101', color:'#8e44ad', deadline:'' },
+    { course:'Architecture of Machine Learning Systems', label:'Prüfung 1 (Klausur)', date:'2026-08-01T00:00', room:'TBA', color:'#2c3e50', deadline:'Pflichtprojekt vor Anmeldung' },
+    { course:'Data Science Toolbox',   label:'Prüfung 2', date:'2026-09-21T10:30', room:'EB 301',  color:'#27ae60', deadline:'Anmeldung bis 14. Sep' },
+    { course:'Data Protection Law',    label:'Prüfung 2', date:'2026-09-28T14:00', room:'H 0105',  color:'#c0392b', deadline:'Anmeldung bis 21. Sep · Abmeldung bis 25. Sep' },
+    { course:'Python for Machine Learning', label:'Prüfung 2', date:'2026-10-06T10:30', room:'HE 101', color:'#8e44ad', deadline:'' },
+    { course:'Natural Language Processing', label:'Prüfung 2', date:'2026-10-07T14:30', room:'A 151',  color:'#2980b9', deadline:'Anmeldung bis 30. Sep' },
+    { course:'Social & Economic Network Analysis', label:'Prüfung 2', date:'2026-10-07T14:30', room:'A 151', color:'#e67e22', deadline:'Anmeldung bis 30. Sep' },
+  ];
+
+  (function buildExams() {
+    const grid = document.getElementById('exam-grid');
+    const now = new Date();
+    EXAMS.forEach(ex => {
+      const examDate = new Date(ex.date);
+      const diffMs = examDate - now;
+      const days = Math.ceil(diffMs / 86400000);
+      const past = days < 0;
+      const soon = days >= 0 && days <= 14;
+
+      const fmt = examDate.toLocaleDateString('de-DE', { weekday:'short', day:'numeric', month:'long', year:'numeric' });
+      const time = ex.date.includes('T00:00') ? 'Zeit TBA' :
+        examDate.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' }) + ' Uhr';
+
+      const card = document.createElement('div');
+      card.className = 'exam-card' + (past ? ' past' : '') + (soon ? ' soon' : '');
+      card.style.setProperty('--c', ex.color);
+      card.innerHTML = `
+        <div class="ec-course">${ex.course}</div>
+        <div class="ec-label">${ex.label}</div>
+        <div class="ec-detail">📅 ${fmt}</div>
+        <div class="ec-detail">🕐 ${time} &nbsp;·&nbsp; 📍 ${ex.room}</div>
+        <div class="ec-countdown">
+          <span class="ec-days">${past ? '–' : days}</span>
+          <span class="ec-days-label">${past ? 'vergangen' : 'Tage noch'}</span>
+        </div>
+        ${ex.deadline ? `<div class="ec-deadline">⏰ ${ex.deadline}</div>` : ''}
+      `;
+      grid.appendChild(card);
+    });
+  })();
+
   // ── Auth guard ──
   const raw = sessionStorage.getItem('ism_user');
   if (!raw) {
