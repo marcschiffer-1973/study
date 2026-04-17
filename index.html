@@ -695,6 +695,15 @@
       <a href="#sem4">View modules →</a>
     </div>
   </div>
+
+  <div style="max-width:1000px;margin:1.5rem auto 0;display:flex;flex-wrap:wrap;gap:.6rem;padding:0 .5rem;">
+    <a onclick="openDetails('isda-tutorials')" href="#isda-tutorials"
+       style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;
+              color:#16a085;background:#f0faf8;border:1.5px solid #b2dfdb;border-radius:20px;
+              padding:.35rem .9rem;text-decoration:none;cursor:pointer;transition:background .2s;">
+      📋 ISDA Tutorial Slots
+    </a>
+  </div>
 </section>
 
 <!-- ── Timetable ── -->
@@ -1027,7 +1036,7 @@
         🗓 Exam 1: Fri 31 Jul 2026, 08:30–10:30 · Register by 24 Jul<br>
         🗓 Exam 2: Tue 29 Sep 2026, 15:00–17:00 · Register by 22 Sep
       </p>
-      <details style="margin-top:.8rem;">
+      <details id="isda-tutorials" style="margin-top:.8rem;">
         <summary style="font-size:.82rem;font-weight:700;cursor:pointer;color:var(--s2);">Tutorial Slots — Choose One →</summary>
         <p style="font-size:.75rem;color:#aaa;margin-top:.5rem;font-style:italic;">Registration via MOSES · all slots start from 22 Apr 2026</p>
         <table style="width:100%;border-collapse:collapse;margin-top:.6rem;font-size:.76rem;">
@@ -1237,6 +1246,12 @@
 
 
 <script>
+  // ── Quick-link: open a <details> and scroll to it ──
+  function openDetails(id) {
+    const el = document.getElementById(id);
+    if (el) { el.open = true; setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'start' }), 50); }
+  }
+
   // ── Timetable popup ──
   const TT_INFO = {
     'Natural Language Processing':         { time:'Tue 10:00–12:00', room:'MA 001 (first session) · then online', note:'R. Roller · ⚠ First session mandatory to register · Max 50 students · <a href="https://tu-berlin.zoom-x.de/j/62435252642?pwd=XwzaJuqTdJqRX3VrUsYLekahb3GJiZ.1" target="_blank" style="color:#2980b9">Join Zoom</a> · ID: 624 3525 2642 · PW: 537955' },
