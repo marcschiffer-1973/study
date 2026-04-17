@@ -187,11 +187,7 @@
 
         <div class="field">
           <label for="login-username">Username</label>
-          <input type="text" id="login-username" placeholder="Username" />
-        </div>
-        <div class="field">
-          <label for="login-password">Password</label>
-          <input type="password" id="login-password" placeholder="••••••••" />
+          <input type="text" id="login-username" placeholder="Enter your username" />
         </div>
         <button class="btn" onclick="doLogin()">Sign In</button>
       </div>
@@ -209,15 +205,14 @@
 
     function doLogin() {
       const username = document.getElementById('login-username').value.trim();
-      const pw       = document.getElementById('login-password').value;
       const err      = document.getElementById('login-error');
 
       err.classList.remove('show');
 
-      if (!username || !pw) { err.textContent = 'Please enter your username and password.'; err.classList.add('show'); return; }
+      if (!username) { err.textContent = 'Please enter your username.'; err.classList.add('show'); return; }
 
-      if (username !== 'marc' || pw !== 'marc123') {
-        err.textContent = 'Incorrect username or password.';
+      if (username.toLowerCase() !== 'marc') {
+        err.textContent = 'Incorrect username.';
         err.classList.add('show');
         return;
       }
