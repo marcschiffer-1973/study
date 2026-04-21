@@ -586,7 +586,7 @@
 
     .sl-input { width:70px; padding:.3rem .5rem; border:1.5px solid var(--tu-border); border-radius:6px; font-size:.88rem; text-align:center; outline:none; transition:border-color .2s; }
     .sl-input:focus { border-color:var(--tu-red); }
-    .sl-input:disabled { background:#f5f5f5; color:#aaa; cursor:not-allowed; }
+    .sl-input[readonly] { background:#f5f5f5; color:#aaa; cursor:not-allowed; }
 
     .sl-total-week { color:var(--tu-red); font-size:1rem; }
     .sl-total-all  { color:var(--tu-dark); }
@@ -1400,15 +1400,15 @@
         <td><span class="sl-dot" style="--c:${c.color}"></span>${c.label}</td>
         <td style="text-align:center">
           <input class="sl-input" type="number" min="0" step="0.5"
-            placeholder="0" data-id="${c.id}" disabled />
+            placeholder="0" data-id="${c.id}" readonly
+            style="background:#f5f5f5;color:#aaa;cursor:not-allowed;" />
         </td>
         <td class="sl-total-cell" style="text-align:right">0.0</td>`;
       tbody.appendChild(tr);
     });
-    // attach listeners once
     tbody.querySelectorAll('.sl-input').forEach(inp => {
-      inp.addEventListener('input', () => slSaveInput(inp));
-      inp.addEventListener('blur',  () => slSaveInput(inp));
+      inp.addEventListener('input', () => { if (slUnlocked) slSaveInput(inp); });
+      inp.addEventListener('change', () => { if (slUnlocked) slSaveInput(inp); });
     });
   }
 
@@ -1460,7 +1460,17 @@
     document.getElementById('sl-lock-icon').textContent = locked ? '🔒' : '🔓';
     document.getElementById('sl-lock-text').textContent = locked ? 'Locked' : 'Editing';
     document.querySelectorAll('.sl-input').forEach(inp => {
-      inp.disabled = locked;
+      if (locked) {
+        inp.readOnly = true;
+        inp.style.background = '#f5f5f5';
+        inp.style.color = '#aaa';
+        inp.style.cursor = 'not-allowed';
+      } else {
+        inp.readOnly = false;
+        inp.style.background = '';
+        inp.style.color = '';
+        inp.style.cursor = '';
+      }
     });
   }
 
