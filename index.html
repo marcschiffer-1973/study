@@ -562,6 +562,49 @@
     .exam-card.past { opacity: .45; }
     .exam-card.soon .ec-days { color: #c0392b; }
 
+    /* ── Study Log ── */
+    #studylog { padding: 4rem 2rem; background: var(--tu-light); }
+
+    .sl-header { display:flex; align-items:center; justify-content:space-between; max-width:860px; margin:0 auto 1.5rem; flex-wrap:wrap; gap:.8rem; }
+
+    .sl-week-nav { display:flex; align-items:center; gap:.7rem; }
+    .sl-week-nav button { background:#fff; border:1.5px solid var(--tu-border); border-radius:7px; width:30px; height:30px; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color .2s; }
+    .sl-week-nav button:hover { border-color:var(--tu-red); }
+    .sl-week-label { font-size:.88rem; font-weight:700; color:var(--tu-dark); min-width:140px; text-align:center; }
+
+    .sl-lock-btn { display:inline-flex; align-items:center; gap:.4rem; font-size:.82rem; font-weight:700; padding:.38rem .9rem; border-radius:20px; border:1.5px solid; cursor:pointer; transition:all .2s; }
+    .sl-lock-btn.locked   { color:#c0392b; border-color:#c0392b; background:#fff5f5; }
+    .sl-lock-btn.unlocked { color:#16a085; border-color:#16a085; background:#f0faf8; }
+
+    .sl-table { width:100%; max-width:860px; margin:0 auto; border-collapse:collapse; background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .sl-table thead tr { background:var(--tu-dark); color:#fff; }
+    .sl-table th { padding:.65rem 1.1rem; font-size:.82rem; font-weight:700; text-align:left; }
+    .sl-table th:last-child, .sl-table td:last-child { text-align:right; }
+    .sl-table td { padding:.6rem 1.1rem; font-size:.88rem; border-bottom:1px solid var(--tu-border); vertical-align:middle; }
+    .sl-table tr:last-child td { border-bottom:none; font-weight:700; background:#f9f9f9; }
+    .sl-table .sl-dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:.5rem; vertical-align:middle; background:var(--c); }
+
+    .sl-input { width:70px; padding:.3rem .5rem; border:1.5px solid var(--tu-border); border-radius:6px; font-size:.88rem; text-align:center; outline:none; transition:border-color .2s; }
+    .sl-input:focus { border-color:var(--tu-red); }
+    .sl-input:disabled { background:#f5f5f5; color:#aaa; cursor:not-allowed; }
+
+    .sl-total-week { color:var(--tu-red); font-size:1rem; }
+    .sl-total-all  { color:var(--tu-dark); }
+
+    .sl-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; display:flex; align-items:center; justify-content:center; }
+    .sl-pw-card { background:#fff; border-radius:12px; padding:2rem; width:320px; box-shadow:0 8px 40px rgba(0,0,0,.2); }
+    .sl-pw-card h3 { font-size:1.1rem; font-weight:800; margin-bottom:.4rem; }
+    .sl-pw-card p  { font-size:.83rem; color:var(--tu-gray); margin-bottom:1.1rem; }
+    .sl-pw-input { width:100%; padding:.6rem .9rem; border:1.5px solid var(--tu-border); border-radius:7px; font-size:.95rem; outline:none; margin-bottom:.8rem; }
+    .sl-pw-input:focus { border-color:var(--tu-red); }
+    .sl-pw-err { font-size:.8rem; color:#c0392b; margin-bottom:.7rem; display:none; }
+    .sl-pw-err.show { display:block; }
+    .sl-pw-btns { display:flex; gap:.6rem; }
+    .sl-pw-btns button { flex:1; padding:.6rem; border-radius:7px; font-size:.88rem; font-weight:700; cursor:pointer; border:none; }
+    .sl-pw-ok  { background:var(--tu-red); color:#fff; }
+    .sl-pw-ok:hover  { background:#a93226; }
+    .sl-pw-cancel { background:#eee; color:var(--tu-dark); }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .nav-links { display: none; }
@@ -623,6 +666,7 @@
   <ul class="nav-links">
     <li><a href="#overview">Overview</a></li>
     <li><a href="#timetable">Timetable</a></li>
+    <li><a href="#studylog">Study Log</a></li>
     <li><a href="#exams">Exams</a></li>
     <li><a href="#sem1">Semester 1</a></li>
     <li><a href="#sem2">Semester 2</a></li>
@@ -908,6 +952,43 @@
     </details>
 
   </div><!-- /.tt-outer wrapper -->
+</section>
+
+<!-- ── Study Log ── -->
+<section id="studylog">
+  <div class="section-title">
+    <h2>Study Time Log</h2>
+    <p>Weekly hours spent per module — stored in your browser</p>
+  </div>
+
+  <div class="sl-header">
+    <div class="sl-week-nav">
+      <button onclick="slPrevWeek()">&#8592;</button>
+      <span class="sl-week-label" id="sl-week-label"></span>
+      <button onclick="slNextWeek()">&#8594;</button>
+    </div>
+    <button class="sl-lock-btn locked" id="sl-lock-btn" onclick="slToggleLock()">
+      <span id="sl-lock-icon">🔒</span> <span id="sl-lock-text">Locked</span>
+    </button>
+  </div>
+
+  <table class="sl-table">
+    <thead>
+      <tr>
+        <th>Module</th>
+        <th style="text-align:center">This Week (hrs)</th>
+        <th>Total (hrs)</th>
+      </tr>
+    </thead>
+    <tbody id="sl-tbody"></tbody>
+    <tfoot>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td style="text-align:center"><span class="sl-total-week" id="sl-week-total">0.0</span></td>
+        <td style="text-align:right"><span class="sl-total-all" id="sl-all-total">0.0</span></td>
+      </tr>
+    </tfoot>
+  </table>
 </section>
 
 <!-- ── Exam Countdown ── -->
@@ -1247,6 +1328,153 @@
     const el = document.getElementById(id);
     if (el) { el.open = true; setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'start' }), 50); }
   }
+
+  // ── Study Log ──
+  const SL_COURSES = [
+    { id:'nlp',   label:'Natural Language Processing',          color:'#2980b9' },
+    { id:'pyml',  label:'Python for Machine Learning',          color:'#8e44ad' },
+    { id:'dpl',   label:'Data Protection Law',                  color:'#c0392b' },
+    { id:'dst',   label:'Data Science Toolbox',                 color:'#27ae60' },
+    { id:'sena',  label:'Social & Economic Network Analysis',   color:'#e67e22' },
+    { id:'isda',  label:'Informationssysteme & Datenanalyse',   color:'#16a085' },
+    { id:'amls',  label:'Architecture of Machine Learning Systems', color:'#2c3e50' },
+  ];
+
+  let slWeekOffset = 0;
+  let slUnlocked = false;
+
+  function slWeekKey(offset) {
+    const d = new Date();
+    d.setDate(d.getDate() - d.getDay() + 1 + offset * 7);
+    const y = d.getFullYear();
+    const w = String(getISOWeek(d)).padStart(2,'0');
+    return `sl_${y}_W${w}`;
+  }
+
+  function slGetData(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+  }
+
+  function slSave(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  function slAllTotal(courseId) {
+    let total = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('sl_')) {
+        const d = slGetData(k);
+        total += parseFloat(d[courseId] || 0);
+      }
+    }
+    return total;
+  }
+
+  function slWeekLabel(offset) {
+    const d = new Date();
+    d.setDate(d.getDate() - d.getDay() + 1 + offset * 7);
+    const mon = new Date(d);
+    const fri = new Date(d); fri.setDate(fri.getDate() + 4);
+    const fmt = dt => dt.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+    const w = getISOWeek(d);
+    const suffix = offset === 0 ? ' (this week)' : offset === -1 ? ' (last week)' : '';
+    return `KW ${w} · ${fmt(mon)} – ${fmt(fri)}${suffix}`;
+  }
+
+  function slRender() {
+    const key = slWeekKey(slWeekOffset);
+    const data = slGetData(key);
+    document.getElementById('sl-week-label').textContent = slWeekLabel(slWeekOffset);
+
+    let weekTotal = 0;
+    let allTotal  = 0;
+    const tbody = document.getElementById('sl-tbody');
+    tbody.innerHTML = '';
+
+    SL_COURSES.forEach(c => {
+      const val = parseFloat(data[c.id] || 0);
+      const tot = slAllTotal(c.id);
+      weekTotal += val;
+      allTotal  += tot;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="sl-dot" style="--c:${c.color}"></span>${c.label}</td>
+        <td style="text-align:center">
+          <input class="sl-input" type="number" min="0" step="0.5"
+            value="${val > 0 ? val : ''}" placeholder="0"
+            data-id="${c.id}" ${slUnlocked ? '' : 'disabled'}
+            onchange="slUpdate(this)" />
+        </td>
+        <td style="text-align:right">${tot.toFixed(1)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('sl-week-total').textContent = weekTotal.toFixed(1);
+    document.getElementById('sl-all-total').textContent  = allTotal.toFixed(1);
+  }
+
+  function slUpdate(input) {
+    const key = slWeekKey(slWeekOffset);
+    const data = slGetData(key);
+    const v = parseFloat(input.value);
+    data[input.dataset.id] = isNaN(v) || v < 0 ? 0 : v;
+    slSave(key, data);
+    slRender();
+  }
+
+  function slPrevWeek() { slWeekOffset--; slRender(); }
+  function slNextWeek() { slWeekOffset++; slRender(); }
+
+  function slToggleLock() {
+    if (slUnlocked) {
+      slUnlocked = false;
+      document.getElementById('sl-lock-btn').className = 'sl-lock-btn locked';
+      document.getElementById('sl-lock-icon').textContent = '🔒';
+      document.getElementById('sl-lock-text').textContent = 'Locked';
+      slRender();
+    } else {
+      // show password prompt
+      const overlay = document.createElement('div');
+      overlay.className = 'sl-overlay';
+      overlay.innerHTML = `
+        <div class="sl-pw-card">
+          <h3>🔐 Enter Password</h3>
+          <p>Enter the edit password to modify study hours.</p>
+          <input class="sl-pw-input" type="password" id="sl-pw-field" placeholder="Password" />
+          <div class="sl-pw-err" id="sl-pw-err">Incorrect password.</div>
+          <div class="sl-pw-btns">
+            <button class="sl-pw-ok" onclick="slCheckPw()">Unlock</button>
+            <button class="sl-pw-cancel" onclick="this.closest('.sl-overlay').remove()">Cancel</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      setTimeout(() => document.getElementById('sl-pw-field').focus(), 50);
+      document.getElementById('sl-pw-field').addEventListener('keydown', e => {
+        if (e.key === 'Enter') slCheckPw();
+        if (e.key === 'Escape') overlay.remove();
+      });
+    }
+  }
+
+  function slCheckPw() {
+    const pw = document.getElementById('sl-pw-field').value;
+    if (pw === '123') {
+      document.querySelector('.sl-overlay').remove();
+      slUnlocked = true;
+      document.getElementById('sl-lock-btn').className = 'sl-lock-btn unlocked';
+      document.getElementById('sl-lock-icon').textContent = '🔓';
+      document.getElementById('sl-lock-text').textContent = 'Editing';
+      slRender();
+    } else {
+      document.getElementById('sl-pw-err').classList.add('show');
+      document.getElementById('sl-pw-field').value = '';
+      document.getElementById('sl-pw-field').focus();
+    }
+  }
+
+  slRender();
 
   // ── Timetable popup ──
   const TT_INFO = {
