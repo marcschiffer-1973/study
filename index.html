@@ -1342,6 +1342,7 @@
 
   let slWeekOffset = 0;
   let slUnlocked = false;
+  let slOverlay = null;
 
   function slWeekKey(offset) {
     const d = new Date();
@@ -1436,9 +1437,9 @@
       slRender();
     } else {
       // show password prompt
-      const overlay = document.createElement('div');
-      overlay.className = 'sl-overlay';
-      overlay.innerHTML = `
+      slOverlay = document.createElement('div');
+      slOverlay.className = 'sl-overlay';
+      slOverlay.innerHTML = `
         <div class="sl-pw-card">
           <h3>🔐 Enter Password</h3>
           <p>Enter the edit password to modify study hours.</p>
@@ -1446,22 +1447,26 @@
           <div class="sl-pw-err" id="sl-pw-err">Incorrect password.</div>
           <div class="sl-pw-btns">
             <button class="sl-pw-ok" onclick="slCheckPw()">Unlock</button>
-            <button class="sl-pw-cancel" onclick="this.closest('.sl-overlay').remove()">Cancel</button>
+            <button class="sl-pw-cancel" onclick="slCloseOverlay()">Cancel</button>
           </div>
         </div>`;
-      document.body.appendChild(overlay);
+      document.body.appendChild(slOverlay);
       setTimeout(() => document.getElementById('sl-pw-field').focus(), 50);
       document.getElementById('sl-pw-field').addEventListener('keydown', e => {
         if (e.key === 'Enter') slCheckPw();
-        if (e.key === 'Escape') overlay.remove();
+        if (e.key === 'Escape') slCloseOverlay();
       });
     }
+  }
+
+  function slCloseOverlay() {
+    if (slOverlay) { slOverlay.remove(); slOverlay = null; }
   }
 
   function slCheckPw() {
     const pw = document.getElementById('sl-pw-field').value;
     if (pw === '123') {
-      document.querySelector('.sl-overlay').remove();
+      slCloseOverlay();
       slUnlocked = true;
       document.getElementById('sl-lock-btn').className = 'sl-lock-btn unlocked';
       document.getElementById('sl-lock-icon').textContent = '🔓';
