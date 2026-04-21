@@ -1407,16 +1407,14 @@
     });
     // attach listeners once
     tbody.querySelectorAll('.sl-input').forEach(inp => {
-      inp.addEventListener('change', () => slSaveInput(inp));
+      inp.addEventListener('input', () => slSaveInput(inp));
+      inp.addEventListener('blur',  () => slSaveInput(inp));
     });
   }
 
-  // Update values in existing rows (no DOM rebuild)
-  function slRefresh() {
+  function slUpdateTotals() {
     const key = slWeekKey(slWeekOffset);
     const data = slGetData(key);
-    document.getElementById('sl-week-label').textContent = slWeekLabel(slWeekOffset);
-
     let weekTotal = 0, allTotal = 0;
     const rows = document.querySelectorAll('#sl-tbody tr');
     SL_COURSES.forEach((c, i) => {
@@ -1424,13 +1422,23 @@
       const tot = slAllTotal(c.id);
       weekTotal += val;
       allTotal  += tot;
-      const inp = rows[i].querySelector('.sl-input');
-      inp.value = val > 0 ? val : '';
       rows[i].querySelector('.sl-total-cell').textContent = tot.toFixed(1);
     });
-
     document.getElementById('sl-week-total').textContent = weekTotal.toFixed(1);
     document.getElementById('sl-all-total').textContent  = allTotal.toFixed(1);
+  }
+
+  // Load saved values into inputs (called on week switch)
+  function slRefresh() {
+    const key = slWeekKey(slWeekOffset);
+    const data = slGetData(key);
+    document.getElementById('sl-week-label').textContent = slWeekLabel(slWeekOffset);
+    const rows = document.querySelectorAll('#sl-tbody tr');
+    SL_COURSES.forEach((c, i) => {
+      const val = parseFloat(data[c.id] || 0);
+      rows[i].querySelector('.sl-input').value = val > 0 ? val : '';
+    });
+    slUpdateTotals();
   }
 
   function slSaveInput(inp) {
@@ -1439,7 +1447,7 @@
     const v = parseFloat(inp.value);
     data[inp.dataset.id] = isNaN(v) || v < 0 ? 0 : v;
     slSave(key, data);
-    slRefresh();
+    slUpdateTotals();
   }
 
   function slPrevWeek() { slWeekOffset--; slRefresh(); }
