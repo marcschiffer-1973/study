@@ -1382,50 +1382,60 @@
     return `KW ${w} · ${fmt(mon)} – ${fmt(fri)}${suffix}`;
   }
 
-  function slRender() {
-    const key = slWeekKey(slWeekOffset);
-    const data = slGetData(key);
-    document.getElementById('sl-week-label').textContent = slWeekLabel(slWeekOffset);
-
-    let weekTotal = 0;
-    let allTotal  = 0;
+  // Build table rows once on load
+  function slBuildTable() {
     const tbody = document.getElementById('sl-tbody');
     tbody.innerHTML = '';
-
     SL_COURSES.forEach(c => {
-      const val = parseFloat(data[c.id] || 0);
-      const tot = slAllTotal(c.id);
-      weekTotal += val;
-      allTotal  += tot;
-
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><span class="sl-dot" style="--c:${c.color}"></span>${c.label}</td>
         <td style="text-align:center">
           <input class="sl-input" type="number" min="0" step="0.5"
-            value="${val > 0 ? val : ''}" placeholder="0"
-            data-id="${c.id}" ${slUnlocked ? '' : 'disabled'}
-            onchange="slUpdate(this)" />
+            placeholder="0" data-id="${c.id}" disabled />
         </td>
-        <td style="text-align:right">${tot.toFixed(1)}</td>`;
+        <td class="sl-total-cell" style="text-align:right">0.0</td>`;
       tbody.appendChild(tr);
+    });
+    // attach listeners once
+    tbody.querySelectorAll('.sl-input').forEach(inp => {
+      inp.addEventListener('change', () => slSaveInput(inp));
+    });
+  }
+
+  // Update values in existing rows (no DOM rebuild)
+  function slRefresh() {
+    const key = slWeekKey(slWeekOffset);
+    const data = slGetData(key);
+    document.getElementById('sl-week-label').textContent = slWeekLabel(slWeekOffset);
+
+    let weekTotal = 0, allTotal = 0;
+    const rows = document.querySelectorAll('#sl-tbody tr');
+    SL_COURSES.forEach((c, i) => {
+      const val = parseFloat(data[c.id] || 0);
+      const tot = slAllTotal(c.id);
+      weekTotal += val;
+      allTotal  += tot;
+      const inp = rows[i].querySelector('.sl-input');
+      inp.value = val > 0 ? val : '';
+      rows[i].querySelector('.sl-total-cell').textContent = tot.toFixed(1);
     });
 
     document.getElementById('sl-week-total').textContent = weekTotal.toFixed(1);
     document.getElementById('sl-all-total').textContent  = allTotal.toFixed(1);
   }
 
-  function slUpdate(input) {
+  function slSaveInput(inp) {
     const key = slWeekKey(slWeekOffset);
     const data = slGetData(key);
-    const v = parseFloat(input.value);
-    data[input.dataset.id] = isNaN(v) || v < 0 ? 0 : v;
+    const v = parseFloat(inp.value);
+    data[inp.dataset.id] = isNaN(v) || v < 0 ? 0 : v;
     slSave(key, data);
-    slRender();
+    slRefresh();
   }
 
-  function slPrevWeek() { slWeekOffset--; slRender(); }
-  function slNextWeek() { slWeekOffset++; slRender(); }
+  function slPrevWeek() { slWeekOffset--; slRefresh(); }
+  function slNextWeek() { slWeekOffset++; slRefresh(); }
 
   function slSetLocked(locked) {
     slUnlocked = !locked;
@@ -1433,7 +1443,9 @@
     btn.className = 'sl-lock-btn ' + (locked ? 'locked' : 'unlocked');
     document.getElementById('sl-lock-icon').textContent = locked ? '🔒' : '🔓';
     document.getElementById('sl-lock-text').textContent = locked ? 'Locked' : 'Editing';
-    slRender();
+    document.querySelectorAll('.sl-input').forEach(inp => {
+      inp.disabled = locked;
+    });
   }
 
   function slToggleLock() {
@@ -1450,7 +1462,8 @@
     }
   }
 
-  slRender();
+  slBuildTable();
+  slRefresh();
 
   // ── Timetable popup ──
   const TT_INFO = {
