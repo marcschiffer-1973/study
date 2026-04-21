@@ -1329,6 +1329,14 @@
     if (el) { el.open = true; setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'start' }), 50); }
   }
 
+  // ── ISO week helper (used by Study Log and Timetable) ──
+  function isoWeek(d) {
+    const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+    return Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+  }
+
   // ── Study Log ──
   const SL_COURSES = [
     { id:'nlp',   label:'Natural Language Processing',          color:'#2980b9' },
@@ -1347,7 +1355,7 @@
     const d = new Date();
     d.setDate(d.getDate() - d.getDay() + 1 + offset * 7);
     const y = d.getFullYear();
-    const w = String(getISOWeek(d)).padStart(2,'0');
+    const w = String(isoWeek(d)).padStart(2,'0');
     return `sl_${y}_W${w}`;
   }
 
@@ -1377,7 +1385,7 @@
     const mon = new Date(d);
     const fri = new Date(d); fri.setDate(fri.getDate() + 4);
     const fmt = dt => dt.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
-    const w = getISOWeek(d);
+    const w = isoWeek(d);
     const suffix = offset === 0 ? ' (this week)' : offset === -1 ? ' (last week)' : '';
     return `KW ${w} · ${fmt(mon)} – ${fmt(fri)}${suffix}`;
   }
@@ -1522,13 +1530,6 @@
   const SEM_START = new Date('2026-04-13T00:00:00');
   const SEM_END_WEEK = 25; // ~26 weeks
   let weekOffset = 0;
-
-  function isoWeek(d) {
-    const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
-    return Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
-  }
 
   function fmtDate(d) {
     return d.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
