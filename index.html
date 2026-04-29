@@ -970,6 +970,7 @@
     <button class="sl-lock-btn locked" id="sl-lock-btn" onclick="slToggleLock()">
       <span id="sl-lock-icon">🔒</span> <span id="sl-lock-text">Locked</span>
     </button>
+    <button onclick="slResetToken()" style="font-size:.75rem;color:#aaa;background:none;border:none;cursor:pointer;text-decoration:underline;">reset token</button>
   </div>
 
   <table class="sl-table">
@@ -1475,6 +1476,11 @@
       inp.style.color      = locked ? '#aaa' : '';
       inp.style.cursor     = locked ? 'not-allowed' : '';
     });
+  }
+
+  function slResetToken() {
+    localStorage.removeItem('sl_gh_token');
+    alert('Token cleared. Next time you unlock, you can enter a new token.');
   }
 
   function slToggleLock() {
