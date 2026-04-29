@@ -1391,16 +1391,22 @@
   }
 
   async function slSaveToGitHub() {
-    const token = localStorage.getItem('sl_gh_token');
-    if (!token) return false;
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(slAllData, null, 2))));
-    const res = await fetch(SL_API, {
-      method: 'PUT',
-      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'update study log', content, sha: slFileSha })
-    });
-    if (res.ok) { const j = await res.json(); slFileSha = j.content.sha; }
-    return res.ok;
+    try {
+      const token = localStorage.getItem('sl_gh_token');
+      if (!token) return false;
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(slAllData, null, 2))));
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const res = await fetch(SL_API, {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'update study log', content, sha: slFileSha }),
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      if (res.ok) { const j = await res.json(); slFileSha = j.content.sha; }
+      return res.ok;
+    } catch { return false; }
   }
 
   function slAllTotal(courseId) {
