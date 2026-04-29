@@ -1508,13 +1508,16 @@
 
   function slTest() {
     const status = document.getElementById('sl-save-status');
-    status.textContent = 'Testing…'; status.style.color = '#aaa';
+    const token = localStorage.getItem('sl_gh_token');
+    if (!token) { status.textContent = 'No token stored'; status.style.color = '#c0392b'; return; }
+    status.textContent = 'Testing auth…'; status.style.color = '#aaa';
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://api.github.com/repos/marcschiffer-1973/study/contents/studydata.json', true);
+    xhr.open('GET', SL_API, true);
+    xhr.setRequestHeader('Authorization', 'token ' + token);
     xhr.timeout = 8000;
-    xhr.ontimeout = () => { status.textContent = '✗ Timeout — API unreachable'; status.style.color = '#c0392b'; };
-    xhr.onerror   = () => { status.textContent = '✗ Network error / CORS blocked'; status.style.color = '#c0392b'; };
-    xhr.onload    = () => { status.textContent = '✓ API reachable (status ' + xhr.status + ')'; status.style.color = '#16a085'; };
+    xhr.ontimeout = () => { status.textContent = '✗ Auth GET timeout'; status.style.color = '#c0392b'; };
+    xhr.onerror   = () => { status.textContent = '✗ Auth GET blocked (CORS?)'; status.style.color = '#c0392b'; };
+    xhr.onload    = () => { status.textContent = 'Auth GET: ' + xhr.status + (xhr.status===200?' ✓ token ok':' ✗ bad token'); status.style.color = xhr.status===200?'#16a085':'#c0392b'; };
     xhr.send();
   }
 
