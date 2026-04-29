@@ -1379,12 +1379,13 @@
 
   async function slLoadFromGitHub() {
     try {
-      // fetch sha for later PUT
-      const meta = await fetch(SL_API);
-      if (meta.ok) { const j = await meta.json(); slFileSha = j.sha; }
-      // fetch actual data via raw URL (no base64 needed)
-      const res = await fetch(SL_RAW + '?t=' + Date.now());
-      slAllData = res.ok ? await res.json() : {};
+      const res = await fetch(SL_API + '?t=' + Date.now());
+      if (res.ok) {
+        const j = await res.json();
+        slFileSha = j.sha;
+        const raw = atob(j.content.replace(/\s/g, ''));
+        slAllData = JSON.parse(raw);
+      }
     } catch { slAllData = {}; }
   }
 
