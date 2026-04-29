@@ -970,9 +970,7 @@
     <button class="sl-lock-btn locked" id="sl-lock-btn" onclick="slToggleLock()">
       <span id="sl-lock-icon">🔒</span> <span id="sl-lock-text">Locked</span>
     </button>
-    <button onclick="slResetToken()" style="font-size:.75rem;color:#aaa;background:none;border:none;cursor:pointer;text-decoration:underline;">reset token</button>
     <span id="sl-save-status" style="font-size:.78rem;margin-left:.5rem;"></span>
-    <button onclick="slTest()" style="font-size:.75rem;color:#2980b9;background:none;border:none;cursor:pointer;text-decoration:underline;margin-left:.5rem;">test connection</button>
   </div>
 
   <table class="sl-table">
@@ -1351,15 +1349,11 @@
     { id:'amls',  label:'Architecture of Machine Learning Systems', color:'#2c3e50' },
   ];
 
-  const SL_REPO   = 'marcschiffer-1973/study';
-  const SL_FILE   = 'studydata.json';
-  const SL_RAW    = `https://raw.githubusercontent.com/${SL_REPO}/main/${SL_FILE}`;
-  const SL_API    = `https://api.github.com/repos/${SL_REPO}/contents/${SL_FILE}`;
+  const SL_NPOINT = 'https://api.npoint.io/3b3aab810cd1a549e561';
 
   let slWeekOffset = 0;
   let slUnlocked   = false;
-  let slAllData    = {};   // full data object loaded from GitHub
-  let slFileSha    = '';   // needed for GitHub PUT
+  let slAllData    = {};
 
   function slWeekKey(offset) {
     const d = new Date();
@@ -1379,47 +1373,22 @@
     return `KW ${isoWeek(d)} · ${fmt(mon)} – ${fmt(fri)}${suffix}`;
   }
 
-  async function slLoadFromGitHub() {
+  async function slLoadData() {
     try {
-      const res = await fetch(SL_API + '?t=' + Date.now());
-      if (res.ok) {
-        const j = await res.json();
-        slFileSha = j.sha;
-        const raw = atob(j.content.replace(/\s/g, ''));
-        slAllData = JSON.parse(raw);
-      }
+      const res = await fetch(SL_NPOINT + '?t=' + Date.now());
+      slAllData = res.ok ? await res.json() : {};
     } catch { slAllData = {}; }
   }
 
-  function slXhr(method, url, token, body) {
-    return new Promise(resolve => {
-      const xhr = new XMLHttpRequest();
-      xhr.open(method, url, true);
-      if (token) xhr.setRequestHeader('Authorization', 'token ' + token);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.timeout = 10000;
-      xhr.ontimeout = () => resolve(null);
-      xhr.onerror   = () => resolve(null);
-      xhr.onload    = () => resolve({ status: xhr.status, text: xhr.responseText });
-      if (body) xhr.send(JSON.stringify(body)); else xhr.send();
-    });
-  }
-
-  async function slSaveToGitHub() {
-    const token = localStorage.getItem('sl_gh_token');
-    if (!token) return 'no token';
-    const meta = await slXhr('GET', SL_API + '?t=' + Date.now(), token, null);
-    if (!meta) return 'GET timeout';
-    if (meta.status !== 200) return 'GET ' + meta.status;
-    try { slFileSha = JSON.parse(meta.text).sha; } catch { return 'sha parse error'; }
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(slAllData, null, 2))));
-    const res = await slXhr('PUT', SL_API, token, { message: 'update study log', content, sha: slFileSha });
-    if (!res) return 'PUT timeout';
-    if (res.status >= 200 && res.status < 300) {
-      try { slFileSha = JSON.parse(res.text).content.sha; } catch {}
-      return true;
-    }
-    return 'PUT ' + res.status;
+  async function slSaveData() {
+    try {
+      const res = await fetch(SL_NPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(slAllData)
+      });
+      return res.ok;
+    } catch { return false; }
   }
 
   function slAllTotal(courseId) {
@@ -1478,12 +1447,12 @@
     const status = document.getElementById('sl-save-status');
     status.textContent = 'Saving…';
     status.style.color = '#aaa';
-    const result = await slSaveToGitHub();
-    if (result === true) {
+    const ok = await slSaveData();
+    if (ok) {
       status.textContent = '✓ Saved';
       status.style.color = '#16a085';
     } else {
-      status.textContent = '✗ Failed: ' + result;
+      status.textContent = '✗ Save failed';
       status.style.color = '#c0392b';
     }
     setTimeout(() => status.textContent = '', 4000);
@@ -1506,43 +1475,17 @@
     });
   }
 
-  function slTest() {
-    const status = document.getElementById('sl-save-status');
-    const token = localStorage.getItem('sl_gh_token');
-    if (!token) { status.textContent = 'No token stored'; status.style.color = '#c0392b'; return; }
-    status.textContent = 'Testing auth…'; status.style.color = '#aaa';
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', SL_API, true);
-    xhr.setRequestHeader('Authorization', 'token ' + token);
-    xhr.timeout = 8000;
-    xhr.ontimeout = () => { status.textContent = '✗ Auth GET timeout'; status.style.color = '#c0392b'; };
-    xhr.onerror   = () => { status.textContent = '✗ Auth GET blocked (CORS?)'; status.style.color = '#c0392b'; };
-    xhr.onload    = () => { status.textContent = 'Auth GET: ' + xhr.status + (xhr.status===200?' ✓ token ok':' ✗ bad token'); status.style.color = xhr.status===200?'#16a085':'#c0392b'; };
-    xhr.send();
-  }
-
-  function slResetToken() {
-    localStorage.removeItem('sl_gh_token');
-    alert('Token cleared. Next time you unlock, you can enter a new token.');
-  }
 
   function slToggleLock() {
     if (slUnlocked) { slSetLocked(true); return; }
     const pw = prompt('Enter password to edit study hours:');
     if (pw === null) return;
     if (pw !== '123') { alert('Incorrect password.'); return; }
-    // check token
-    let token = localStorage.getItem('sl_gh_token');
-    if (!token) {
-      token = prompt('First time setup: paste your GitHub Personal Access Token:');
-      if (!token) return;
-      localStorage.setItem('sl_gh_token', token.trim());
-    }
     slSetLocked(false);
   }
 
   slBuildTable();
-  slLoadFromGitHub().then(() => slUpdateDisplay());
+  slLoadData().then(() => slUpdateDisplay());
 
   // ── Timetable popup ──
   const TT_INFO = {
