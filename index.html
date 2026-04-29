@@ -972,6 +972,7 @@
     </button>
     <button onclick="slResetToken()" style="font-size:.75rem;color:#aaa;background:none;border:none;cursor:pointer;text-decoration:underline;">reset token</button>
     <span id="sl-save-status" style="font-size:.78rem;margin-left:.5rem;"></span>
+    <button onclick="slTest()" style="font-size:.75rem;color:#2980b9;background:none;border:none;cursor:pointer;text-decoration:underline;margin-left:.5rem;">test connection</button>
   </div>
 
   <table class="sl-table">
@@ -1503,6 +1504,18 @@
       inp.style.color      = locked ? '#aaa' : '';
       inp.style.cursor     = locked ? 'not-allowed' : '';
     });
+  }
+
+  function slTest() {
+    const status = document.getElementById('sl-save-status');
+    status.textContent = 'Testing…'; status.style.color = '#aaa';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://api.github.com/repos/marcschiffer-1973/study/contents/studydata.json', true);
+    xhr.timeout = 8000;
+    xhr.ontimeout = () => { status.textContent = '✗ Timeout — API unreachable'; status.style.color = '#c0392b'; };
+    xhr.onerror   = () => { status.textContent = '✗ Network error / CORS blocked'; status.style.color = '#c0392b'; };
+    xhr.onload    = () => { status.textContent = '✓ API reachable (status ' + xhr.status + ')'; status.style.color = '#16a085'; };
+    xhr.send();
   }
 
   function slResetToken() {
