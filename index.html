@@ -1390,28 +1390,34 @@
     } catch { slAllData = {}; }
   }
 
-  function slSaveToGitHub() {
+  function slXhr(method, url, token, body) {
     return new Promise(resolve => {
-      const token = localStorage.getItem('sl_gh_token');
-      if (!token) { resolve(false); return; }
-      const timer = setTimeout(() => resolve(false), 8000);
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(slAllData, null, 2))));
       const xhr = new XMLHttpRequest();
-      xhr.open('PUT', SL_API, true);
-      xhr.setRequestHeader('Authorization', 'token ' + token);
+      xhr.open(method, url, true);
+      if (token) xhr.setRequestHeader('Authorization', 'token ' + token);
       xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.timeout = 8000;
-      xhr.ontimeout = () => { clearTimeout(timer); resolve(false); };
-      xhr.onerror   = () => { clearTimeout(timer); resolve(false); };
-      xhr.onload    = () => {
-        clearTimeout(timer);
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try { slFileSha = JSON.parse(xhr.responseText).content.sha; } catch {}
-          resolve(true);
-        } else { resolve(false); }
-      };
-      xhr.send(JSON.stringify({ message: 'update study log', content, sha: slFileSha }));
+      xhr.timeout = 10000;
+      xhr.ontimeout = () => resolve(null);
+      xhr.onerror   = () => resolve(null);
+      xhr.onload    = () => resolve({ status: xhr.status, text: xhr.responseText });
+      if (body) xhr.send(JSON.stringify(body)); else xhr.send();
     });
+  }
+
+  async function slSaveToGitHub() {
+    const token = localStorage.getItem('sl_gh_token');
+    if (!token) return false;
+    // always fetch latest sha before saving
+    const meta = await slXhr('GET', SL_API + '?t=' + Date.now(), token, null);
+    if (!meta || meta.status !== 200) return false;
+    try { slFileSha = JSON.parse(meta.text).sha; } catch { return false; }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(slAllData, null, 2))));
+    const res = await slXhr('PUT', SL_API, token, { message: 'update study log', content, sha: slFileSha });
+    if (res && res.status >= 200 && res.status < 300) {
+      try { slFileSha = JSON.parse(res.text).content.sha; } catch {}
+      return true;
+    }
+    return false;
   }
 
   function slAllTotal(courseId) {
