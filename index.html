@@ -1378,11 +1378,12 @@
 
   async function slLoadFromGitHub() {
     try {
-      const res = await fetch(SL_RAW + '?t=' + Date.now());
-      slAllData = res.ok ? await res.json() : {};
-      // also grab sha for later PUT
-      const meta = await fetch(SL_API);
-      if (meta.ok) { const j = await meta.json(); slFileSha = j.sha; }
+      const res = await fetch(SL_API, { headers: { 'Cache-Control': 'no-cache' } });
+      if (res.ok) {
+        const j = await res.json();
+        slFileSha = j.sha;
+        slAllData = JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g, '')))));
+      }
     } catch { slAllData = {}; }
   }
 
