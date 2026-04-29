@@ -971,6 +971,7 @@
       <span id="sl-lock-icon">🔒</span> <span id="sl-lock-text">Locked</span>
     </button>
     <button onclick="slResetToken()" style="font-size:.75rem;color:#aaa;background:none;border:none;cursor:pointer;text-decoration:underline;">reset token</button>
+    <span id="sl-save-status" style="font-size:.78rem;margin-left:.5rem;"></span>
   </div>
 
   <table class="sl-table">
@@ -1455,11 +1456,18 @@
     const v = parseFloat(inp.value);
     slAllData[key][inp.dataset.id] = isNaN(v) || v < 0 ? 0 : v;
     slUpdateDisplay();
+    const status = document.getElementById('sl-save-status');
+    status.textContent = 'Saving…';
+    status.style.color = '#aaa';
     const ok = await slSaveToGitHub();
-    if (!ok) {
-      inp.style.borderColor = '#e74c3c';
-      setTimeout(() => inp.style.borderColor = '', 2000);
+    if (ok) {
+      status.textContent = '✓ Saved';
+      status.style.color = '#16a085';
+    } else {
+      status.textContent = '✗ Save failed — check token';
+      status.style.color = '#c0392b';
     }
+    setTimeout(() => status.textContent = '', 4000);
   }
 
   function slPrevWeek() { slWeekOffset--; slUpdateDisplay(); }
