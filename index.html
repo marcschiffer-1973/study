@@ -576,17 +576,20 @@
     .sl-lock-btn.locked   { color:#c0392b; border-color:#c0392b; background:#fff5f5; }
     .sl-lock-btn.unlocked { color:#16a085; border-color:#16a085; background:#f0faf8; }
 
-    .sl-table { width:100%; max-width:860px; margin:0 auto; border-collapse:collapse; background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .sl-table { width:100%; border-collapse:collapse; background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); }
     .sl-table thead tr { background:var(--tu-dark); color:#fff; }
-    .sl-table th { padding:.65rem 1.1rem; font-size:.82rem; font-weight:700; text-align:left; }
-    .sl-table th:last-child, .sl-table td:last-child { text-align:right; }
-    .sl-table td { padding:.6rem 1.1rem; font-size:.88rem; border-bottom:1px solid var(--tu-border); vertical-align:middle; }
-    .sl-table tr:last-child td { border-bottom:none; font-weight:700; background:#f9f9f9; }
-    .sl-table .sl-dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:.5rem; vertical-align:middle; background:var(--c); }
+    .sl-table th { padding:.5rem .6rem; font-size:.78rem; font-weight:700; text-align:center; white-space:nowrap; }
+    .sl-table th.sl-course-col { text-align:left; padding:.5rem 1rem; min-width:180px; }
+    .sl-table th.sl-today-col { background:#2980b9; }
+    .sl-table td { padding:.4rem .5rem; font-size:.82rem; border-bottom:1px solid var(--tu-border); text-align:center; vertical-align:middle; }
+    .sl-table td.sl-course-name { text-align:left; padding:.4rem 1rem; font-size:.84rem; }
+    .sl-table tfoot td { border-bottom:none; font-weight:700; background:#f9f9f9; }
+    .sl-table .sl-dot { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:.4rem; vertical-align:middle; background:var(--c); }
+    .sl-table .sl-today-cell { background:#eaf4fb; }
 
-    .sl-input { width:70px; padding:.3rem .5rem; border:1.5px solid var(--tu-border); border-radius:6px; font-size:.88rem; text-align:center; outline:none; transition:border-color .2s; }
+    .sl-input { width:46px; padding:.25rem .2rem; border:1.5px solid var(--tu-border); border-radius:5px; font-size:.82rem; text-align:center; outline:none; transition:border-color .2s; }
     .sl-input:focus { border-color:var(--tu-red); }
-    .sl-input[readonly] { background:#f5f5f5; color:#aaa; cursor:not-allowed; }
+    .sl-input[readonly] { background:#f5f5f5; color:#bbb; cursor:not-allowed; }
 
     .sl-total-week { color:var(--tu-red); font-size:1rem; }
     .sl-total-all  { color:var(--tu-dark); }
@@ -958,7 +961,7 @@
 <section id="studylog">
   <div class="section-title">
     <h2>Study Time Log</h2>
-    <p>Weekly hours spent per module — shared across all visitors</p>
+    <p>Daily hours spent per module — shared across all visitors</p>
   </div>
 
   <div class="sl-header">
@@ -973,23 +976,13 @@
     <span id="sl-save-status" style="font-size:.78rem;margin-left:.5rem;"></span>
   </div>
 
-  <table class="sl-table">
-    <thead>
-      <tr>
-        <th>Module</th>
-        <th style="text-align:center">This Week (hrs)</th>
-        <th>Total (hrs)</th>
-      </tr>
-    </thead>
-    <tbody id="sl-tbody"></tbody>
-    <tfoot>
-      <tr>
-        <td><strong>Total</strong></td>
-        <td style="text-align:center"><span class="sl-total-week" id="sl-week-total">0.0</span></td>
-        <td style="text-align:right"><span class="sl-total-all" id="sl-all-total">0.0</span></td>
-      </tr>
-    </tfoot>
-  </table>
+  <div style="overflow-x:auto;max-width:1000px;margin:0 auto;">
+    <table class="sl-table" id="sl-table">
+      <thead id="sl-thead"></thead>
+      <tbody id="sl-tbody"></tbody>
+      <tfoot id="sl-tfoot"></tfoot>
+    </table>
+  </div>
 </section>
 
 <!-- ── Exam Countdown ── -->
@@ -1355,22 +1348,33 @@
   let slUnlocked   = false;
   let slAllData    = {};
 
-  function slWeekKey(offset) {
-    const d = new Date();
-    d.setDate(d.getDate() - d.getDay() + 1 + offset * 7);
-    const y = d.getFullYear();
-    const w = String(isoWeek(d)).padStart(2,'0');
-    return `${y}_W${w}`;
+  const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  function slDayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2,'0');
+    const d = String(date.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function slWeekDays(offset) {
+    const today = new Date();
+    const dow = today.getDay() || 7;
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - dow + 1 + offset * 7);
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(mon);
+      d.setDate(mon.getDate() + i);
+      return d;
+    });
   }
 
   function slWeekLabel(offset) {
-    const d = new Date();
-    d.setDate(d.getDate() - d.getDay() + 1 + offset * 7);
-    const mon = new Date(d);
-    const fri = new Date(d); fri.setDate(fri.getDate() + 4);
+    const days = slWeekDays(offset);
     const fmt = dt => dt.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+    const kw = isoWeek(days[0]);
     const suffix = offset === 0 ? ' (this week)' : offset === -1 ? ' (last week)' : '';
-    return `KW ${isoWeek(d)} · ${fmt(mon)} – ${fmt(fri)}${suffix}`;
+    return `KW ${kw} · ${fmt(days[0])} – ${fmt(days[6])}${suffix}`;
   }
 
   async function slLoadData() {
@@ -1393,56 +1397,113 @@
 
   function slAllTotal(courseId) {
     let total = 0;
-    Object.values(slAllData).forEach(week => {
-      total += parseFloat(week[courseId] || 0);
+    Object.values(slAllData).forEach(day => {
+      if (typeof day === 'object') total += parseFloat(day[courseId] || 0);
     });
     return total;
   }
 
-  // Build table rows once on load
   function slBuildTable() {
+    const thead = document.getElementById('sl-thead');
     const tbody = document.getElementById('sl-tbody');
+    const tfoot = document.getElementById('sl-tfoot');
+
+    // header built dynamically in slUpdateDisplay
     tbody.innerHTML = '';
     SL_COURSES.forEach(c => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><span class="sl-dot" style="--c:${c.color}"></span>${c.label}</td>
-        <td style="text-align:center">
-          <input class="sl-input" type="number" min="0" step="0.5"
-            placeholder="0" data-id="${c.id}" readonly
-            style="background:#f5f5f5;color:#aaa;cursor:not-allowed;" />
-        </td>
-        <td class="sl-total-cell" style="text-align:right">0.0</td>`;
+      tr.dataset.id = c.id;
+      let cells = `<td class="sl-course-name"><span class="sl-dot" style="--c:${c.color}"></span>${c.label}</td>`;
+      for (let i = 0; i < 7; i++) {
+        cells += `<td class="sl-day-cell" data-col="${i}">
+          <input class="sl-input" type="number" min="0" step="0.5" placeholder="–"
+            data-course="${c.id}" data-col="${i}" readonly />
+        </td>`;
+      }
+      cells += `<td class="sl-week-sum" style="text-align:right;font-weight:700;color:var(--tu-red)">0.0</td>`;
+      cells += `<td class="sl-total-cell" style="text-align:right;color:#555">0.0</td>`;
+      tr.innerHTML = cells;
       tbody.appendChild(tr);
     });
+
     tbody.querySelectorAll('.sl-input').forEach(inp => {
       inp.addEventListener('change', () => { if (slUnlocked) slSaveInput(inp); });
     });
+
+    // tfoot
+    tfoot.innerHTML = `<tr>
+      <td class="sl-course-name" style="font-weight:700">Total</td>
+      ${Array.from({length:7},(_,i)=>`<td class="sl-day-total" data-col="${i}" style="text-align:center;font-weight:700;color:var(--tu-red)">0.0</td>`).join('')}
+      <td id="sl-week-total" style="text-align:right;font-weight:700;color:var(--tu-red)">0.0</td>
+      <td id="sl-all-total"  style="text-align:right;font-weight:700">0.0</td>
+    </tr>`;
   }
 
   function slUpdateDisplay() {
-    const key = slWeekKey(slWeekOffset);
-    const weekData = slAllData[key] || {};
+    const days = slWeekDays(slWeekOffset);
+    const todayKey = slDayKey(new Date());
     document.getElementById('sl-week-label').textContent = slWeekLabel(slWeekOffset);
-    let weekTotal = 0, allTotal = 0;
-    const rows = document.querySelectorAll('#sl-tbody tr');
-    SL_COURSES.forEach((c, i) => {
-      const val = parseFloat(weekData[c.id] || 0);
-      const tot = slAllTotal(c.id);
-      weekTotal += val;
-      allTotal  += tot;
-      rows[i].querySelector('.sl-input').value = val > 0 ? val : '';
-      rows[i].querySelector('.sl-total-cell').textContent = tot.toFixed(1);
+
+    // rebuild thead
+    const thead = document.getElementById('sl-thead');
+    let hdr = `<tr>
+      <th class="sl-course-col">Course</th>`;
+    days.forEach((d, i) => {
+      const key = slDayKey(d);
+      const isToday = key === todayKey;
+      const dayLabel = DAY_NAMES[i];
+      const dateLabel = d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+      hdr += `<th class="${isToday ? 'sl-today-col' : ''}" style="min-width:54px">${dayLabel}<br><span style="font-weight:400;font-size:.7rem;opacity:.8">${dateLabel}</span></th>`;
     });
-    document.getElementById('sl-week-total').textContent = weekTotal.toFixed(1);
-    document.getElementById('sl-all-total').textContent  = allTotal.toFixed(1);
+    hdr += `<th>Week</th><th>Total</th></tr>`;
+    thead.innerHTML = hdr;
+
+    // fill rows
+    let weekColTotals = Array(7).fill(0);
+    let grandWeekTotal = 0, grandAllTotal = 0;
+
+    document.querySelectorAll('#sl-tbody tr').forEach(tr => {
+      const cid = tr.dataset.id;
+      let weekSum = 0;
+      days.forEach((d, i) => {
+        const key = slDayKey(d);
+        const isToday = key === todayKey;
+        const val = parseFloat((slAllData[key] || {})[cid] || 0);
+        weekSum += val;
+        weekColTotals[i] += val;
+        const cell = tr.querySelector(`.sl-day-cell[data-col="${i}"]`);
+        if (cell) {
+          cell.style.background = isToday ? '#eaf4fb' : '';
+        }
+        const inp = tr.querySelector(`.sl-input[data-col="${i}"]`);
+        if (inp) inp.value = val > 0 ? val : '';
+      });
+      const allTime = slAllTotal(cid);
+      tr.querySelector('.sl-week-sum').textContent = weekSum > 0 ? weekSum.toFixed(1) : '–';
+      tr.querySelector('.sl-total-cell').textContent = allTime.toFixed(1);
+      grandWeekTotal += weekSum;
+      grandAllTotal  += allTime;
+    });
+
+    // fill tfoot col totals
+    days.forEach((_, i) => {
+      const cell = document.querySelector(`.sl-day-total[data-col="${i}"]`);
+      if (cell) {
+        cell.textContent = weekColTotals[i] > 0 ? weekColTotals[i].toFixed(1) : '–';
+        cell.style.background = slDayKey(days[i]) === todayKey ? '#eaf4fb' : '';
+      }
+    });
+    document.getElementById('sl-week-total').textContent = grandWeekTotal.toFixed(1);
+    document.getElementById('sl-all-total').textContent  = grandAllTotal.toFixed(1);
   }
 
   async function slSaveInput(inp) {
-    const key = slWeekKey(slWeekOffset);
+    const days = slWeekDays(slWeekOffset);
+    const col = parseInt(inp.dataset.col);
+    const key = slDayKey(days[col]);
     if (!slAllData[key]) slAllData[key] = {};
     const v = parseFloat(inp.value);
-    slAllData[key][inp.dataset.id] = isNaN(v) || v < 0 ? 0 : v;
+    slAllData[key][inp.dataset.course] = isNaN(v) || v < 0 ? 0 : v;
     slUpdateDisplay();
     const status = document.getElementById('sl-save-status');
     status.textContent = 'Saving…';
@@ -1474,7 +1535,6 @@
       inp.style.cursor     = locked ? 'not-allowed' : '';
     });
   }
-
 
   function slToggleLock() {
     if (slUnlocked) { slSetLocked(true); return; }
