@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MSc Information System Management — TU Berlin</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -614,7 +615,50 @@
     .sl-pw-ok:hover  { background:#a93226; }
     .sl-pw-cancel { background:#eee; color:var(--tu-dark); }
 
-    /* ── Responsive ── */
+    /* ── Campus Map ── */
+  #map { padding: 4rem 2rem; background: var(--tu-light); }
+
+  #campus-map {
+    height: 480px;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .map-legend {
+    max-width: 1000px;
+    margin: 1.2rem auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+  }
+
+  .map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    background: #fff;
+    border: 1px solid var(--tu-border);
+    border-radius: 20px;
+    padding: .3rem .8rem;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: box-shadow .15s;
+  }
+
+  .map-legend-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+
+  .map-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Responsive ── */
     @media (max-width: 600px) {
       .nav-links { display: none; }
       .hero { padding: 3rem 1.2rem 2.5rem; }
@@ -677,6 +721,7 @@
     <li><a href="#timetable">Timetable</a></li>
     <li><a href="#studylog">Study Log</a></li>
     <li><a href="#exams">Exams</a></li>
+    <li><a href="#map">Map</a></li>
     <li><a href="#sem1">Semester 1</a></li>
     <li><a href="#sem2">Semester 2</a></li>
     <li><a href="#sem3">Semester 3</a></li>
@@ -1001,6 +1046,16 @@
   <div class="exam-grid" id="exam-grid">
     <!-- filled by JS -->
   </div>
+</section>
+
+<!-- ── Campus Map ── -->
+<section id="map">
+  <div class="section-title">
+    <h2>Campus Map</h2>
+    <p>TU Berlin teaching buildings — click a pin for details</p>
+  </div>
+  <div id="campus-map"></div>
+  <div class="map-legend" id="map-legend"></div>
 </section>
 
 <!-- ── Semester 1 ── -->
@@ -1725,6 +1780,149 @@
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js');
   }
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // ── Campus Map ──
+  const BUILDINGS = [
+    {
+      id: 'H',
+      name: 'Hauptgebäude (H)',
+      abbr: 'H',
+      lat: 52.51222, lng: 13.32647,
+      color: '#c0392b',
+      courses: [
+        { name: 'Data Protection Law', rooms: 'H 0107', time: 'Mon 10:00–12:00 & Thu 14:00–16:00' },
+        { name: 'Data Science Toolbox', rooms: 'H 0110', time: 'Tue 14:00–16:00' },
+        { name: 'Data Science Toolbox Exercise', rooms: 'H 0110', time: 'Tue 16:00–18:00 (biweekly)' },
+        { name: 'Social & Economic Network Analysis', rooms: 'H 0112', time: 'Wed 16:00–18:00' },
+        { name: 'Social & Econ. Network Analysis Ex. A', rooms: 'H 0111', time: 'Thu 10:00–12:00' },
+        { name: 'NLP Exam 1', rooms: 'H 0104', time: '29 Jul 2026, 11:00–12:30' },
+      ]
+    },
+    {
+      id: 'MA',
+      name: 'Mathematikgebäude (MA)',
+      abbr: 'MA',
+      lat: 52.51268, lng: 13.32198,
+      color: '#2980b9',
+      courses: [
+        { name: 'NLP — first session', rooms: 'MA 001', time: 'Tue 10:00–12:00 (14 Apr, in-person)' },
+        { name: 'Python for ML', rooms: 'MA 043', time: 'Mon 16:15–17:45 (not every week)' },
+        { name: 'ISDA Exercise', rooms: 'MA 651', time: 'Thu 14:00–16:00' },
+      ]
+    },
+    {
+      id: 'MAR',
+      name: 'Marchstraße (MAR)',
+      abbr: 'MAR',
+      lat: 52.51455, lng: 13.32353,
+      color: '#8e44ad',
+      courses: [
+        { name: 'Python for ML Tutorial', rooms: 'MAR 0.009', time: 'Wed & Fri 16:00–18:00' },
+      ]
+    },
+    {
+      id: 'BH',
+      name: 'Bergbau-Hochhaus (BH-N)',
+      abbr: 'BH-N',
+      lat: 52.51125, lng: 13.32280,
+      color: '#2c3e50',
+      courses: [
+        { name: 'Architecture of ML Systems', rooms: 'BH-N 243', time: 'Thu 16:00–18:00' },
+      ]
+    },
+    {
+      id: 'HE',
+      name: 'Hochspannungs­gebäude (HE)',
+      abbr: 'HE',
+      lat: 52.51338, lng: 13.32760,
+      color: '#8e44ad',
+      courses: [
+        { name: 'Python for ML Exam 1', rooms: 'HE 101', time: '05 Aug 2026, 14:30–16:30' },
+        { name: 'Python for ML Exam 2', rooms: 'HE 101', time: '06 Oct 2026, 10:30–12:30' },
+      ]
+    },
+    {
+      id: 'FR',
+      name: 'Fraunhofer­gebäude (FR)',
+      abbr: 'FR',
+      lat: 52.51380, lng: 13.32920,
+      color: '#2c3e50',
+      courses: [
+        { name: 'AMLS Office Hours', rooms: 'FR 772', time: 'Tue 15:00–16:30' },
+      ]
+    },
+    {
+      id: 'A',
+      name: 'Architektur­gebäude (A)',
+      abbr: 'A',
+      lat: 52.51472, lng: 13.32518,
+      color: '#2980b9',
+      courses: [
+        { name: 'NLP Exam 2', rooms: 'A 151', time: '07 Oct 2026, 14:30–16:00' },
+      ]
+    },
+  ];
+
+  function svgIcon(color, abbr) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44">
+      <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 26 18 26S36 31.5 36 18C36 8.06 27.94 0 18 0z" fill="${color}"/>
+      <text x="18" y="23" font-family="Arial,sans-serif" font-size="10" font-weight="bold"
+        fill="white" text-anchor="middle">${abbr}</text>
+    </svg>`;
+    return L.divIcon({
+      html: svg,
+      className: '',
+      iconSize: [36, 44],
+      iconAnchor: [18, 44],
+      popupAnchor: [0, -44]
+    });
+  }
+
+  const map = L.map('campus-map').setView([52.51280, 13.32500], 16);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  const markerMap = {};
+
+  BUILDINGS.forEach(b => {
+    const marker = L.marker([b.lat, b.lng], { icon: svgIcon(b.color, b.abbr) }).addTo(map);
+
+    const courseRows = b.courses.map(c =>
+      `<div style="margin-bottom:.5rem;padding-bottom:.5rem;border-bottom:1px solid #eee">
+        <div style="font-weight:700;font-size:.85rem;color:#1a1a1a">${c.name}</div>
+        <div style="font-size:.78rem;color:#555;margin-top:.1rem">📍 ${c.rooms}</div>
+        <div style="font-size:.78rem;color:#555;">🕐 ${c.time}</div>
+      </div>`
+    ).join('');
+
+    marker.bindPopup(`
+      <div style="min-width:220px">
+        <div style="font-weight:800;font-size:.95rem;color:${b.color};margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:2px solid ${b.color}">${b.name}</div>
+        ${courseRows}
+      </div>
+    `, { maxWidth: 280 });
+
+    markerMap[b.id] = marker;
+  });
+
+  // Legend
+  const legend = document.getElementById('map-legend');
+  BUILDINGS.forEach(b => {
+    const item = document.createElement('div');
+    item.className = 'map-legend-item';
+    item.innerHTML = `<span class="map-legend-dot" style="background:${b.color}"></span>${b.abbr} — ${b.courses[0].name}${b.courses.length > 1 ? ` +${b.courses.length - 1}` : ''}`;
+    item.addEventListener('click', () => {
+      map.setView([b.lat, b.lng], 17);
+      markerMap[b.id].openPopup();
+    });
+    legend.appendChild(item);
+  });
 </script>
 </body>
 </html>
