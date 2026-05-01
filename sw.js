@@ -1,4 +1,4 @@
-const CACHE = 'tu-study-v1';
+const CACHE = 'tu-study-v2';
 const ASSETS = [
   '/study/',
   '/study/index.html',
