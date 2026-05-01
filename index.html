@@ -404,7 +404,7 @@
 
     .tt-timecol { width: 46px; flex-shrink: 0; }
     .tt-spacer  { height: 38px; }
-    .tt-timebody { position: relative; height: 480px; }
+    .tt-timebody { position: relative; height: 540px; }
     .tt-timebody span {
       position: absolute; right: 6px;
       font-size: .68rem; color: #bbb;
@@ -422,7 +422,7 @@
     }
 
     .tt-daybody {
-      position: relative; height: 480px;
+      position: relative; height: 540px;
       background: var(--tu-light); border-radius: 0 0 6px 6px;
       background-image: repeating-linear-gradient(
         to bottom, transparent 0, transparent 59px,
@@ -819,15 +819,16 @@
       <div class="tt-timecol">
         <div class="tt-spacer"></div>
         <div class="tt-timebody">
-          <span style="top:0">10:00</span>
-          <span style="top:60px">11:00</span>
-          <span style="top:120px">12:00</span>
-          <span style="top:180px">13:00</span>
-          <span style="top:240px">14:00</span>
-          <span style="top:300px">15:00</span>
-          <span style="top:360px">16:00</span>
-          <span style="top:420px">17:00</span>
-          <span style="top:480px">18:00</span>
+          <span style="top:0">09:00</span>
+          <span style="top:60px">10:00</span>
+          <span style="top:120px">11:00</span>
+          <span style="top:180px">12:00</span>
+          <span style="top:240px">13:00</span>
+          <span style="top:300px">14:00</span>
+          <span style="top:360px">15:00</span>
+          <span style="top:420px">16:00</span>
+          <span style="top:480px">17:00</span>
+          <span style="top:540px">18:00</span>
         </div>
       </div>
 
@@ -837,12 +838,12 @@
         <div class="tt-day" id="tt-mon">
           <div class="tt-dayhdr">Mon</div>
           <div class="tt-daybody">
-            <div class="tt-ev" style="--c:#c0392b;top:0;height:120px">
+            <div class="tt-ev" style="--c:#c0392b;top:60px;height:120px">
               <b>Data Protection Law</b>
               <span>10:00–12:00</span>
               <span>H 0107</span>
             </div>
-            <div class="tt-ev tt-ev-opt" style="--c:#8e44ad;top:375px;height:90px">
+            <div class="tt-ev tt-ev-opt" style="--c:#8e44ad;top:435px;height:90px">
               <b>Python for Machine Learning</b>
               <span>16:15–17:45</span>
               <span>MA 043 · not weekly</span>
@@ -854,22 +855,22 @@
         <div class="tt-day" id="tt-tue">
           <div class="tt-dayhdr">Tue</div>
           <div class="tt-daybody">
-            <div class="tt-ev" style="--c:#2980b9;top:0;height:120px">
+            <div class="tt-ev" style="--c:#2980b9;top:60px;height:120px">
               <b>Natural Language Processing</b>
               <span>10:00–12:00</span>
               <span>MA 001 / online</span>
             </div>
-            <div class="tt-ev tt-ev-l" style="--c:#27ae60;top:240px;height:120px">
+            <div class="tt-ev tt-ev-l" style="--c:#27ae60;top:300px;height:120px">
               <b>Data Science Toolbox ⚠</b>
               <span>14:00–16:00</span>
               <span>H 0110</span>
             </div>
-            <div class="tt-ev tt-ev-r" style="--c:#16a085;top:240px;height:120px">
+            <div class="tt-ev tt-ev-r" style="--c:#16a085;top:300px;height:120px">
               <b>Informationssysteme &amp; Datenanalyse ⚠</b>
               <span>14:00–16:00</span>
               <span>H 0104</span>
             </div>
-            <div class="tt-ev tt-ev-opt" style="--c:#27ae60;top:360px;height:120px">
+            <div class="tt-ev tt-ev-opt" style="--c:#27ae60;top:420px;height:120px">
               <b>Data Science Toolbox Exercise</b>
               <span>16:00–18:00</span>
               <span>H 0110 · biweekly</span>
@@ -881,12 +882,12 @@
         <div class="tt-day" id="tt-wed">
           <div class="tt-dayhdr">Wed</div>
           <div class="tt-daybody">
-            <div class="tt-ev tt-ev-l" style="--c:#e67e22;top:360px;height:120px">
+            <div class="tt-ev tt-ev-l" style="--c:#e67e22;top:420px;height:120px">
               <b>Social &amp; Economic Network Analysis</b>
               <span>16:00–18:00</span>
               <span>H 0112</span>
             </div>
-            <div class="tt-ev tt-ev-r tt-ev-opt" style="--c:#8e44ad;top:360px;height:120px">
+            <div class="tt-ev tt-ev-r tt-ev-opt" style="--c:#8e44ad;top:420px;height:120px">
               <b>Python for ML Tutorial</b>
               <span>16:00–18:00</span>
               <span>MAR 0.009</span>
@@ -898,22 +899,27 @@
         <div class="tt-day" id="tt-thu">
           <div class="tt-dayhdr">Thu</div>
           <div class="tt-daybody">
-            <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
+            <div class="tt-ev" style="--c:#0097a7;top:0;height:180px">
+              <b>5G / 6G Software Networks</b>
+              <span>09:00–12:00</span>
+              <span>H 2053</span>
+            </div>
+            <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:60px;height:120px">
               <b>Social &amp; Econ. Network Analysis Exercise A</b>
               <span>10:00–12:00</span>
               <span>H 0111</span>
             </div>
-            <div class="tt-ev tt-ev-l" style="--c:#c0392b;top:240px;height:120px">
+            <div class="tt-ev tt-ev-l" style="--c:#c0392b;top:300px;height:120px">
               <b>Data Protection Law ⚠</b>
               <span>14:00–16:00</span>
               <span>H 0107</span>
             </div>
-            <div class="tt-ev tt-ev-r" style="--c:#16a085;top:240px;height:120px">
+            <div class="tt-ev tt-ev-r" style="--c:#16a085;top:300px;height:120px">
               <b>Informationssysteme &amp; Datenanalyse Exercise ⚠</b>
               <span>14:00–16:00</span>
               <span>MA 651</span>
             </div>
-            <div class="tt-ev" style="--c:#2c3e50;top:360px;height:120px">
+            <div class="tt-ev" style="--c:#2c3e50;top:420px;height:120px">
               <b>Architecture of Machine Learning Systems</b>
               <span>16:00–18:00</span>
               <span>BH-N 243</span>
@@ -925,12 +931,12 @@
         <div class="tt-day" id="tt-fri">
           <div class="tt-dayhdr">Fri</div>
           <div class="tt-daybody">
-            <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:0;height:120px">
+            <div class="tt-ev tt-ev-opt" style="--c:#e67e22;top:60px;height:120px">
               <b>Social &amp; Econ. Network Analysis Exercise B</b>
               <span>10:00–12:00</span>
               <span>Online</span>
             </div>
-            <div class="tt-ev" style="--c:#8e44ad;top:360px;height:120px">
+            <div class="tt-ev" style="--c:#8e44ad;top:420px;height:120px">
               <b>Python for Machine Learning Tutorial</b>
               <span>16:00–18:00</span>
               <span>MAR 0.009</span>
@@ -949,6 +955,7 @@
       <div class="tt-leg"><i style="--c:#e67e22"></i> Social &amp; Economic Network Analysis</div>
       <div class="tt-leg"><i style="--c:#16a085"></i> Informationssysteme &amp; Datenanalyse</div>
       <div class="tt-leg"><i style="--c:#2c3e50"></i> Architecture of Machine Learning Systems</div>
+      <div class="tt-leg"><i style="--c:#0097a7"></i> 5G / 6G Software Networks</div>
       <div class="tt-leg"><i style="--c:#aaa"></i> Dashed = optional / biweekly</div>
     </div>
 
@@ -1651,6 +1658,7 @@
     'Informationssysteme & Datenanalyse':  { time:'Tue 14:00–16:00', room:'H 0104 (Elinor-Ostrom-Hörsaal)', note:'⚠ Conflicts with Data Science Toolbox' },
     'Informationssysteme & Datenanalyse Exercise': { time:'Thu 14:00–16:00', room:'MA 651', note:'Marco Kraemer · ⚠ Conflicts with DPL 2nd session' },
     'Architecture of Machine Learning Systems': { time:'Thu 16:00–18:00', room:'BH-N 243 (in-person) + Zoom', note:'Prof. Matthias Böhm · TA: Jannik Lindemann · Office hours: Tue 15:00–16:30, FR 772 + Zoom · Project deadline: 15 Jul 2026' },
+    '5G / 6G Software Networks':              { time:'Thu 09:00–12:00', room:'H 2053 (Hauptgebäude)', note:'Prof. Dr. Thomas Magedanz · Dr. Marius Corici · <a href="https://tubcloud.tu-berlin.de/s/xgTbtkg5E75PQi6" target="_blank" style="color:#0097a7">Recorded Lectures (TUBcloud)</a> · Exam: 9 Jul 2026, 10:00–12:00' },
     'Python for Machine Learning Tutorial': { time:'Wed & Fri 16:00–18:00', room:'MAR 0.009', note:'Both sessions identical · Ryan Gelston · <a href="https://tu-berlin.zoom-x.de/j/69893006640?pwd=UFgiGIdRCSrAInTRLHst7XJ60gFAIb.1" target="_blank" style="color:#8e44ad">Join Zoom</a>' },
   };
 
