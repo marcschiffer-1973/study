@@ -1476,14 +1476,30 @@
     return `KW ${kw} · ${fmt(days[0])} – ${fmt(days[6])}${suffix}`;
   }
 
+  const SL_BACKUP_KEY = 'studylog_backup';
+
+  function slSaveBackup() {
+    try { localStorage.setItem(SL_BACKUP_KEY, JSON.stringify(slAllData)); } catch {}
+  }
+
+  function slLoadBackup() {
+    try {
+      const raw = localStorage.getItem(SL_BACKUP_KEY);
+      if (raw) { slAllData = JSON.parse(raw); slDataLoaded = true; }
+    } catch {}
+  }
+
   async function slLoadData() {
     try {
       const res = await fetch(SL_NPOINT + '?t=' + Date.now());
       if (res.ok) {
         slAllData = await res.json();
         slDataLoaded = true;
+        slSaveBackup();
+      } else {
+        slLoadBackup();
       }
-    } catch { /* slDataLoaded stays false */ }
+    } catch { slLoadBackup(); }
   }
 
   async function slSaveData() {
@@ -1494,6 +1510,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(slAllData)
       });
+      if (res.ok) slSaveBackup();
       return res.ok;
     } catch { return false; }
   }
