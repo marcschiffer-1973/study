@@ -1445,6 +1445,7 @@
   let slWeekOffset = 0;
   let slUnlocked   = false;
   let slAllData    = {};
+  let slDataLoaded = false;
 
   const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
@@ -1478,11 +1479,15 @@
   async function slLoadData() {
     try {
       const res = await fetch(SL_NPOINT + '?t=' + Date.now());
-      slAllData = res.ok ? await res.json() : {};
-    } catch { slAllData = {}; }
+      if (res.ok) {
+        slAllData = await res.json();
+        slDataLoaded = true;
+      }
+    } catch { /* slDataLoaded stays false */ }
   }
 
   async function slSaveData() {
+    if (!slDataLoaded) return false;
     try {
       const res = await fetch(SL_NPOINT, {
         method: 'POST',
