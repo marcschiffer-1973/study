@@ -1442,10 +1442,11 @@
 
   const SL_NPOINT = 'https://api.npoint.io/3b3aab810cd1a549e561';
 
-  let slWeekOffset = 0;
-  let slUnlocked   = false;
-  let slAllData    = {};
-  let slDataLoaded = false;
+  let slWeekOffset    = 0;
+  let slUnlocked      = false;
+  let slAllData       = {};
+  let slDataLoaded    = false;
+  let slOfflineMode   = false;
 
   const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
@@ -1485,7 +1486,11 @@
   function slLoadBackup() {
     try {
       const raw = localStorage.getItem(SL_BACKUP_KEY);
-      if (raw) { slAllData = JSON.parse(raw); slDataLoaded = true; }
+      if (raw) {
+        slAllData     = JSON.parse(raw);
+        slDataLoaded  = true;
+        slOfflineMode = true;
+      }
     } catch {}
   }
 
@@ -1493,17 +1498,26 @@
     try {
       const res = await fetch(SL_NPOINT + '?t=' + Date.now());
       if (res.ok) {
-        slAllData = await res.json();
-        slDataLoaded = true;
+        slAllData     = await res.json();
+        slDataLoaded  = true;
+        slOfflineMode = false;
         slSaveBackup();
       } else {
         slLoadBackup();
       }
     } catch { slLoadBackup(); }
+
+    if (slOfflineMode) {
+      const status = document.getElementById('sl-save-status');
+      if (status) {
+        status.textContent = '⚠ Offline – saving disabled';
+        status.style.color = '#e67e22';
+      }
+    }
   }
 
   async function slSaveData() {
-    if (!slDataLoaded) return false;
+    if (!slDataLoaded || slOfflineMode) return false;
     try {
       const res = await fetch(SL_NPOINT, {
         method: 'POST',
