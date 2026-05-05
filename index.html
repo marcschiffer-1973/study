@@ -1497,12 +1497,25 @@
 
   async function slLoadData() {
     try {
-      const res = await fetch(SL_NPOINT + '?t=' + Date.now());
+      const res = await fetch(SL_NPOINT + '?t=' + Date.now(), { signal: AbortSignal.timeout(8000) });
       if (res.ok) {
-        slAllData     = await res.json();
-        slDataLoaded  = true;
-        slOfflineMode = false;
-        slSaveBackup();
+        const remote = await res.json();
+        // If remote is empty but we have a local backup with more data, use backup
+        const backup = (() => { try { return JSON.parse(localStorage.getItem(SL_BACKUP_KEY) || '{}'); } catch { return {}; } })();
+        const remoteKeys = Object.keys(remote || {}).length;
+        const backupKeys = Object.keys(backup).length;
+        if (remoteKeys === 0 && backupKeys > 0) {
+          slAllData     = backup;
+          slDataLoaded  = true;
+          slOfflineMode = true;
+          const status = document.getElementById('sl-save-status');
+          if (status) { status.textContent = '⚠ Remote empty – using local backup'; status.style.color = '#e67e22'; }
+        } else {
+          slAllData     = slDeepMerge(backup, remote); // merge backup under remote so nothing is lost
+          slDataLoaded  = true;
+          slOfflineMode = false;
+          slSaveBackup();
+        }
       } else {
         slLoadBackup();
       }
@@ -1517,9 +1530,33 @@
     }
   }
 
+  function slDeepMerge(base, overlay) {
+    const result = { ...base };
+    for (const [k, v] of Object.entries(overlay)) {
+      if (v && typeof v === 'object' && result[k] && typeof result[k] === 'object') {
+        result[k] = { ...result[k], ...v };
+      } else {
+        result[k] = v;
+      }
+    }
+    return result;
+  }
+
   async function slSaveData() {
     if (!slDataLoaded || slOfflineMode) return false;
     try {
+      // Always fetch remote first and merge — prevents overwriting entries
+      // that weren't loaded into slAllData this session (e.g. after a failed load)
+      try {
+        const getRes = await fetch(SL_NPOINT + '?t=' + Date.now(), { signal: AbortSignal.timeout(6000) });
+        if (getRes.ok) {
+          const remote = await getRes.json();
+          if (remote && typeof remote === 'object' && Object.keys(remote).length > 0) {
+            slAllData = slDeepMerge(remote, slAllData);
+          }
+        }
+      } catch {}
+
       const res = await fetch(SL_NPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
