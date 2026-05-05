@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌸 投资看板</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#e91e8c" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:       #e91e8c;
+      --pink-dark:  #c2185b;
+      --pink-light: #fce4ec;
+      --pink-mid:   #f48fb1;
+      --bg:         #fff0f5;
+      --card:       #ffffff;
+      --text:       #2d1b25;
+      --muted:      #9e6e83;
+      --up:         #e53935;
+      --down:       #43a047;
+      --radius:     14px;
+      --shadow:     0 4px 20px rgba(233,30,140,.10);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+    }
+
+    /* ── Gate ── */
+    #gate {
+      position: fixed; inset: 0; z-index: 999;
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 40%, #f48fb1 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .gate-card {
+      background: #fff; border-radius: 24px; padding: 2.5rem 2rem;
+      width: 100%; max-width: 340px;
+      box-shadow: 0 8px 40px rgba(233,30,140,.25); text-align: center;
+    }
+    .gate-icon  { font-size: 3rem; margin-bottom: .8rem; }
+    .gate-title { font-size: 1.4rem; font-weight: 700; color: var(--pink-dark); margin-bottom: .4rem; }
+    .gate-sub   { font-size: .85rem; color: var(--muted); margin-bottom: 1.6rem; }
+    .gate-input {
+      width: 100%; padding: .75rem 1rem;
+      border: 2px solid var(--pink-mid); border-radius: 10px;
+      font-size: 1.2rem; text-align: center; letter-spacing: .3em;
+      outline: none; color: var(--text); transition: border-color .2s;
+    }
+    .gate-input:focus { border-color: var(--pink); }
+    .gate-input.shake { animation: shake .4s; border-color: #e53935; }
+    @keyframes shake {
+      0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)}
+      40%{transform:translateX(6px)}   60%{transform:translateX(-4px)}
+      80%{transform:translateX(4px)}
+    }
+    .gate-btn {
+      margin-top: 1rem; width: 100%; padding: .85rem; border: none;
+      border-radius: 10px; font-size: 1rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; cursor: pointer; transition: opacity .2s, transform .1s;
+    }
+    .gate-btn:active { transform: scale(.97); }
+    .gate-err { color: #e53935; font-size: .82rem; margin-top: .6rem; min-height: 1.2em; }
+
+    /* ── App ── */
+    #app { display: none; }
+
+    header {
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; padding: 1rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 2px 12px rgba(233,30,140,.3);
+    }
+    .header-left { display: flex; align-items: center; gap: .5rem; }
+    .header-title { font-size: 1.05rem; font-weight: 700; }
+    .header-right { display: flex; align-items: center; gap: .6rem; }
+    .btn-sm {
+      padding: .35rem .75rem; border-radius: 8px; border: none;
+      font-size: .8rem; font-weight: 600; cursor: pointer;
+      transition: opacity .2s, transform .1s;
+    }
+    .btn-sm:active { transform: scale(.95); }
+    .btn-refresh { background: rgba(255,255,255,.25); color: #fff; }
+    .btn-logout  { background: rgba(255,255,255,.15); color: #fff; }
+
+    /* ── Status bar ── */
+    .status-bar {
+      display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
+      padding: .55rem 1.2rem;
+      background: #fff; border-bottom: 1px solid #fce4ec;
+      font-size: .78rem; color: var(--muted);
+    }
+    .market-pill {
+      display: flex; align-items: center; gap: .35rem;
+      padding: .2rem .6rem; border-radius: 20px; font-size: .73rem; font-weight: 700;
+    }
+    .pill-open   { background: #e8f5e9; color: #2e7d32; }
+    .pill-closed { background: #fce4ec; color: var(--pink-dark); }
+    .status-sep { color: #f0c0d8; }
+    .update-time { margin-left: auto; }
+
+    /* ── Tabs ── */
+    .tab-bar {
+      display: flex; gap: .5rem; padding: .8rem 1rem .2rem;
+      max-width: 960px; margin: 0 auto;
+    }
+    .tab-btn {
+      padding: .5rem 1.2rem; border-radius: 20px; border: 2px solid transparent;
+      font-size: .88rem; font-weight: 700; cursor: pointer;
+      background: #fff; color: var(--muted);
+      transition: all .2s;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border-color: transparent;
+      box-shadow: 0 3px 12px rgba(233,30,140,.3);
+    }
+
+    /* ── Grid ── */
+    main { padding: .8rem 1rem 1rem; max-width: 960px; margin: 0 auto; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1rem;
+    }
+
+    /* ── Sector card ── */
+    .sector-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); border: 1.5px solid #fce4ec;
+      overflow: hidden;
+    }
+    .sector-head {
+      padding: .8rem 1.1rem;
+      background: linear-gradient(135deg, #fce4ec, #fff0f5);
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #fce4ec;
+    }
+    .sector-head-left { display: flex; align-items: center; gap: .5rem; }
+    .sector-icon { font-size: 1.3rem; }
+    .sector-name { font-weight: 700; color: var(--pink-dark); font-size: .95rem; }
+    .chart-toggle-btn {
+      padding: .25rem .65rem; border: 1.5px solid var(--pink-mid);
+      border-radius: 8px; font-size: .73rem; font-weight: 600;
+      color: var(--pink-dark); background: #fff;
+      cursor: pointer; white-space: nowrap;
+      transition: all .18s;
+    }
+    .chart-toggle-btn:hover { background: var(--pink-light); }
+    .chart-toggle-btn.open  { background: var(--pink); color: #fff; border-color: var(--pink); }
+
+    /* ── Stock rows ── */
+    .stock-list { padding: .3rem 0; }
+    .stock-row {
+      display: flex; align-items: center;
+      padding: .6rem 1.1rem;
+      border-bottom: 1px solid #fdf0f5; gap: .6rem;
+    }
+    .stock-row:last-child { border-bottom: none; }
+    .stock-info { flex: 1; min-width: 0; }
+    .stock-name { font-weight: 600; font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stock-code { font-size: .7rem; color: var(--muted); }
+    .stock-price-wrap { text-align: right; min-width: 90px; }
+    .stock-price  { font-size: .97rem; font-weight: 700; }
+    .stock-change {
+      font-size: .74rem; font-weight: 600;
+      padding: .12rem .38rem; border-radius: 5px; margin-top: .12rem;
+      display: inline-block;
+    }
+    .up      { color: var(--up); }
+    .down    { color: var(--down); }
+    .up-bg   { background: #ffebee; }
+    .down-bg { background: #e8f5e9; }
+    .flat    { color: var(--muted); }
+    .loading { color: var(--muted); font-size: .82rem; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── Chart panel ── */
+    .chart-panel {
+      display: none; border-top: 1.5px solid #fce4ec;
+      padding: .8rem 1rem 1rem;
+      background: linear-gradient(180deg, #fff8fb 0%, #fff 100%);
+    }
+    .chart-label {
+      font-size: .72rem; color: var(--muted); font-weight: 600;
+      letter-spacing: .04em; text-transform: uppercase;
+      margin-bottom: .5rem;
+    }
+    .chart-wrap { position: relative; height: 180px; }
+    .chart-loading, .chart-error {
+      display: flex; align-items: center; justify-content: center;
+      height: 140px; font-size: .83rem; color: var(--muted);
+    }
+
+    /* ── Footer note ── */
+    .note {
+      text-align: center; color: var(--muted); font-size: .72rem;
+      padding: 1rem; margin-top: .2rem;
+    }
+
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: 1fr; }
+      header { padding: .75rem 1rem; }
+      .update-time { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Gate ── -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-icon">🌸</div>
+    <div class="gate-title">投资看板</div>
+    <div class="gate-sub">请输入密码进入</div>
+    <input id="pwd-input" class="gate-input" type="password"
+           maxlength="4" placeholder="••••" autocomplete="off" />
+    <div class="gate-err" id="gate-err"></div>
+    <button class="gate-btn" onclick="checkPwd()">进 入</button>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <span>🌸</span>
+      <span class="header-title">我的投资看板</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-sm btn-refresh" onclick="loadAll()">⟳ 刷新</button>
+      <button class="btn-sm btn-logout" onclick="logout()">退出</button>
+    </div>
+  </header>
+
+  <div class="status-bar">
+    <span class="market-pill pill-closed" id="badge-cn">🇨🇳 A股 休市</span>
+    <span class="status-sep">|</span>
+    <span class="market-pill pill-closed" id="badge-us">🇺🇸 美股 休市</span>
+    <span class="update-time" id="update-time">加载中…</span>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-cn-btn" onclick="switchTab('cn')">🇨🇳 中国A股</button>
+    <button class="tab-btn"        id="tab-us-btn" onclick="switchTab('us')">🇺🇸 美股</button>
+  </div>
+
+  <div id="tab-cn">
+    <main><div class="grid" id="grid-cn"></div></main>
+  </div>
+  <div id="tab-us" style="display:none">
+    <main><div class="grid" id="grid-us"></div></main>
+  </div>
+
+  <div class="note">数据来源：Yahoo Finance · 走势图为近2年每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议</div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   CONFIG
+══════════════════════════════════════ */
+const PASSWORD = '1234';
+const KEY = 'invest_auth';
+
+const CN_SECTORS = [
+  {
+    icon: '⚡', name: '电力板块',
+    colors: ['#e91e8c', '#9c27b0', '#ff6f00'],
+    stocks: [
+      { code: '600900.SS', label: '长江电力', display: '600900' },
+      { code: '600011.SS', label: '华能国际', display: '600011' },
+      { code: '600027.SS', label: '华电国际', display: '600027' },
+    ]
+  },
+  {
+    icon: '🤖', name: 'AI 板块',
+    colors: ['#673ab7', '#3f51b5', '#e91e8c'],
+    stocks: [
+      { code: '002230.SZ', label: '科大讯飞', display: '002230' },
+      { code: '688256.SS', label: '寒武纪',   display: '688256' },
+      { code: '603019.SS', label: '中科曙光', display: '603019' },
+    ]
+  },
+  {
+    icon: '🏗️', name: '有色金属',
+    colors: ['#ff6f00', '#c62828', '#5d4037'],
+    stocks: [
+      { code: '601899.SS', label: '紫金矿业', display: '601899' },
+      { code: '603993.SS', label: '洛阳钼业', display: '603993' },
+      { code: '601600.SS', label: '中国铝业', display: '601600' },
+    ]
+  },
+  {
+    icon: '🔋', name: '锂电池板块',
+    colors: ['#00897b', '#558b2f', '#0277bd'],
+    stocks: [
+      { code: '300750.SZ', label: '宁德时代', display: '300750' },
+      { code: '002594.SZ', label: '比亚迪',   display: '002594' },
+      { code: '002460.SZ', label: '赣锋锂业', display: '002460' },
+    ]
+  },
+];
+
+const US_SECTORS = [
+  {
+    icon: '🤖', name: 'AI',
+    colors: ['#1565c0', '#4527a0', '#00695c'],
+    stocks: [
+      { code: 'NVDA', label: 'Nvidia',     display: 'NVDA' },
+      { code: 'MSFT', label: 'Microsoft',  display: 'MSFT' },
+      { code: 'META', label: 'Meta',       display: 'META' },
+    ]
+  },
+  {
+    icon: '⚡', name: '清洁能源',
+    colors: ['#2e7d32', '#00695c', '#f57f17'],
+    stocks: [
+      { code: 'NEE',  label: 'NextEra Energy', display: 'NEE'  },
+      { code: 'ENPH', label: 'Enphase Energy', display: 'ENPH' },
+      { code: 'FSLR', label: 'First Solar',    display: 'FSLR' },
+    ]
+  },
+  {
+    icon: '🏗️', name: '有色金属',
+    colors: ['#5d4037', '#37474f', '#bf360c'],
+    stocks: [
+      { code: 'FCX', label: 'Freeport-McMoRan', display: 'FCX' },
+      { code: 'AA',  label: 'Alcoa',            display: 'AA'  },
+      { code: 'MP',  label: 'MP Materials',     display: 'MP'  },
+    ]
+  },
+  {
+    icon: '🔋', name: '锂电 / EV',
+    colors: ['#0277bd', '#6a1b9a', '#558b2f'],
+    stocks: [
+      { code: 'TSLA', label: 'Tesla',           display: 'TSLA' },
+      { code: 'ALB',  label: 'Albemarle',       display: 'ALB'  },
+      { code: 'LAC',  label: 'Lithium Americas',display: 'LAC'  },
+    ]
+  },
+];
+
+/* ══════════════════════════════════════
+   AUTH
+══════════════════════════════════════ */
+function checkPwd() {
+  const val = document.getElementById('pwd-input').value;
+  if (val === PASSWORD) {
+    sessionStorage.setItem(KEY, '1');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    init();
+  } else {
+    const inp = document.getElementById('pwd-input');
+    inp.classList.add('shake');
+    document.getElementById('gate-err').textContent = '密码错误，请重试';
+    setTimeout(() => inp.classList.remove('shake'), 500);
+    inp.value = '';
+    inp.focus();
+  }
+}
+function logout() {
+  sessionStorage.removeItem(KEY);
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('pwd-input').value = '';
+}
+document.getElementById('pwd-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPwd(); });
+
+/* ══════════════════════════════════════
+   MARKET STATUS
+══════════════════════════════════════ */
+function isCNOpen() {
+  const bj = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+  if (bj.getDay() === 0 || bj.getDay() === 6) return false;
+  const m = bj.getHours() * 60 + bj.getMinutes();
+  return (m >= 570 && m <= 690) || (m >= 780 && m <= 900);
+}
+function isUSOpen() {
+  const et = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  if (et.getDay() === 0 || et.getDay() === 6) return false;
+  const m = et.getHours() * 60 + et.getMinutes();
+  return m >= 570 && m < 960;
+}
+function updateMarketBadges() {
+  const cn = isCNOpen(), us = isUSOpen();
+  const bc = document.getElementById('badge-cn');
+  const bu = document.getElementById('badge-us');
+  bc.textContent = '🇨🇳 A股 ' + (cn ? '开盘中' : '休市');
+  bc.className = 'market-pill ' + (cn ? 'pill-open' : 'pill-closed');
+  bu.textContent = '🇺🇸 美股 ' + (us ? '开盘中' : '休市');
+  bu.className = 'market-pill ' + (us ? 'pill-open' : 'pill-closed');
+}
+
+/* ══════════════════════════════════════
+   TAB SWITCH
+══════════════════════════════════════ */
+function switchTab(market) {
+  document.getElementById('tab-cn').style.display    = market === 'cn' ? '' : 'none';
+  document.getElementById('tab-us').style.display    = market === 'us' ? '' : 'none';
+  document.getElementById('tab-cn-btn').className = 'tab-btn' + (market === 'cn' ? ' active' : '');
+  document.getElementById('tab-us-btn').className = 'tab-btn' + (market === 'us' ? ' active' : '');
+}
+
+/* ══════════════════════════════════════
+   FETCH QUOTES
+══════════════════════════════════════ */
+async function fetchQuotes(symbols) {
+  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}&fields=regularMarketPrice,regularMarketChangePercent`;
+  const endpoints = [
+    url,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  ];
+  for (const ep of endpoints) {
+    try {
+      const res = await fetch(ep, { signal: AbortSignal.timeout(9000) });
+      if (!res.ok) continue;
+      let data = await res.json();
+      if (data.contents) data = JSON.parse(data.contents);
+      const r = data?.quoteResponse?.result;
+      if (r?.length) return r;
+    } catch {}
+  }
+  return null;
+}
+
+/* ══════════════════════════════════════
+   RENDER SECTOR CARDS (skeleton + data)
+══════════════════════════════════════ */
+function renderGrid(market, quoteMap) {
+  const sectors = market === 'cn' ? CN_SECTORS : US_SECTORS;
+  const currency = market === 'cn' ? '¥' : '$';
+  const gridEl = document.getElementById('grid-' + market);
+
+  gridEl.innerHTML = sectors.map((s, idx) => {
+    const rows = s.stocks.map(st => {
+      const q = quoteMap?.[st.code];
+      if (!q) return `
+        <div class="stock-row">
+          <div class="stock-info">
+            <div class="stock-name">${st.label}</div>
+            <div class="stock-code">${st.display}</div>
+          </div>
+          <div class="stock-price-wrap">
+            <span class="flat" style="font-size:.8rem">${quoteMap ? '暂无数据' : '<span class="loading">加载中…</span>'}</span>
+          </div>
+        </div>`;
+      const up = q.pct >= 0;
+      return `
+        <div class="stock-row">
+          <div class="stock-info">
+            <div class="stock-name">${st.label}</div>
+            <div class="stock-code">${st.display}</div>
+          </div>
+          <div class="stock-price-wrap">
+            <div class="stock-price ${up ? 'up' : 'down'}">${currency}${q.price.toFixed(market === 'cn' ? 2 : 2)}</div>
+            <span class="stock-change ${up ? 'up up-bg' : 'down down-bg'}">
+              ${up ? '▲' : '▼'} ${Math.abs(q.pct).toFixed(2)}%
+            </span>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="sector-card">
+        <div class="sector-head">
+          <div class="sector-head-left">
+            <span class="sector-icon">${s.icon}</span>
+            <span class="sector-name">${s.name}</span>
+          </div>
+          <button class="chart-toggle-btn" id="chartbtn-${market}-${idx}"
+                  onclick="toggleChart('${market}',${idx})">📈 走势图</button>
+        </div>
+        <div class="stock-list">${rows}</div>
+        <div class="chart-panel" id="chart-panel-${market}-${idx}">
+          <div class="chart-loading">走势图加载中…</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function loadMarket(market) {
+  renderGrid(market, null);
+  const sectors = market === 'cn' ? CN_SECTORS : US_SECTORS;
+  const symbols = sectors.flatMap(s => s.stocks.map(st => st.code));
+  const results = await fetchQuotes(symbols);
+  const map = {};
+  if (results) results.forEach(q => {
+    map[q.symbol] = { price: q.regularMarketPrice, pct: q.regularMarketChangePercent };
+  });
+  renderGrid(market, map);
+
+  // Re-open any previously open charts
+  Object.keys(chartLoaded).forEach(key => {
+    if (key.startsWith(market + '-') && chartLoaded[key]) {
+      const idx = parseInt(key.split('-')[1]);
+      const panel = document.getElementById(`chart-panel-${market}-${idx}`);
+      if (panel) panel.style.display = 'block';
+    }
+  });
+}
+
+async function loadAll() {
+  updateMarketBadges();
+  await Promise.all([loadMarket('cn'), loadMarket('us')]);
+  const now = new Date();
+  document.getElementById('update-time').textContent =
+    '更新于 ' + now.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+}
+
+/* ══════════════════════════════════════
+   CHART: FETCH HISTORY + DRAW
+══════════════════════════════════════ */
+const chartInstances = {};
+const chartLoaded    = {};
+
+async function fetchHistory(symbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1wk&range=2y`;
+  const endpoints = [
+    url,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  ];
+  for (const ep of endpoints) {
+    try {
+      const res = await fetch(ep, { signal: AbortSignal.timeout(12000) });
+      if (!res.ok) continue;
+      let data = await res.json();
+      if (data.contents) data = JSON.parse(data.contents);
+      const result = data?.chart?.result?.[0];
+      if (!result?.timestamp) continue;
+      const closes = result.indicators.quote[0].close;
+      const points = result.timestamp
+        .map((ts, i) => ({ date: new Date(ts * 1000), price: closes[i] }))
+        .filter(p => p.price != null);
+      if (points.length > 0) return points;
+    } catch {}
+  }
+  return null;
+}
+
+const zeroLinePlugin = {
+  id: 'zeroline',
+  beforeDraw(chart) {
+    const { ctx, scales: { y } } = chart;
+    if (!y) return;
+    const zero = y.getPixelForValue(0);
+    if (zero < chart.chartArea.top || zero > chart.chartArea.bottom) return;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(233,30,140,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(chart.chartArea.left, zero);
+    ctx.lineTo(chart.chartArea.right, zero);
+    ctx.stroke();
+    ctx.restore();
+  }
+};
+
+async function toggleChart(market, idx) {
+  const panel  = document.getElementById(`chart-panel-${market}-${idx}`);
+  const btn    = document.getElementById(`chartbtn-${market}-${idx}`);
+  const key    = `${market}-${idx}`;
+
+  if (panel.style.display === 'block') {
+    panel.style.display = 'none';
+    btn.textContent = '📈 走势图';
+    btn.classList.remove('open');
+    return;
+  }
+
+  panel.style.display = 'block';
+  btn.textContent = '📈 收起';
+  btn.classList.add('open');
+
+  if (chartLoaded[key]) return;
+
+  panel.innerHTML = '<div class="chart-loading">走势图加载中…</div>';
+
+  const sector = market === 'cn' ? CN_SECTORS[idx] : US_SECTORS[idx];
+  const histories = await Promise.all(sector.stocks.map(s => fetchHistory(s.code)));
+
+  const datasets = sector.stocks.map((stock, i) => {
+    const h = histories[i];
+    if (!h || h.length === 0) return null;
+    const base = h[0].price;
+    return {
+      label: stock.label,
+      data: h.map(p => ({ x: p.date.getTime(), y: +((p.price - base) / base * 100).toFixed(2) })),
+      borderColor: sector.colors[i],
+      backgroundColor: sector.colors[i] + '18',
+      borderWidth: 2,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      fill: false,
+      tension: 0.3,
+    };
+  }).filter(Boolean);
+
+  if (datasets.length === 0) {
+    panel.innerHTML = '<div class="chart-error">⚠️ 数据获取失败，请稍后重试</div>';
+    return;
+  }
+
+  const canvasId = `chart-${market}-${idx}`;
+  panel.innerHTML = `
+    <div class="chart-label">近2年累计涨跌幅（%，以2年前收盘价为基准）</div>
+    <div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>`;
+
+  if (chartInstances[key]) chartInstances[key].destroy();
+
+  chartInstances[key] = new Chart(document.getElementById(canvasId), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          type: 'time',
+          time: { unit: 'month', displayFormats: { month: 'yy/MM' } },
+          grid: { color: '#fce4ec50' },
+          ticks: { color: '#9e6e83', font: { size: 10 }, maxTicksLimit: 13 }
+        },
+        y: {
+          grid: { color: '#fce4ec50' },
+          ticks: {
+            color: '#9e6e83', font: { size: 10 },
+            callback: v => (v >= 0 ? '+' : '') + v.toFixed(0) + '%'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#2d1b25', font: { size: 11 }, boxWidth: 12, padding: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            title: items => new Date(items[0].parsed.x).toLocaleDateString('zh-CN',
+              { year: 'numeric', month: 'short', day: 'numeric' }),
+            label: ctx => ` ${ctx.dataset.label}：${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%`
+          }
+        }
+      }
+    },
+    plugins: [zeroLinePlugin]
+  });
+
+  chartLoaded[key] = true;
+}
+
+/* ══════════════════════════════════════
+   INIT + AUTO-REFRESH
+══════════════════════════════════════ */
+function init() {
+  loadAll();
+}
+
+// Auto-refresh every 5 min when any market is open
+setInterval(() => {
+  if (sessionStorage.getItem(KEY) !== '1') return;
+  if (isCNOpen() || isUSOpen()) loadAll();
+}, 5 * 60 * 1000);
+
+// Auto-enter if already authenticated
+if (sessionStorage.getItem(KEY) === '1') {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  init();
+}
+</script>
+</body>
+</html>
