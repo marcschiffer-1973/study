@@ -313,6 +313,32 @@
     }
     .news-status { text-align: center; color: var(--muted); font-size: .82rem; padding: 1.5rem; }
 
+    /* ── Language toggle ── */
+    .lang-toggle {
+      display: inline-flex; gap: 2px;
+      background: rgba(255,255,255,.18);
+      border-radius: 8px; padding: 2px;
+    }
+    .lang-toggle button {
+      border: none; background: transparent;
+      color: rgba(255,255,255,.85);
+      font-size: .72rem; font-weight: 700;
+      padding: .25rem .55rem; border-radius: 6px; cursor: pointer;
+      letter-spacing: .03em; transition: all .15s;
+    }
+    .lang-toggle button.active {
+      background: #fff; color: var(--pink-dark);
+    }
+    .lang-toggle button:not(.active):hover { background: rgba(255,255,255,.12); }
+
+    .gate-lang {
+      position: absolute; top: 1rem; right: 1rem;
+      background: rgba(233,30,140,.12);
+    }
+    .gate-lang button { color: var(--pink-dark); }
+    .gate-lang button.active { background: var(--pink); color: #fff; }
+    .gate-lang button:not(.active):hover { background: rgba(233,30,140,.08); }
+
     @media (max-width: 520px) {
       .grid { grid-template-columns: 1fr; }
       header { padding: .75rem 1rem; }
@@ -325,14 +351,19 @@
 
 <!-- ── Gate ── -->
 <div id="gate">
+  <div class="lang-toggle gate-lang">
+    <button data-lang="zh" onclick="setLang('zh')">中</button>
+    <button data-lang="en" onclick="setLang('en')">EN</button>
+    <button data-lang="de" onclick="setLang('de')">DE</button>
+  </div>
   <div class="gate-card">
     <div class="gate-icon">🌸</div>
-    <div class="gate-title">投资看板</div>
-    <div class="gate-sub">请输入密码进入</div>
+    <div class="gate-title" data-i18n="gate_title">投资看板</div>
+    <div class="gate-sub" data-i18n="gate_sub">请输入密码进入</div>
     <input id="pwd-input" class="gate-input" type="password"
            maxlength="4" placeholder="••••" autocomplete="off" />
     <div class="gate-err" id="gate-err"></div>
-    <button class="gate-btn" onclick="checkPwd()">进 入</button>
+    <button class="gate-btn" data-i18n="gate_btn" onclick="checkPwd()">进 入</button>
   </div>
 </div>
 
@@ -341,11 +372,16 @@
   <header>
     <div class="header-left">
       <span>🌸</span>
-      <span class="header-title">我的投资看板</span>
+      <span class="header-title" data-i18n="title">我的投资看板</span>
     </div>
     <div class="header-right">
-      <button class="btn-sm btn-refresh" onclick="loadAll()">⟳ 刷新</button>
-      <button class="btn-sm btn-logout" onclick="logout()">退出</button>
+      <div class="lang-toggle">
+        <button data-lang="zh" onclick="setLang('zh')">中</button>
+        <button data-lang="en" onclick="setLang('en')">EN</button>
+        <button data-lang="de" onclick="setLang('de')">DE</button>
+      </div>
+      <button class="btn-sm btn-refresh" data-i18n="refresh" onclick="loadAll()">⟳ 刷新</button>
+      <button class="btn-sm btn-logout" data-i18n="logout" onclick="logout()">退出</button>
     </div>
   </header>
 
@@ -353,13 +389,13 @@
     <span class="market-pill pill-closed" id="badge-cn">🇨🇳 A股 休市</span>
     <span class="status-sep">|</span>
     <span class="market-pill pill-closed" id="badge-us">🇺🇸 美股 休市</span>
-    <span class="update-time" id="update-time">加载中…</span>
+    <span class="update-time" id="update-time" data-i18n="loading">加载中…</span>
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" id="tab-cn-btn"  onclick="switchTab('cn')">🇨🇳 中国A股</button>
-    <button class="tab-btn"        id="tab-us-btn"  onclick="switchTab('us')">🇺🇸 美股</button>
-    <button class="tab-btn"        id="tab-idx-btn" onclick="switchTab('idx')">🌍 全球指数</button>
+    <button class="tab-btn active" id="tab-cn-btn"  data-i18n="tab_cn"  onclick="switchTab('cn')">🇨🇳 中国A股</button>
+    <button class="tab-btn"        id="tab-us-btn"  data-i18n="tab_us"  onclick="switchTab('us')">🇺🇸 美股</button>
+    <button class="tab-btn"        id="tab-idx-btn" data-i18n="tab_idx" onclick="switchTab('idx')">🌍 全球指数</button>
   </div>
 
   <div id="tab-cn">
@@ -376,17 +412,17 @@
   <div id="news-section">
     <div class="news-main">
       <div class="news-hdr">
-        <span class="news-hdr-title">📰 财经资讯</span>
+        <span class="news-hdr-title" data-i18n="news_title">📰 财经资讯</span>
         <span class="news-hdr-sub">Yahoo Finance · CNBC · MarketWatch</span>
-        <button class="btn-news-refresh" onclick="loadNews()">⟳ 刷新</button>
+        <button class="btn-news-refresh" data-i18n="news_refresh" onclick="loadNews()">⟳ 刷新</button>
       </div>
       <div class="news-grid" id="news-grid">
-        <div class="news-status">资讯加载中…</div>
+        <div class="news-status" data-i18n="news_loading">资讯加载中…</div>
       </div>
     </div>
   </div>
 
-  <div class="note">数据来源：腾讯财经 / Yahoo Finance · 走势图为每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议</div>
+  <div class="note" data-i18n="note">数据来源：腾讯财经 / Yahoo Finance · 走势图为每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议</div>
 </div>
 
 <!-- ── Chart fullscreen modal ── -->
@@ -404,6 +440,173 @@
 </div>
 
 <script>
+/* ══════════════════════════════════════
+   I18N
+══════════════════════════════════════ */
+const I18N = {
+  zh: {
+    title:        '我的投资看板',
+    refresh:      '⟳ 刷新',
+    logout:       '退出',
+    loading:      '加载中…',
+    no_data:      '暂无数据',
+    market_cn:    'A股',
+    market_us:    '美股',
+    open:         '开盘中',
+    closed:       '休市',
+    updated:      '更新于 ',
+    tab_cn:       '🇨🇳 中国A股',
+    tab_us:       '🇺🇸 美股',
+    tab_idx:      '🌍 全球指数',
+    chart_btn:    '📈 走势图',
+    chart_close:  '📈 收起',
+    chart_zoom:   '🔍 放大',
+    chart_loading:'走势图加载中…',
+    chart_error:  '⚠️ 数据获取失败，请稍后重试',
+    chart_label:  yrs => `近${yrs}年累计涨跌幅（%，以起点收盘价为基准）`,
+    news_title:   '📰 财经资讯',
+    news_refresh: '⟳ 刷新',
+    news_loading: '资讯加载中…',
+    news_empty:   '⚠ 暂无资讯，请稍后刷新',
+    news_now:     '刚刚',
+    news_min:     m => `${m}分钟前`,
+    news_hour:    h => `${h}小时前`,
+    note:         '数据来源：腾讯财经 / Yahoo Finance · 走势图为每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议',
+    gate_title:   '投资看板',
+    gate_sub:     '请输入密码进入',
+    gate_btn:     '进 入',
+    gate_err:     '密码错误，请重试',
+  },
+  en: {
+    title:        'Investment Dashboard',
+    refresh:      '⟳ Refresh',
+    logout:       'Sign out',
+    loading:      'Loading…',
+    no_data:      'No data',
+    market_cn:    'A-Shares',
+    market_us:    'US',
+    open:         'Open',
+    closed:       'Closed',
+    updated:      'Updated ',
+    tab_cn:       '🇨🇳 China A-Shares',
+    tab_us:       '🇺🇸 US Stocks',
+    tab_idx:      '🌍 Global Indices',
+    chart_btn:    '📈 Chart',
+    chart_close:  '📈 Hide',
+    chart_zoom:   '🔍 Enlarge',
+    chart_loading:'Loading chart…',
+    chart_error:  '⚠️ Failed to load data — please retry',
+    chart_label:  yrs => `Cumulative return last ${yrs} years (%, base = first close)`,
+    news_title:   '📰 Market News',
+    news_refresh: '⟳ Refresh',
+    news_loading: 'Loading news…',
+    news_empty:   '⚠ No news available, please refresh',
+    news_now:     'just now',
+    news_min:     m => `${m} min ago`,
+    news_hour:    h => `${h} h ago`,
+    note:         'Source: Tencent Finance / Yahoo Finance · Charts show weekly cumulative returns · Reference only, not investment advice',
+    gate_title:   'Investment Dashboard',
+    gate_sub:     'Enter password to continue',
+    gate_btn:     'Enter',
+    gate_err:     'Wrong password — please retry',
+  },
+  de: {
+    title:        'Investment-Dashboard',
+    refresh:      '⟳ Aktualisieren',
+    logout:       'Abmelden',
+    loading:      'Lädt…',
+    no_data:      'Keine Daten',
+    market_cn:    'A-Aktien',
+    market_us:    'US',
+    open:         'Geöffnet',
+    closed:       'Geschlossen',
+    updated:      'Stand ',
+    tab_cn:       '🇨🇳 China A-Aktien',
+    tab_us:       '🇺🇸 US-Aktien',
+    tab_idx:      '🌍 Welt-Indizes',
+    chart_btn:    '📈 Verlauf',
+    chart_close:  '📈 Ausblenden',
+    chart_zoom:   '🔍 Vergrößern',
+    chart_loading:'Lade Diagramm…',
+    chart_error:  '⚠️ Daten konnten nicht geladen werden',
+    chart_label:  yrs => `Kumulierte Rendite (${yrs} Jahre, Basis = erster Schlusskurs)`,
+    news_title:   '📰 Finanznachrichten',
+    news_refresh: '⟳ Aktualisieren',
+    news_loading: 'Nachrichten werden geladen…',
+    news_empty:   '⚠ Keine Nachrichten — bitte aktualisieren',
+    news_now:     'gerade eben',
+    news_min:     m => `vor ${m} Min.`,
+    news_hour:    h => `vor ${h} Std.`,
+    note:         'Quelle: Tencent Finance / Yahoo Finance · Diagramm: kumulierte Wochenrenditen · Nur zur Information, keine Anlageberatung',
+    gate_title:   'Investment-Dashboard',
+    gate_sub:     'Bitte Passwort eingeben',
+    gate_btn:     'Eintreten',
+    gate_err:     'Falsches Passwort — bitte erneut versuchen',
+  },
+};
+
+/* Translate sector name (zh -> active language) */
+const SECTOR_I18N = {
+  '电力板块':       { en: 'Power & Solar',         de: 'Strom & Solar' },
+  'AI & 半导体':    { en: 'AI & Semiconductors',   de: 'KI & Halbleiter' },
+  '有色金属':       { en: 'Non-ferrous Metals',    de: 'Buntmetalle' },
+  '锂电池产业链':   { en: 'Battery Supply Chain',  de: 'Akku-Lieferkette' },
+  'AI & 软件':      { en: 'AI & Software',         de: 'KI & Software' },
+  '半导体':         { en: 'Semiconductors',        de: 'Halbleiter' },
+  '清洁能源':       { en: 'Clean Energy',          de: 'Saubere Energie' },
+  '有色金属 / 矿业': { en: 'Metals & Mining',      de: 'Metalle & Bergbau' },
+  '锂电 / EV':      { en: 'Battery & EV',          de: 'Akku & E-Fahrzeuge' },
+  '巴菲特持仓':     { en: 'Buffett Holdings',      de: 'Buffett-Bestände' },
+  '美国':           { en: 'United States',         de: 'USA' },
+  '德国 / 欧洲':    { en: 'Germany / Europe',      de: 'Deutschland / Europa' },
+  '中国 / 香港':    { en: 'China / Hong Kong',     de: 'China / Hongkong' },
+  '亚太 / 英国':    { en: 'Asia-Pacific / UK',     de: 'Asien-Pazifik / GB' },
+  'A股宽基指数':    { en: 'A-Share Broad',         de: 'A-Aktien (breit)' },
+  'A股行业指数':    { en: 'A-Share Sectors',       de: 'A-Aktien Sektoren' },
+  '美债收益率':     { en: 'US Treasury Yields',    de: 'US-Staatsanleihen' },
+  '大宗商品':       { en: 'Commodities',           de: 'Rohstoffe' },
+  '主要汇率':       { en: 'Major FX',              de: 'Devisenkurse' },
+};
+
+let lang = localStorage.getItem('invest_lang') || 'zh';
+
+function t(key, ...args) {
+  const v = (I18N[lang] && I18N[lang][key]) ?? I18N.zh[key] ?? key;
+  return typeof v === 'function' ? v(...args) : v;
+}
+
+function sectorName(s) {
+  if (lang === 'zh') return s.name;
+  return SECTOR_I18N[s.name]?.[lang] || s.name;
+}
+
+function setLang(l) {
+  if (!I18N[l]) return;
+  lang = l;
+  localStorage.setItem('invest_lang', l);
+  applyI18n();
+  /* Re-render dynamic content (sector names, badges, news) */
+  if (document.getElementById('app').style.display !== 'none') {
+    updateMarketBadges();
+    loadAll();
+    loadNews();
+  }
+}
+
+function applyI18n() {
+  /* Static text: any element with [data-i18n] gets its textContent updated */
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  /* Highlight active language button */
+  document.querySelectorAll('.lang-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  /* Update <html lang> + document title */
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+  document.title = '🌸 ' + t('gate_title');
+}
+
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
@@ -828,7 +1031,7 @@ function checkPwd() {
   } else {
     const inp = document.getElementById('pwd-input');
     inp.classList.add('shake');
-    document.getElementById('gate-err').textContent = '密码错误，请重试';
+    document.getElementById('gate-err').textContent = t('gate_err');
     setTimeout(() => inp.classList.remove('shake'), 500);
     inp.value = '';
     inp.focus();
@@ -861,9 +1064,9 @@ function updateMarketBadges() {
   const cn = isCNOpen(), us = isUSOpen();
   const bc = document.getElementById('badge-cn');
   const bu = document.getElementById('badge-us');
-  bc.textContent = '🇨🇳 A股 ' + (cn ? '开盘中' : '休市');
+  bc.textContent = '🇨🇳 ' + t('market_cn') + ' ' + (cn ? t('open') : t('closed'));
   bc.className = 'market-pill ' + (cn ? 'pill-open' : 'pill-closed');
-  bu.textContent = '🇺🇸 美股 ' + (us ? '开盘中' : '休市');
+  bu.textContent = '🇺🇸 ' + t('market_us') + ' ' + (us ? t('open') : t('closed'));
   bu.className = 'market-pill ' + (us ? 'pill-open' : 'pill-closed');
 }
 
@@ -1015,7 +1218,7 @@ function renderGrid(market, quoteMap) {
             <div class="stock-code">${st.display}</div>
           </div>
           <div class="stock-price-wrap">
-            <span class="flat" style="font-size:.8rem">${quoteMap ? '暂无数据' : '<span class="loading">加载中…</span>'}</span>
+            <span class="flat" style="font-size:.8rem">${quoteMap ? t('no_data') : `<span class="loading">${t('loading')}</span>`}</span>
           </div>
         </div>`;
       const up = q.pct >= 0;
@@ -1039,14 +1242,14 @@ function renderGrid(market, quoteMap) {
         <div class="sector-head">
           <div class="sector-head-left">
             <span class="sector-icon">${s.icon}</span>
-            <span class="sector-name">${s.name}</span>
+            <span class="sector-name">${sectorName(s)}</span>
           </div>
           <button class="chart-toggle-btn" id="chartbtn-${market}-${idx}"
-                  onclick="toggleChart('${market}',${idx})">📈 走势图</button>
+                  onclick="toggleChart('${market}',${idx})">${t('chart_btn')}</button>
         </div>
         <div class="stock-list${s.stocks.length >= 10 ? ' two-col' : ''}">${rows}</div>
         <div class="chart-panel" id="chart-panel-${market}-${idx}">
-          <div class="chart-loading">走势图加载中…</div>
+          <div class="chart-loading">${t('chart_loading')}</div>
         </div>
       </div>`;
   }).join('');
@@ -1075,8 +1278,9 @@ async function loadAll() {
   updateMarketBadges();
   await Promise.all([loadMarket('cn'), loadMarket('us'), loadMarket('idx')]);
   const now = new Date();
+  const locale = lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US');
   document.getElementById('update-time').textContent =
-    '更新于 ' + now.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
+    t('updated') + now.toLocaleString(locale, { timeZone: 'Asia/Shanghai', hour12: false });
 }
 
 /* ══════════════════════════════════════
@@ -1136,18 +1340,18 @@ async function toggleChart(market, idx) {
 
   if (panel.style.display === 'block') {
     panel.style.display = 'none';
-    btn.textContent = '📈 走势图';
+    btn.textContent = t('chart_btn');
     btn.classList.remove('open');
     return;
   }
 
   panel.style.display = 'block';
-  btn.textContent = '📈 收起';
+  btn.textContent = t('chart_close');
   btn.classList.add('open');
 
   if (chartLoaded[key]) return;
 
-  panel.innerHTML = '<div class="chart-loading">走势图加载中…</div>';
+  panel.innerHTML = `<div class="chart-loading">${t('chart_loading')}</div>`;
 
   const sector = market === 'cn' ? CN_SECTORS[idx] : market === 'us' ? US_SECTORS[idx] : INDEX_SECTORS[idx];
   const range  = sector.range || '2y';
@@ -1171,7 +1375,7 @@ async function toggleChart(market, idx) {
   }).filter(Boolean);
 
   if (datasets.length === 0) {
-    panel.innerHTML = '<div class="chart-error">⚠️ 数据获取失败，请稍后重试</div>';
+    panel.innerHTML = `<div class="chart-error">${t('chart_error')}</div>`;
     return;
   }
 
@@ -1179,8 +1383,8 @@ async function toggleChart(market, idx) {
   const yrs = range === '3y' ? '3' : '2';
   panel.innerHTML = `
     <div class="chart-panel-head">
-      <div class="chart-label">近${yrs}年累计涨跌幅（%，以起点收盘价为基准）</div>
-      <button class="chart-zoom-btn" onclick="openChartModal('${market}',${idx})">🔍 放大</button>
+      <div class="chart-label">${t('chart_label', yrs)}</div>
+      <button class="chart-zoom-btn" onclick="openChartModal('${market}',${idx})">${t('chart_zoom')}</button>
     </div>
     <div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>`;
 
@@ -1214,7 +1418,8 @@ async function toggleChart(market, idx) {
         },
         tooltip: {
           callbacks: {
-            title: items => new Date(items[0].parsed.x).toLocaleDateString('zh-CN',
+            title: items => new Date(items[0].parsed.x).toLocaleDateString(
+              lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US'),
               { year: 'numeric', month: 'short', day: 'numeric' }),
             label: ctx => ` ${ctx.dataset.label}：${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%`
           }
@@ -1240,8 +1445,8 @@ function openChartModal(market, idx) {
   const range  = sector.range || '2y';
   const yrs    = range === '3y' ? '3' : '2';
 
-  document.getElementById('chart-modal-title').textContent = `${sector.icon}  ${sector.name}`;
-  document.getElementById('chart-modal-sub').textContent   = `近${yrs}年累计涨跌幅（%，以起点收盘价为基准）`;
+  document.getElementById('chart-modal-title').textContent = `${sector.icon}  ${sectorName(sector)}`;
+  document.getElementById('chart-modal-sub').textContent   = t('chart_label', yrs);
   document.getElementById('chart-modal').classList.add('open');
 
   /* Re-create chart in the modal canvas using the same data */
@@ -1280,7 +1485,8 @@ function openChartModal(market, idx) {
         },
         tooltip: {
           callbacks: {
-            title: items => new Date(items[0].parsed.x).toLocaleDateString('zh-CN',
+            title: items => new Date(items[0].parsed.x).toLocaleDateString(
+              lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US'),
               { year: 'numeric', month: 'short', day: 'numeric' }),
             label: ctx => ` ${ctx.dataset.label}：${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%`
           }
@@ -1317,23 +1523,24 @@ async function fetchNewsSource(src) {
 
 async function loadNews() {
   const grid = document.getElementById('news-grid');
-  grid.innerHTML = '<div class="news-status">资讯加载中…</div>';
+  grid.innerHTML = `<div class="news-status">${t('news_loading')}</div>`;
 
   const results = await Promise.all(NEWS_SOURCES.map(fetchNewsSource));
   const all = results.flat().sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate)).slice(0, 12);
 
   if (!all.length) {
-    grid.innerHTML = '<div class="news-status">⚠ 暂无资讯，请稍后刷新</div>';
+    grid.innerHTML = `<div class="news-status">${t('news_empty')}</div>`;
     return;
   }
 
   const now = new Date();
+  const dateLocale = lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US');
   grid.innerHTML = all.map(item => {
     const pub  = new Date(item.pubDate);
     const diff = Math.floor((now - pub) / 60000);
-    const age  = diff < 1 ? '刚刚' : diff < 60 ? `${diff}分钟前`
-               : diff < 1440 ? `${Math.floor(diff/60)}小时前`
-               : pub.toLocaleDateString('zh-CN', { month:'short', day:'numeric' });
+    const age  = diff < 1 ? t('news_now') : diff < 60 ? t('news_min', diff)
+               : diff < 1440 ? t('news_hour', Math.floor(diff/60))
+               : pub.toLocaleDateString(dateLocale, { month:'short', day:'numeric' });
     const desc = item.description
       ? item.description.replace(/<[^>]*>/g,'').trim().slice(0, 90) + '…' : '';
     const s = item._src;
@@ -1362,6 +1569,9 @@ setInterval(() => {
   if (sessionStorage.getItem(KEY) !== '1') return;
   if (isCNOpen() || isUSOpen()) loadAll();
 }, 5 * 60 * 1000);
+
+/* Apply chosen language to all static UI text on first load */
+applyI18n();
 
 // Auto-enter if already authenticated
 if (sessionStorage.getItem(KEY) === '1') {
