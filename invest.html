@@ -413,7 +413,7 @@
     <div class="news-main">
       <div class="news-hdr">
         <span class="news-hdr-title" data-i18n="news_title">📰 财经资讯</span>
-        <span class="news-hdr-sub">Yahoo Finance · CNBC · MarketWatch</span>
+        <span class="news-hdr-sub" data-i18n="news_sub">突发 · 评级 · 政策 · 实时</span>
         <button class="btn-news-refresh" data-i18n="news_refresh" onclick="loadNews()">⟳ 刷新</button>
       </div>
       <div class="news-grid" id="news-grid">
@@ -465,6 +465,7 @@ const I18N = {
     chart_error:  '⚠️ 数据获取失败，请稍后重试',
     chart_label:  yrs => `近${yrs}年累计涨跌幅（%，以起点收盘价为基准）`,
     news_title:   '📰 财经资讯',
+    news_sub:     '突发 · 评级 · 政策 · 实时',
     news_refresh: '⟳ 刷新',
     news_loading: '资讯加载中…',
     news_empty:   '⚠ 暂无资讯，请稍后刷新',
@@ -498,6 +499,7 @@ const I18N = {
     chart_error:  '⚠️ Failed to load data — please retry',
     chart_label:  yrs => `Cumulative return last ${yrs} years (%, base = first close)`,
     news_title:   '📰 Market News',
+    news_sub:     'Bulletins · Ratings · Policy · Real-time',
     news_refresh: '⟳ Refresh',
     news_loading: 'Loading news…',
     news_empty:   '⚠ No news available, please refresh',
@@ -531,6 +533,7 @@ const I18N = {
     chart_error:  '⚠️ Daten konnten nicht geladen werden',
     chart_label:  yrs => `Kumulierte Rendite (${yrs} Jahre, Basis = erster Schlusskurs)`,
     news_title:   '📰 Finanznachrichten',
+    news_sub:     'Eilmeldungen · Ratings · Politik · Echtzeit',
     news_refresh: '⟳ Aktualisieren',
     news_loading: 'Nachrichten werden geladen…',
     news_empty:   '⚠ Keine Nachrichten — bitte aktualisieren',
@@ -1005,17 +1008,25 @@ const INDEX_SECTORS = [
   },
 ];
 
+/* Action-oriented sources: market-moving headlines, analyst ratings,
+   earnings/catalysts, Fed policy. */
 const NEWS_SOURCES = [
-  { id: 'yahoo',       label: 'Yahoo Finance', color: '#6001d2', bg: '#f3e5ff',
-    rss: 'https://finance.yahoo.com/news/rssindex' },
-  { id: 'cnbc',        label: 'CNBC',          color: '#003d66', bg: '#e3f2fd',
-    rss: 'https://www.cnbc.com/id/100003114/device/rss/rss.html' },
-  { id: 'marketwatch', label: 'MarketWatch',   color: '#005b99', bg: '#e1f0fb',
-    rss: 'https://feeds.marketwatch.com/marketwatch/topstories/' },
-  { id: 'scmp',        label: 'SCMP',          color: '#b71c1c', bg: '#ffebee',
-    rss: 'https://www.scmp.com/rss/91/feed' },
-  { id: 'rthk',        label: 'RTHK 财经',     color: '#c62828', bg: '#fff8e1',
-    rss: 'https://news.rthk.hk/rthk/ch/component/k2/1366367-546905.htm?spf=rss' },
+  { id: 'mw-bulletin', label: 'MW · Bulletin',  color: '#c62828', bg: '#ffebee',
+    rss: 'https://feeds.marketwatch.com/marketwatch/bulletins/' },
+  { id: 'mw-realtime', label: 'MW · Real-time', color: '#0277bd', bg: '#e1f5fe',
+    rss: 'https://feeds.marketwatch.com/marketwatch/realtimeheadlines/' },
+  { id: 'cnbc-inv',    label: 'CNBC Investing', color: '#003d66', bg: '#e3f2fd',
+    rss: 'https://www.cnbc.com/id/15839069/device/rss/rss.html' },
+  { id: 'wsj-mkts',    label: 'WSJ · Markets',  color: '#1a1a1a', bg: '#f0f0f0',
+    rss: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml' },
+  { id: 'benzinga',    label: 'Benzinga',       color: '#e65100', bg: '#fff3e0',
+    rss: 'https://www.benzinga.com/feed' },
+  { id: 'seekingalpha',label: 'Seeking Alpha',  color: '#1565c0', bg: '#e3f2fd',
+    rss: 'https://seekingalpha.com/market_currents.xml' },
+  { id: 'fed',         label: 'Fed',            color: '#283593', bg: '#e8eaf6',
+    rss: 'https://www.federalreserve.gov/feeds/press_all.xml' },
+  { id: 'wscn',        label: '华尔街见闻',     color: '#b71c1c', bg: '#fff8e1',
+    rss: 'https://wallstreetcn.com/feed' },
 ];
 
 /* ══════════════════════════════════════
