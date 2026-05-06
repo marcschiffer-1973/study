@@ -516,6 +516,46 @@ const INDEX_SECTORS = [
       { code: '801730.SS', label: '申万电气设备', display: '801730' },
     ]
   },
+  /* ── US Treasury yields ── */
+  {
+    icon: '🏦', name: '美债收益率',
+    colors: ['#1a237e', '#283593', '#3949ab', '#5c6bc0'],
+    range: '3y',
+    priceFmt: p => p.toFixed(2) + ' %',
+    stocks: [
+      { code: '^IRX', label: '3个月美债',  display: '3M'  },
+      { code: '^FVX', label: '5年期美债',  display: '5Y'  },
+      { code: '^TNX', label: '10年期美债', display: '10Y' },
+      { code: '^TYX', label: '30年期美债', display: '30Y' },
+    ]
+  },
+  /* ── Commodities ── */
+  {
+    icon: '🪨', name: '大宗商品',
+    colors: ['#f57f17', '#9e9e9e', '#8d6e63', '#455a64'],
+    range: '3y',
+    priceFmt: p => '$ ' + p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    stocks: [
+      { code: 'GC=F', label: '黄金 Gold',   display: 'XAU' },
+      { code: 'SI=F', label: '白银 Silver',  display: 'XAG' },
+      { code: 'CL=F', label: '原油 WTI',    display: 'WTI' },
+      { code: 'HG=F', label: '铜 Copper',   display: 'CU'  },
+    ]
+  },
+  /* ── Major FX pairs ── */
+  {
+    icon: '💱', name: '主要汇率',
+    colors: ['#1565c0', '#c62828', '#2e7d32', '#6a1b9a', '#e65100'],
+    range: '3y',
+    priceFmt: p => p.toFixed(4),
+    stocks: [
+      { code: 'EURUSD=X', label: 'EUR / USD', display: 'EURUSD' },
+      { code: 'GBPUSD=X', label: 'GBP / USD', display: 'GBPUSD' },
+      { code: 'USDJPY=X', label: 'USD / JPY', display: 'USDJPY' },
+      { code: 'USDCNY=X', label: 'USD / CNY', display: 'USDCNY' },
+      { code: 'USDCHF=X', label: 'USD / CHF', display: 'USDCHF' },
+    ]
+  },
 ];
 
 const NEWS_SOURCES = [
@@ -622,9 +662,11 @@ async function fetchQuotes(symbols) {
 function renderGrid(market, quoteMap) {
   const sectors = market === 'cn' ? CN_SECTORS : market === 'us' ? US_SECTORS : INDEX_SECTORS;
   const currency = market === 'cn' ? '¥' : market === 'us' ? '$' : '';
-  const fmtPrice = (p) => market === 'idx'
-    ? p.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-    : currency + p.toFixed(2);
+  const fmtPrice = (p, sec) => {
+    if (sec?.priceFmt) return sec.priceFmt(p);
+    if (market === 'idx') return p.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    return currency + p.toFixed(2);
+  };
   const gridEl = document.getElementById('grid-' + market);
 
   gridEl.innerHTML = sectors.map((s, idx) => {
@@ -648,7 +690,7 @@ function renderGrid(market, quoteMap) {
             <div class="stock-code">${st.display}</div>
           </div>
           <div class="stock-price-wrap">
-            <div class="stock-price ${up ? 'up' : 'down'}">${fmtPrice(q.price)}</div>
+            <div class="stock-price ${up ? 'up' : 'down'}">${fmtPrice(q.price, s)}</div>
             <span class="stock-change ${up ? 'up up-bg' : 'down down-bg'}">
               ${up ? '▲' : '▼'} ${Math.abs(q.pct).toFixed(2)}%
             </span>
