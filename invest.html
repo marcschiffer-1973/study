@@ -407,23 +407,37 @@ const US_SECTORS = [
       { code: 'LAC',  label: 'Lithium Americas',display: 'LAC'  },
     ]
   },
-  /* ── Buffett top holdings (Berkshire 13-F Q4 2024) ── */
+  /* ── Buffett / Berkshire 13-F Q4 2024 — complete major positions ── */
   {
-    icon: '🎩', name: '巴菲特持仓 Top',
-    colors: ['#e65100', '#1565c0', '#2e7d32'],
+    icon: '🎩', name: '巴菲特 — 科技·消费',
+    colors: ['#1565c0','#c62828','#6a1b9a','#e65100','#2e7d32'],
     stocks: [
-      { code: 'AAPL',  label: 'Apple',          display: 'AAPL' },
-      { code: 'BAC',   label: 'Bank of America',display: 'BAC'  },
-      { code: 'AXP',   label: 'Amex',           display: 'AXP'  },
+      { code: 'AAPL', label: 'Apple',       display: 'AAPL' },
+      { code: 'KO',   label: 'Coca-Cola',   display: 'KO'   },
+      { code: 'KHC',  label: 'Kraft Heinz', display: 'KHC'  },
+      { code: 'AMZN', label: 'Amazon',      display: 'AMZN' },
+      { code: 'VRSN', label: 'VeriSign',    display: 'VRSN' },
     ]
   },
   {
-    icon: '🎩', name: '巴菲特持仓 其他',
-    colors: ['#4527a0', '#00695c', '#c62828'],
+    icon: '🎩', name: '巴菲特 — 金融',
+    colors: ['#0d47a1','#1976d2','#0288d1','#0097a7','#00838f','#006064'],
     stocks: [
-      { code: 'KO',    label: 'Coca-Cola',      display: 'KO'   },
-      { code: 'CVX',   label: 'Chevron',        display: 'CVX'  },
-      { code: 'OXY',   label: 'Occidental Pet.',display: 'OXY'  },
+      { code: 'AXP', label: 'American Express', display: 'AXP' },
+      { code: 'BAC', label: 'Bank of America',  display: 'BAC' },
+      { code: 'MCO', label: "Moody's",          display: 'MCO' },
+      { code: 'CB',  label: 'Chubb',            display: 'CB'  },
+      { code: 'USB', label: 'U.S. Bancorp',     display: 'USB' },
+      { code: 'BK',  label: 'BNY Mellon',       display: 'BK'  },
+    ]
+  },
+  {
+    icon: '🎩', name: '巴菲特 — 能源·医疗',
+    colors: ['#e65100','#bf360c','#4e342e'],
+    stocks: [
+      { code: 'CVX', label: 'Chevron',    display: 'CVX' },
+      { code: 'OXY', label: 'Occidental', display: 'OXY' },
+      { code: 'DVA', label: 'DaVita',     display: 'DVA' },
     ]
   },
 ];
@@ -770,8 +784,8 @@ async function toggleChart(market, idx) {
     return {
       label: stock.label,
       data: h.map(p => ({ x: p.date.getTime(), y: +((p.price - base) / base * 100).toFixed(2) })),
-      borderColor: sector.colors[i],
-      backgroundColor: sector.colors[i] + '18',
+      borderColor: sector.colors[i % sector.colors.length],
+      backgroundColor: sector.colors[i % sector.colors.length] + '18',
       borderWidth: 2,
       pointRadius: 0,
       pointHoverRadius: 4,
