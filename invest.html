@@ -486,6 +486,14 @@
         <div id="report-sectors"></div>
       </div>
     </div>
+    <div class="report-section">
+      <div class="report-card">
+        <h3><span data-i18n="report_macro">🌍 全球大事</span><span class="meta" data-i18n="report_macro_sub">地缘 · 央行 · 战争</span></h3>
+        <div class="news-grid" id="report-macro" style="margin-top:.4rem">
+          <div class="report-empty" data-i18n="news_loading">资讯加载中…</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="tab-cn" style="display:none">
@@ -557,6 +565,8 @@ const I18N = {
     report_sorted:  '按平均涨幅',
     report_breadth: n => `${n} 涨`,
     report_date_pre:'今日',
+    report_macro:    '🌍 全球大事',
+    report_macro_sub:'地缘 · 央行 · 战争',
     chart_btn:    '📈 走势图',
     chart_close:  '📈 收起',
     chart_zoom:   '🔍 放大',
@@ -600,6 +610,8 @@ const I18N = {
     report_sorted:  'sorted by avg %',
     report_breadth: n => `${n} up`,
     report_date_pre:'Today',
+    report_macro:    '🌍 Global Headlines',
+    report_macro_sub:'Geopolitics · Central banks · War',
     chart_btn:    '📈 Chart',
     chart_close:  '📈 Hide',
     chart_zoom:   '🔍 Enlarge',
@@ -643,6 +655,8 @@ const I18N = {
     report_sorted:  'sortiert nach Ø %',
     report_breadth: n => `${n} aufwärts`,
     report_date_pre:'Heute',
+    report_macro:    '🌍 Welt-Schlagzeilen',
+    report_macro_sub:'Geopolitik · Notenbanken · Krieg',
     chart_btn:    '📈 Verlauf',
     chart_close:  '📈 Ausblenden',
     chart_zoom:   '🔍 Vergrößern',
@@ -710,6 +724,7 @@ function setLang(l) {
     updateMarketBadges();
     loadAll();
     loadNews();
+    loadMacro();
   }
 }
 
@@ -1123,6 +1138,25 @@ const INDEX_SECTORS = [
       { code: 'USDCHF=X', label: 'USD / CHF', display: 'USDCHF' },
     ]
   },
+];
+
+/* Macro / geopolitical sources for the daily report — wars, central
+   banks, sanctions, elections, major global events. */
+const MACRO_SOURCES = [
+  { id: 'bbc-w',  label: 'BBC World',  color: '#bb1919', bg: '#fdebed',
+    rss: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
+  { id: 'wsj-w',  label: 'WSJ World',  color: '#1a1a1a', bg: '#f0f0f0',
+    rss: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml' },
+  { id: 'aj',     label: 'Al Jazeera', color: '#e65100', bg: '#fff3e0',
+    rss: 'https://www.aljazeera.com/xml/rss/all.xml' },
+  { id: 'dw',     label: 'DW',         color: '#005ca7', bg: '#e3f2fd',
+    rss: 'https://rss.dw.com/rdf/rss-en-world' },
+  { id: 'nyt-w',  label: 'NYT World',  color: '#222222', bg: '#f5f5f5',
+    rss: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml' },
+  { id: 'guardian',label:'Guardian',   color: '#005689', bg: '#e1f0fb',
+    rss: 'https://www.theguardian.com/world/rss' },
+  { id: 'xinhua', label: '新华社',     color: '#c62828', bg: '#ffebee',
+    rss: 'http://www.xinhuanet.com/world/news_world.xml' },
 ];
 
 /* Action-oriented sources: market-moving headlines, analyst ratings,
@@ -1761,6 +1795,43 @@ async function fetchNewsSource(src) {
   } catch { return []; }
 }
 
+function renderNewsGrid(grid, items) {
+  if (!items.length) {
+    grid.innerHTML = `<div class="news-status">${t('news_empty')}</div>`;
+    return;
+  }
+  const now = new Date();
+  const dateLocale = lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US');
+  grid.innerHTML = items.map(item => {
+    const pub  = new Date(item.pubDate);
+    const diff = Math.floor((now - pub) / 60000);
+    const age  = diff < 1 ? t('news_now') : diff < 60 ? t('news_min', diff)
+               : diff < 1440 ? t('news_hour', Math.floor(diff/60))
+               : pub.toLocaleDateString(dateLocale, { month:'short', day:'numeric' });
+    const desc = item.description
+      ? item.description.replace(/<[^>]*>/g,'').trim().slice(0, 90) + '…' : '';
+    const s = item._src;
+    return `
+      <a class="news-card" href="${item.link}" target="_blank" rel="noopener noreferrer">
+        <div class="news-meta">
+          <span class="news-src" style="color:${s.color};background:${s.bg}">${s.label}</span>
+          <span class="news-time">${age}</span>
+        </div>
+        <div class="news-title">${item.title}</div>
+        ${desc ? `<div class="news-desc">${desc}</div>` : ''}
+      </a>`;
+  }).join('');
+}
+
+async function loadMacro() {
+  const grid = document.getElementById('report-macro');
+  if (!grid) return;
+  grid.innerHTML = `<div class="news-status">${t('news_loading')}</div>`;
+  const results = await Promise.all(MACRO_SOURCES.map(fetchNewsSource));
+  const all = results.flat().sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate)).slice(0, 8);
+  renderNewsGrid(grid, all);
+}
+
 async function loadNews() {
   const grid = document.getElementById('news-grid');
   grid.innerHTML = `<div class="news-status">${t('news_loading')}</div>`;
@@ -1802,6 +1873,7 @@ async function loadNews() {
 function init() {
   loadAll();
   loadNews();
+  loadMacro();
 }
 
 // Auto-refresh every 5 min when any market is open
