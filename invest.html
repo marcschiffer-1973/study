@@ -313,6 +313,68 @@
     }
     .news-status { text-align: center; color: var(--muted); font-size: .82rem; padding: 1.5rem; }
 
+    /* ── Daily Report tab ── */
+    .report-date {
+      max-width: 960px; margin: 0 auto; padding: 1rem 1rem .2rem;
+      font-size: .85rem; color: var(--muted);
+    }
+    .report-date strong { color: var(--pink-dark); font-size: 1rem; }
+    .report-section {
+      max-width: 960px; margin: 0 auto;
+      padding: .5rem 1rem 0;
+      display: grid; gap: 1rem;
+    }
+    .report-section.movers { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 700px) { .report-section.movers { grid-template-columns: 1fr; } }
+    .report-card {
+      background: #fff; border-radius: var(--radius);
+      border: 1.5px solid #fce4ec; box-shadow: var(--shadow);
+      padding: .9rem 1.1rem 1rem;
+    }
+    .report-card h3 {
+      font-size: .92rem; color: var(--pink-dark); font-weight: 700;
+      padding-bottom: .55rem; margin-bottom: .6rem;
+      border-bottom: 1px solid #fce4ec;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .report-card h3 .meta { font-size: .7rem; color: var(--muted); font-weight: 500; }
+    .indices-row { display: flex; gap: .55rem; flex-wrap: wrap; }
+    .idx-pill {
+      flex: 1; min-width: 120px;
+      padding: .55rem .75rem; border-radius: 9px;
+      border: 1.5px solid #fce4ec;
+      background: linear-gradient(180deg, #fff8fb 0%, #fff 100%);
+    }
+    .idx-pill .name { font-size: .7rem; color: var(--muted); margin-bottom: .12rem; }
+    .idx-pill .price { font-size: 1.02rem; font-weight: 700; }
+    .idx-pill .pct { font-size: .73rem; font-weight: 700; margin-top: .1rem; }
+    .mover-row, .sector-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .35rem 0; gap: .5rem;
+      border-bottom: 1px dashed #fce4ec;
+    }
+    .mover-row:last-child, .sector-row:last-child { border-bottom: none; }
+    .mover-row .info, .sector-row .info {
+      flex: 1; min-width: 0;
+      display: flex; align-items: center; gap: .35rem;
+      font-size: .82rem; overflow: hidden;
+    }
+    .mover-row .flag { font-size: .82rem; }
+    .mover-row .name {
+      font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mover-row .code { font-size: .68rem; color: var(--muted); flex-shrink: 0; }
+    .sector-row .icon { font-size: 1rem; flex-shrink: 0; }
+    .sector-row .name { font-weight: 600; }
+    .sector-row .breadth {
+      font-size: .68rem; color: var(--muted); margin-left: auto; padding-right: .5rem;
+    }
+    .mover-pct, .sector-pct {
+      font-size: .82rem; font-weight: 700; flex-shrink: 0;
+      padding: .15rem .45rem; border-radius: 5px;
+    }
+    .report-empty { text-align: center; color: var(--muted); padding: 1.2rem; font-size: .85rem; }
+
     /* ── Language toggle ── */
     .lang-toggle {
       display: inline-flex; gap: 2px;
@@ -393,12 +455,40 @@
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" id="tab-cn-btn"  data-i18n="tab_cn"  onclick="switchTab('cn')">🇨🇳 中国A股</button>
-    <button class="tab-btn"        id="tab-us-btn"  data-i18n="tab_us"  onclick="switchTab('us')">🇺🇸 美股</button>
-    <button class="tab-btn"        id="tab-idx-btn" data-i18n="tab_idx" onclick="switchTab('idx')">🌍 全球指数</button>
+    <button class="tab-btn active" id="tab-report-btn" data-i18n="tab_report" onclick="switchTab('report')">📊 今日动向</button>
+    <button class="tab-btn"        id="tab-cn-btn"     data-i18n="tab_cn"     onclick="switchTab('cn')">🇨🇳 中国A股</button>
+    <button class="tab-btn"        id="tab-us-btn"     data-i18n="tab_us"     onclick="switchTab('us')">🇺🇸 美股</button>
+    <button class="tab-btn"        id="tab-idx-btn"    data-i18n="tab_idx"    onclick="switchTab('idx')">🌍 全球指数</button>
   </div>
 
-  <div id="tab-cn">
+  <!-- Daily Report tab -->
+  <div id="tab-report">
+    <div class="report-date" id="report-date"></div>
+    <div class="report-section">
+      <div class="report-card">
+        <h3><span data-i18n="report_indices">📈 主要指数</span></h3>
+        <div class="indices-row" id="report-indices"></div>
+      </div>
+    </div>
+    <div class="report-section movers">
+      <div class="report-card">
+        <h3><span data-i18n="report_gainers">🔥 涨幅榜</span><span class="meta" data-i18n="report_top10">Top 10</span></h3>
+        <div id="report-gainers"></div>
+      </div>
+      <div class="report-card">
+        <h3><span data-i18n="report_losers">❄️ 跌幅榜</span><span class="meta" data-i18n="report_top10">Top 10</span></h3>
+        <div id="report-losers"></div>
+      </div>
+    </div>
+    <div class="report-section">
+      <div class="report-card">
+        <h3><span data-i18n="report_sectors">🏷️ 板块表现</span><span class="meta" data-i18n="report_sorted">按平均涨幅</span></h3>
+        <div id="report-sectors"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-cn" style="display:none">
     <main><div class="grid" id="grid-cn"></div></main>
   </div>
   <div id="tab-us" style="display:none">
@@ -455,9 +545,18 @@ const I18N = {
     open:         '开盘中',
     closed:       '休市',
     updated:      '更新于 ',
+    tab_report:   '📊 今日动向',
     tab_cn:       '🇨🇳 中国A股',
     tab_us:       '🇺🇸 美股',
     tab_idx:      '🌍 全球指数',
+    report_indices: '📈 主要指数',
+    report_gainers: '🔥 涨幅榜',
+    report_losers:  '❄️ 跌幅榜',
+    report_sectors: '🏷️ 板块表现',
+    report_top10:   'Top 10',
+    report_sorted:  '按平均涨幅',
+    report_breadth: n => `${n} 涨`,
+    report_date_pre:'今日',
     chart_btn:    '📈 走势图',
     chart_close:  '📈 收起',
     chart_zoom:   '🔍 放大',
@@ -489,9 +588,18 @@ const I18N = {
     open:         'Open',
     closed:       'Closed',
     updated:      'Updated ',
+    tab_report:   '📊 Today',
     tab_cn:       '🇨🇳 China A-Shares',
     tab_us:       '🇺🇸 US Stocks',
     tab_idx:      '🌍 Global Indices',
+    report_indices: '📈 Key Indices',
+    report_gainers: '🔥 Top Gainers',
+    report_losers:  '❄️ Top Losers',
+    report_sectors: '🏷️ Sector Performance',
+    report_top10:   'Top 10',
+    report_sorted:  'sorted by avg %',
+    report_breadth: n => `${n} up`,
+    report_date_pre:'Today',
     chart_btn:    '📈 Chart',
     chart_close:  '📈 Hide',
     chart_zoom:   '🔍 Enlarge',
@@ -523,9 +631,18 @@ const I18N = {
     open:         'Geöffnet',
     closed:       'Geschlossen',
     updated:      'Stand ',
+    tab_report:   '📊 Heute',
     tab_cn:       '🇨🇳 China A-Aktien',
     tab_us:       '🇺🇸 US-Aktien',
     tab_idx:      '🌍 Welt-Indizes',
+    report_indices: '📈 Hauptindizes',
+    report_gainers: '🔥 Top-Gewinner',
+    report_losers:  '❄️ Top-Verlierer',
+    report_sectors: '🏷️ Sektor-Performance',
+    report_top10:   'Top 10',
+    report_sorted:  'sortiert nach Ø %',
+    report_breadth: n => `${n} aufwärts`,
+    report_date_pre:'Heute',
     chart_btn:    '📈 Verlauf',
     chart_close:  '📈 Ausblenden',
     chart_zoom:   '🔍 Vergrößern',
@@ -1085,7 +1202,7 @@ function updateMarketBadges() {
    TAB SWITCH
 ══════════════════════════════════════ */
 function switchTab(market) {
-  ['cn','us','idx'].forEach(m => {
+  ['report','cn','us','idx'].forEach(m => {
     document.getElementById(`tab-${m}`).style.display = market === m ? '' : 'none';
     document.getElementById(`tab-${m}-btn`).className = 'tab-btn' + (market === m ? ' active' : '');
   });
@@ -1266,6 +1383,8 @@ function renderGrid(market, quoteMap) {
   }).join('');
 }
 
+const QUOTES = { cn: {}, us: {}, idx: {} };
+
 async function loadMarket(market) {
   renderGrid(market, null);
   const sectors = market === 'cn' ? CN_SECTORS : market === 'us' ? US_SECTORS : INDEX_SECTORS;
@@ -1273,6 +1392,7 @@ async function loadMarket(market) {
   const results = await fetchQuotes(symbols);
   const map = {};
   if (results) results.forEach(q => { map[q.symbol] = { price: q.price, pct: q.pct }; });
+  QUOTES[market] = map;
   renderGrid(market, map);
 
   // Re-open any previously open charts
@@ -1288,10 +1408,119 @@ async function loadMarket(market) {
 async function loadAll() {
   updateMarketBadges();
   await Promise.all([loadMarket('cn'), loadMarket('us'), loadMarket('idx')]);
+  renderReport();
   const now = new Date();
   const locale = lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US');
   document.getElementById('update-time').textContent =
     t('updated') + now.toLocaleString(locale, { timeZone: 'Asia/Shanghai', hour12: false });
+}
+
+/* ══════════════════════════════════════
+   DAILY REPORT
+══════════════════════════════════════ */
+function computeReport() {
+  const stocks = [];
+  const flag = m => m === 'cn' ? '🇨🇳' : '🇺🇸';
+  ['cn','us'].forEach(market => {
+    const sectors = market === 'cn' ? CN_SECTORS : US_SECTORS;
+    sectors.forEach(sec => sec.stocks.forEach(st => {
+      const q = QUOTES[market][st.code];
+      if (q && !isNaN(q.price)) stocks.push({
+        code: st.code, label: st.label, display: st.display,
+        price: q.price, pct: q.pct, market, flag: flag(market),
+        sector: sec
+      });
+    }));
+  });
+
+  const sortedByPct = [...stocks].sort((a,b) => b.pct - a.pct);
+  const gainers = sortedByPct.slice(0, 10);
+  const losers  = sortedByPct.slice(-10).reverse();
+
+  /* Key indices snapshot */
+  const KEY_IDX = ['^GSPC','^IXIC','^DJI','^HSI','000001.SS','000300.SS','^GDAXI','^N225'];
+  const indices = [];
+  for (const code of KEY_IDX) {
+    for (const sec of INDEX_SECTORS) {
+      const st = sec.stocks.find(x => x.code === code);
+      const q = QUOTES.idx[code];
+      if (st && q && !isNaN(q.price)) {
+        indices.push({ ...st, ...q });
+        break;
+      }
+    }
+  }
+
+  /* Sector breadth */
+  const sectorPerf = [];
+  ['cn','us'].forEach(market => {
+    const sectors = market === 'cn' ? CN_SECTORS : US_SECTORS;
+    sectors.forEach(sec => {
+      const qs = sec.stocks.map(st => QUOTES[market][st.code]).filter(q => q && !isNaN(q.pct));
+      if (!qs.length) return;
+      const avg = qs.reduce((s,q) => s + q.pct, 0) / qs.length;
+      const ups = qs.filter(q => q.pct > 0).length;
+      sectorPerf.push({ sector: sec, avg, ups, total: qs.length, market });
+    });
+  });
+  sectorPerf.sort((a,b) => b.avg - a.avg);
+
+  return { gainers, losers, indices, sectorPerf };
+}
+
+function renderReport() {
+  const r = computeReport();
+  const locale = lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US');
+  const today = new Date().toLocaleDateString(locale,
+    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('report-date').innerHTML = `<strong>${t('report_date_pre')}</strong> · ${today}`;
+
+  /* Indices */
+  const fmtPrice = (p, code) => {
+    if (code === '^IRX' || code === '^FVX' || code === '^TNX' || code === '^TYX') return p.toFixed(2)+' %';
+    return p.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  };
+  document.getElementById('report-indices').innerHTML = r.indices.length === 0
+    ? `<div class="report-empty">${t('loading')}</div>`
+    : r.indices.map(i => {
+        const up = i.pct >= 0;
+        return `<div class="idx-pill">
+          <div class="name">${i.label}</div>
+          <div class="price ${up?'up':'down'}">${fmtPrice(i.price, i.code)}</div>
+          <div class="pct ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(i.pct).toFixed(2)}%</div>
+        </div>`;
+      }).join('');
+
+  const moverRow = (s, isGain) => `
+    <div class="mover-row">
+      <div class="info">
+        <span class="flag">${s.flag}</span>
+        <span class="name">${s.label}</span>
+        <span class="code">${s.display}</span>
+      </div>
+      <span class="mover-pct ${isGain?'up up-bg':'down down-bg'}">${isGain?'▲':'▼'} ${Math.abs(s.pct).toFixed(2)}%</span>
+    </div>`;
+
+  document.getElementById('report-gainers').innerHTML = r.gainers.length === 0
+    ? `<div class="report-empty">${t('loading')}</div>`
+    : r.gainers.map(s => moverRow(s, true)).join('');
+  document.getElementById('report-losers').innerHTML = r.losers.length === 0
+    ? `<div class="report-empty">${t('loading')}</div>`
+    : r.losers.map(s => moverRow(s, false)).join('');
+
+  document.getElementById('report-sectors').innerHTML = r.sectorPerf.length === 0
+    ? `<div class="report-empty">${t('loading')}</div>`
+    : r.sectorPerf.map(s => {
+        const up = s.avg >= 0;
+        return `<div class="sector-row">
+          <div class="info">
+            <span class="icon">${s.sector.icon}</span>
+            <span class="name">${sectorName(s.sector)}</span>
+          </div>
+          <span class="breadth">${t('report_breadth', `${s.ups}/${s.total}`)}</span>
+          <span class="sector-pct ${up?'up up-bg':'down down-bg'}">${up?'+':''}${s.avg.toFixed(2)}%</span>
+        </div>`;
+      }).join('');
 }
 
 /* ══════════════════════════════════════
