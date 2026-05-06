@@ -407,6 +407,25 @@ const US_SECTORS = [
       { code: 'LAC',  label: 'Lithium Americas',display: 'LAC'  },
     ]
   },
+  /* ── Buffett top holdings (Berkshire 13-F Q4 2024) ── */
+  {
+    icon: '🎩', name: '巴菲特持仓 Top',
+    colors: ['#e65100', '#1565c0', '#2e7d32'],
+    stocks: [
+      { code: 'AAPL',  label: 'Apple',          display: 'AAPL' },
+      { code: 'BAC',   label: 'Bank of America',display: 'BAC'  },
+      { code: 'AXP',   label: 'Amex',           display: 'AXP'  },
+    ]
+  },
+  {
+    icon: '🎩', name: '巴菲特持仓 其他',
+    colors: ['#4527a0', '#00695c', '#c62828'],
+    stocks: [
+      { code: 'KO',    label: 'Coca-Cola',      display: 'KO'   },
+      { code: 'CVX',   label: 'Chevron',        display: 'CVX'  },
+      { code: 'OXY',   label: 'Occidental Pet.',display: 'OXY'  },
+    ]
+  },
 ];
 
 const INDEX_SECTORS = [
@@ -450,6 +469,39 @@ const INDEX_SECTORS = [
       { code: '^AXJO', label: 'ASX 200',  display: 'AS51'},
     ]
   },
+  /* ── A-share broad market ── */
+  {
+    icon: '📊', name: 'A股宽基指数',
+    colors: ['#880e4f', '#6a1b9a', '#1565c0'],
+    range: '3y',
+    stocks: [
+      { code: '000016.SS', label: '上证 50',  display: '000016' },
+      { code: '000905.SS', label: '中证 500', display: '000905' },
+      { code: '399006.SZ', label: '创业板指', display: '399006' },
+    ]
+  },
+  /* ── A-share tech / AI ── */
+  {
+    icon: '🤖', name: 'A股科技板块',
+    colors: ['#673ab7', '#0277bd', '#00897b'],
+    range: '3y',
+    stocks: [
+      { code: '000688.SS', label: '科创 50',    display: '000688' },
+      { code: '801750.SS', label: '申万计算机', display: '801750' },
+      { code: '^HSTECH',   label: '恒生科技',   display: 'HSTECH' },
+    ]
+  },
+  /* ── A-share sector: power / metals / batteries (Shenwan indices) ── */
+  {
+    icon: '⚡', name: 'A股行业板块',
+    colors: ['#c62828', '#ff6f00', '#00897b'],
+    range: '3y',
+    stocks: [
+      { code: '801160.SS', label: '申万公用事业', display: '801160' },
+      { code: '801050.SS', label: '申万有色金属', display: '801050' },
+      { code: '801730.SS', label: '申万电气设备', display: '801730' },
+    ]
+  },
 ];
 
 const NEWS_SOURCES = [
@@ -459,6 +511,10 @@ const NEWS_SOURCES = [
     rss: 'https://www.cnbc.com/id/100003114/device/rss/rss.html' },
   { id: 'marketwatch', label: 'MarketWatch',   color: '#005b99', bg: '#e1f0fb',
     rss: 'https://feeds.marketwatch.com/marketwatch/topstories/' },
+  { id: 'scmp',        label: 'SCMP',          color: '#b71c1c', bg: '#ffebee',
+    rss: 'https://www.scmp.com/rss/91/feed' },
+  { id: 'rthk',        label: 'RTHK 财经',     color: '#c62828', bg: '#fff8e1',
+    rss: 'https://news.rthk.hk/rthk/ch/component/k2/1366367-546905.htm?spf=rss' },
 ];
 
 /* ══════════════════════════════════════
