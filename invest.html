@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>🌸 投资看板</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#e91e8c" />
@@ -127,7 +130,7 @@
     main { padding: .8rem 1rem 1rem; max-width: 960px; margin: 0 auto; }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
       gap: 1rem;
     }
 
@@ -158,6 +161,16 @@
 
     /* ── Stock rows ── */
     .stock-list { padding: .3rem 0; }
+    .stock-list.two-col {
+      display: grid; grid-template-columns: 1fr 1fr; padding: 0;
+    }
+    .stock-list.two-col .stock-row { padding: .45rem .8rem; }
+    .stock-list.two-col .stock-row:nth-child(odd) { border-right: 1px solid #fdf0f5; }
+    .stock-list.two-col .stock-name { font-size: .82rem; }
+    .stock-list.two-col .stock-code { font-size: .65rem; }
+    .stock-list.two-col .stock-price { font-size: .88rem; }
+    .stock-list.two-col .stock-change { font-size: .68rem; }
+    .stock-list.two-col .stock-price-wrap { min-width: 72px; }
     .stock-row {
       display: flex; align-items: center;
       padding: .6rem 1.1rem;
@@ -334,38 +347,118 @@ const KEY = 'invest_auth';
 const CN_SECTORS = [
   {
     icon: '⚡', name: '电力板块',
-    colors: ['#e91e8c', '#9c27b0', '#ff6f00'],
+    colors: ['#e91e8c','#9c27b0','#ff6f00','#c2185b','#1565c0',
+             '#2e7d32','#00695c','#bf360c','#4527a0','#e65100',
+             '#0277bd','#558b2f','#880e4f','#4a148c','#1b5e20',
+             '#006064','#b71c1c','#f57f17','#37474f','#3e2723'],
     stocks: [
       { code: '600900.SS', label: '长江电力', display: '600900' },
       { code: '600011.SS', label: '华能国际', display: '600011' },
       { code: '600027.SS', label: '华电国际', display: '600027' },
+      { code: '600905.SS', label: '三峡能源', display: '600905' },
+      { code: '601985.SS', label: '中国核电', display: '601985' },
+      { code: '600886.SS', label: '国投电力', display: '600886' },
+      { code: '601991.SS', label: '大唐发电', display: '601991' },
+      { code: '600795.SS', label: '国电电力', display: '600795' },
+      { code: '600023.SS', label: '浙能电力', display: '600023' },
+      { code: '600025.SS', label: '华能水电', display: '600025' },
+      { code: '000027.SZ', label: '深圳能源', display: '000027' },
+      { code: '000539.SZ', label: '粤电力A',  display: '000539' },
+      { code: '600021.SS', label: '上海电力', display: '600021' },
+      { code: '600863.SS', label: '内蒙华电', display: '600863' },
+      { code: '601727.SS', label: '上海电气', display: '601727' },
+      { code: '601012.SS', label: '隆基绿能', display: '601012' },
+      { code: '600438.SS', label: '通威股份', display: '600438' },
+      { code: '688599.SS', label: '天合光能', display: '688599' },
+      { code: '000400.SZ', label: '许继电气', display: '000400' },
+      { code: '601877.SS', label: '正泰电器', display: '601877' },
     ]
   },
   {
-    icon: '🤖', name: 'AI 板块',
-    colors: ['#673ab7', '#3f51b5', '#e91e8c'],
+    icon: '🤖', name: 'AI & 半导体',
+    colors: ['#673ab7','#3f51b5','#e91e8c','#0097a7','#ff6f00',
+             '#c62828','#1565c0','#2e7d32','#4527a0','#e65100',
+             '#0277bd','#558b2f','#880e4f','#4a148c','#1b5e20',
+             '#006064','#b71c1c','#f57f17','#37474f','#3e2723'],
     stocks: [
       { code: '002230.SZ', label: '科大讯飞', display: '002230' },
       { code: '688256.SS', label: '寒武纪',   display: '688256' },
       { code: '603019.SS', label: '中科曙光', display: '603019' },
+      { code: '002415.SZ', label: '海康威视', display: '002415' },
+      { code: '688981.SS', label: '中芯国际', display: '688981' },
+      { code: '688041.SS', label: '海光信息', display: '688041' },
+      { code: '688012.SS', label: '中微公司', display: '688012' },
+      { code: '000977.SZ', label: '浪潮信息', display: '000977' },
+      { code: '688111.SS', label: '金山办公', display: '688111' },
+      { code: '002236.SZ', label: '大华股份', display: '002236' },
+      { code: '603501.SS', label: '韦尔股份', display: '603501' },
+      { code: '002049.SZ', label: '紫光国微', display: '002049' },
+      { code: '300124.SZ', label: '汇川技术', display: '300124' },
+      { code: '601360.SS', label: '三六零',   display: '601360' },
+      { code: '300418.SZ', label: '昆仑万维', display: '300418' },
+      { code: '688561.SS', label: '奇安信',   display: '688561' },
+      { code: '688099.SS', label: '晶晨股份', display: '688099' },
+      { code: '688008.SS', label: '澜起科技', display: '688008' },
+      { code: '300316.SZ', label: '晶盛机电', display: '300316' },
+      { code: '300751.SZ', label: '迈为股份', display: '300751' },
     ]
   },
   {
     icon: '🏗️', name: '有色金属',
-    colors: ['#ff6f00', '#c62828', '#5d4037'],
+    colors: ['#ff6f00','#c62828','#5d4037','#f57f17','#1b5e20',
+             '#0277bd','#880e4f','#4527a0','#e65100','#2e7d32',
+             '#1565c0','#558b2f','#4a148c','#006064','#b71c1c',
+             '#673ab7','#37474f','#3e2723','#bf360c','#00695c'],
     stocks: [
       { code: '601899.SS', label: '紫金矿业', display: '601899' },
       { code: '603993.SS', label: '洛阳钼业', display: '603993' },
       { code: '601600.SS', label: '中国铝业', display: '601600' },
+      { code: '600547.SS', label: '山东黄金', display: '600547' },
+      { code: '601168.SS', label: '西部矿业', display: '601168' },
+      { code: '000878.SZ', label: '云南铜业', display: '000878' },
+      { code: '000630.SZ', label: '铜陵有色', display: '000630' },
+      { code: '600362.SS', label: '江西铜业', display: '600362' },
+      { code: '600489.SS', label: '中金黄金', display: '600489' },
+      { code: '603799.SS', label: '华友钴业', display: '603799' },
+      { code: '002460.SZ', label: '赣锋锂业', display: '002460' },
+      { code: '002466.SZ', label: '天齐锂业', display: '002466' },
+      { code: '000762.SZ', label: '西藏矿业', display: '000762' },
+      { code: '600988.SS', label: '赤峰黄金', display: '600988' },
+      { code: '000807.SZ', label: '云铝股份', display: '000807' },
+      { code: '300618.SZ', label: '寒锐钴业', display: '300618' },
+      { code: '002237.SZ', label: '恒邦股份', display: '002237' },
+      { code: '600497.SS', label: '驰宏锌锗', display: '600497' },
+      { code: '600219.SS', label: '南山铝业', display: '600219' },
+      { code: '000612.SZ', label: '焦作万方', display: '000612' },
     ]
   },
   {
-    icon: '🔋', name: '锂电池板块',
-    colors: ['#00897b', '#558b2f', '#0277bd'],
+    icon: '🔋', name: '锂电池产业链',
+    colors: ['#00897b','#558b2f','#0277bd','#6a1b9a','#e65100',
+             '#2e7d32','#1565c0','#c62828','#e91e8c','#f57f17',
+             '#880e4f','#4527a0','#1b5e20','#006064','#b71c1c',
+             '#673ab7','#37474f','#3e2723','#bf360c','#00695c'],
     stocks: [
       { code: '300750.SZ', label: '宁德时代', display: '300750' },
       { code: '002594.SZ', label: '比亚迪',   display: '002594' },
+      { code: '300014.SZ', label: '亿纬锂能', display: '300014' },
+      { code: '002074.SZ', label: '国轩高科', display: '002074' },
+      { code: '300438.SZ', label: '鹏辉能源', display: '300438' },
+      { code: '688005.SS', label: '容百科技', display: '688005' },
+      { code: '300769.SZ', label: '德方纳米', display: '300769' },
+      { code: '600884.SS', label: '杉杉股份', display: '600884' },
+      { code: '002812.SZ', label: '恩捷股份', display: '002812' },
+      { code: '300568.SZ', label: '星源材质', display: '300568' },
+      { code: '002709.SZ', label: '天赐材料', display: '002709' },
+      { code: '300037.SZ', label: '新宙邦',   display: '300037' },
+      { code: '300450.SZ', label: '先导智能', display: '300450' },
+      { code: '688006.SS', label: '杭可科技', display: '688006' },
+      { code: '688187.SS', label: '时代电气', display: '688187' },
       { code: '002460.SZ', label: '赣锋锂业', display: '002460' },
+      { code: '002466.SZ', label: '天齐锂业', display: '002466' },
+      { code: '603799.SS', label: '华友钴业', display: '603799' },
+      { code: '002129.SZ', label: '中环股份', display: '002129' },
+      { code: '300274.SZ', label: '阳光电源', display: '300274' },
     ]
   },
 ];
@@ -458,19 +551,20 @@ const INDEX_SECTORS = [
     colors: ['#b71c1c', '#e53935', '#ff6f00'],
     range: '3y',
     stocks: [
-      { code: '^GDAXI',    label: 'DAX 40',        display: 'DAX'  },
-      { code: '^STOXX50E', label: 'Euro Stoxx 50',  display: 'SX5E' },
-      { code: '^MDAXI',    label: 'MDAX',           display: 'MDAX' },
+      { code: '^GDAXI',    label: 'DAX 40',        display: 'DAX'   },
+      { code: '^STOXX50E', label: 'Euro Stoxx 50',  display: 'SX5E'  },
+      { code: '^TECDAX',   label: 'TecDAX',         display: 'TECDAX'},
     ]
   },
   {
     icon: '🇨🇳', name: '中国 / 香港',
-    colors: ['#c62828', '#e91e8c', '#ff6f00'],
+    colors: ['#c62828', '#e91e8c', '#ff6f00', '#673ab7'],
     range: '3y',
     stocks: [
       { code: '000001.SS', label: '上证综指', display: 'SHCOMP' },
       { code: '000300.SS', label: '沪深 300', display: 'CSI300' },
       { code: '^HSI',      label: '恒生指数', display: 'HSI'    },
+      { code: '^HSTECH',   label: '恒生科技', display: 'HSTECH' },
     ]
   },
   {
@@ -486,34 +580,25 @@ const INDEX_SECTORS = [
   /* ── A-share broad market ── */
   {
     icon: '📊', name: 'A股宽基指数',
-    colors: ['#880e4f', '#6a1b9a', '#1565c0'],
+    colors: ['#880e4f', '#6a1b9a', '#1565c0', '#00695c'],
     range: '3y',
     stocks: [
       { code: '000016.SS', label: '上证 50',  display: '000016' },
       { code: '000905.SS', label: '中证 500', display: '000905' },
       { code: '399006.SZ', label: '创业板指', display: '399006' },
+      { code: '000688.SS', label: '科创 50',  display: '000688' },
     ]
   },
-  /* ── A-share tech / AI ── */
+  /* ── A-share sector indices (CSI) ── */
   {
-    icon: '🤖', name: 'A股科技板块',
-    colors: ['#673ab7', '#0277bd', '#00897b'],
+    icon: '🔌', name: 'A股行业指数',
+    colors: ['#c62828', '#ff6f00', '#00897b', '#673ab7'],
     range: '3y',
     stocks: [
-      { code: '000688.SS', label: '科创 50',    display: '000688' },
-      { code: '801750.SS', label: '申万计算机', display: '801750' },
-      { code: '^HSTECH',   label: '恒生科技',   display: 'HSTECH' },
-    ]
-  },
-  /* ── A-share sector: power / metals / batteries (Shenwan indices) ── */
-  {
-    icon: '⚡', name: 'A股行业板块',
-    colors: ['#c62828', '#ff6f00', '#00897b'],
-    range: '3y',
-    stocks: [
-      { code: '801160.SS', label: '申万公用事业', display: '801160' },
-      { code: '801050.SS', label: '申万有色金属', display: '801050' },
-      { code: '801730.SS', label: '申万电气设备', display: '801730' },
+      { code: '000928.SS', label: '中证能源',      display: '000928' },
+      { code: '000849.SS', label: '中证有色金属',  display: '000849' },
+      { code: '399967.SZ', label: '中证新能源车',  display: '399967' },
+      { code: '399399.SZ', label: '国证信息技术',  display: '399399' },
     ]
   },
   /* ── US Treasury yields ── */
@@ -635,25 +720,117 @@ function switchTab(market) {
 
 /* ══════════════════════════════════════
    FETCH QUOTES
+   Primary: Tencent qt.gtimg.cn (CORS-enabled, no proxy needed)
+   Fallback: Yahoo Finance v8 chart via allorigins.win
 ══════════════════════════════════════ */
-async function fetchQuotes(symbols) {
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}&fields=regularMarketPrice,regularMarketChangePercent`;
-  const endpoints = [
-    url,
-    `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-  ];
-  for (const ep of endpoints) {
+
+/* Map a Yahoo symbol to its Tencent equivalent. Returns null if no mapping. */
+function toTencentSymbol(yh) {
+  if (!yh) return null;
+  /* Explicit overrides for indices / commodities / forex */
+  const FIXED = {
+    '^GSPC': 'usINX',  '^IXIC': 'usIXIC',  '^DJI': 'usDJI',
+    '^HSI': 'hkHSI',   '^HSTECH': 'hkHSTECH',
+    'GC=F': 'hf_GC',   'SI=F': 'hf_SI',
+    'CL=F': 'hf_CL',   'HG=F': 'hf_HG',
+    'EURUSD=X': 'fxEURUSD', 'GBPUSD=X': 'fxGBPUSD',
+    'USDJPY=X': 'fxUSDJPY', 'USDCNY=X': 'fxUSDCNY',
+    'USDCHF=X': 'fxUSDCHF',
+  };
+  if (FIXED[yh]) return FIXED[yh];
+
+  /* Mainland China A-shares */
+  if (yh.endsWith('.SS')) return 'sh' + yh.slice(0, -3);
+  if (yh.endsWith('.SZ')) return 'sz' + yh.slice(0, -3);
+  /* Hong Kong */
+  if (yh.endsWith('.HK')) return 'hk' + yh.slice(0, -3).padStart(5, '0');
+  /* US plain ticker (allow dots/hyphens like BRK-B, BRK.A) */
+  if (/^[A-Z][A-Z0-9.\-]*$/.test(yh)) return 'us' + yh.replace('-', '.');
+
+  return null;
+}
+
+/* Parse Tencent text response. mapping = [{yh, tc}, ...] */
+function parseTencent(text, mapping) {
+  const out = [];
+  for (const m of mapping) {
+    const re = new RegExp('v_' + m.tc.replace(/[.\\-]/g, '\\$&') + '="([^"]*)"');
+    const mt = text.match(re);
+    if (!mt || !mt[1]) continue;
+    const raw = mt[1];
+    let price, pct;
+    if (m.tc.startsWith('hf_')) {
+      /* Commodities: comma-separated, [price, pct, ...] */
+      const f = raw.split(',');
+      price = parseFloat(f[0]);
+      pct   = parseFloat(f[1]);
+    } else if (m.tc.startsWith('fx')) {
+      /* Forex: tilde-separated, price@3, pct@13 */
+      const f = raw.split('~');
+      price = parseFloat(f[3]);
+      pct   = parseFloat(f[13]);
+    } else {
+      /* Stocks/indices: tilde-separated, price@3, pct@32 */
+      const f = raw.split('~');
+      price = parseFloat(f[3]);
+      pct   = parseFloat(f[32]);
+      if ((isNaN(pct) || pct === 0)) {
+        const prev = parseFloat(f[4]);
+        if (!isNaN(prev) && prev > 0) pct = ((price - prev) / prev) * 100;
+      }
+    }
+    if (!isNaN(price) && price > 0) out.push({ symbol: m.yh, price, pct: pct || 0 });
+  }
+  return out;
+}
+
+async function fetchTencent(symbols) {
+  const mapping = symbols.map(yh => ({ yh, tc: toTencentSymbol(yh) })).filter(m => m.tc);
+  if (!mapping.length) return [];
+  const BATCH = 60;
+  const all = [];
+  for (let i = 0; i < mapping.length; i += BATCH) {
+    const chunk = mapping.slice(i, i + BATCH);
     try {
-      const res = await fetch(ep, { signal: AbortSignal.timeout(9000) });
+      const res = await fetch(`https://qt.gtimg.cn/q=${chunk.map(m => m.tc).join(',')}`,
+                              { signal: AbortSignal.timeout(10000) });
       if (!res.ok) continue;
-      let data = await res.json();
-      if (data.contents) data = JSON.parse(data.contents);
-      const r = data?.quoteResponse?.result;
-      if (r?.length) return r;
+      const text = await res.text();
+      all.push(...parseTencent(text, chunk));
+    } catch {}
+  }
+  return all;
+}
+
+/* Yahoo fallback for symbols Tencent can't serve (DAX, FTSE, ^TNX, EURUSD=X, …) */
+async function fetchYahooOne(symbol) {
+  const url = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=2d&interval=1d`;
+  const eps = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+    url,
+  ];
+  for (const ep of eps) {
+    try {
+      const res = await fetch(ep, { signal: AbortSignal.timeout(12000) });
+      if (!res.ok) continue;
+      let d = await res.json();
+      if (d.contents) d = JSON.parse(d.contents);
+      const meta = d?.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice != null)
+        return { symbol, price: meta.regularMarketPrice, pct: meta.regularMarketChangePercent ?? 0 };
     } catch {}
   }
   return null;
+}
+
+async function fetchQuotes(symbols) {
+  const tencent = await fetchTencent(symbols);
+  const got = new Set(tencent.map(r => r.symbol));
+  const missing = symbols.filter(s => !got.has(s));
+  if (!missing.length) return tencent;
+  const yahoo = await Promise.all(missing.map(fetchYahooOne));
+  return [...tencent, ...yahoo.filter(Boolean)];
 }
 
 /* ══════════════════════════════════════
@@ -708,7 +885,7 @@ function renderGrid(market, quoteMap) {
           <button class="chart-toggle-btn" id="chartbtn-${market}-${idx}"
                   onclick="toggleChart('${market}',${idx})">📈 走势图</button>
         </div>
-        <div class="stock-list">${rows}</div>
+        <div class="stock-list${s.stocks.length >= 10 ? ' two-col' : ''}">${rows}</div>
         <div class="chart-panel" id="chart-panel-${market}-${idx}">
           <div class="chart-loading">走势图加载中…</div>
         </div>
@@ -722,9 +899,7 @@ async function loadMarket(market) {
   const symbols = sectors.flatMap(s => s.stocks.map(st => st.code));
   const results = await fetchQuotes(symbols);
   const map = {};
-  if (results) results.forEach(q => {
-    map[q.symbol] = { price: q.regularMarketPrice, pct: q.regularMarketChangePercent };
-  });
+  if (results) results.forEach(q => { map[q.symbol] = { price: q.price, pct: q.pct }; });
   renderGrid(market, map);
 
   // Re-open any previously open charts
