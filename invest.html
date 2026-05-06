@@ -201,15 +201,67 @@
       padding: .8rem 1rem 1rem;
       background: linear-gradient(180deg, #fff8fb 0%, #fff 100%);
     }
+    .chart-panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .5rem;
+    }
     .chart-label {
       font-size: .72rem; color: var(--muted); font-weight: 600;
       letter-spacing: .04em; text-transform: uppercase;
-      margin-bottom: .5rem;
     }
-    .chart-wrap { position: relative; height: 180px; }
+    .chart-zoom-btn {
+      padding: .22rem .65rem; border: 1.5px solid var(--pink-mid);
+      border-radius: 6px; font-size: .72rem; font-weight: 600;
+      color: var(--pink-dark); background: #fff;
+      cursor: pointer; transition: all .15s;
+    }
+    .chart-zoom-btn:hover { background: var(--pink-light); }
+    .chart-wrap { position: relative; height: 220px; }
     .chart-loading, .chart-error {
       display: flex; align-items: center; justify-content: center;
-      height: 140px; font-size: .83rem; color: var(--muted);
+      height: 160px; font-size: .83rem; color: var(--muted);
+    }
+
+    /* ── Chart fullscreen modal ── */
+    #chart-modal {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(45, 27, 37, 0.7);
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    #chart-modal.open { display: flex; }
+    .chart-modal-card {
+      background: #fff; border-radius: 16px;
+      width: 100%; max-width: 1280px; max-height: 92vh;
+      padding: 1.25rem 1.5rem 1.5rem;
+      position: relative; display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    .chart-modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: .8rem; border-bottom: 1.5px solid #fce4ec;
+      margin-bottom: 1rem;
+    }
+    .chart-modal-title {
+      font-size: 1.15rem; font-weight: 700; color: var(--pink-dark);
+    }
+    .chart-modal-sub {
+      font-size: .78rem; color: var(--muted); margin-top: .15rem;
+    }
+    .chart-modal-close {
+      background: var(--pink-light); border: none;
+      width: 36px; height: 36px; border-radius: 50%;
+      font-size: 1.4rem; line-height: 1; cursor: pointer;
+      color: var(--pink-dark); transition: background .2s;
+    }
+    .chart-modal-close:hover { background: var(--pink-mid); color: #fff; }
+    .chart-modal-canvas-wrap {
+      flex: 1; min-height: 0; height: 70vh; position: relative;
+    }
+    @media (max-width: 600px) {
+      .chart-modal-card { padding: .8rem .9rem 1rem; }
+      .chart-modal-canvas-wrap { height: 65vh; }
+      .chart-modal-title { font-size: 1rem; }
     }
 
     /* ── Footer note ── */
@@ -334,7 +386,21 @@
     </div>
   </div>
 
-  <div class="note">数据来源：Yahoo Finance · 走势图为每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议</div>
+  <div class="note">数据来源：腾讯财经 / Yahoo Finance · 走势图为每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议</div>
+</div>
+
+<!-- ── Chart fullscreen modal ── -->
+<div id="chart-modal" onclick="if(event.target===this) closeChartModal()">
+  <div class="chart-modal-card">
+    <div class="chart-modal-head">
+      <div>
+        <div class="chart-modal-title" id="chart-modal-title"></div>
+        <div class="chart-modal-sub" id="chart-modal-sub"></div>
+      </div>
+      <button class="chart-modal-close" onclick="closeChartModal()" aria-label="Close">×</button>
+    </div>
+    <div class="chart-modal-canvas-wrap"><canvas id="chart-modal-canvas"></canvas></div>
+  </div>
 </div>
 
 <script>
@@ -463,74 +529,167 @@ const CN_SECTORS = [
   },
 ];
 
+const COLORS_20 = ['#e91e8c','#9c27b0','#ff6f00','#c2185b','#1565c0',
+                   '#2e7d32','#00695c','#bf360c','#4527a0','#e65100',
+                   '#0277bd','#558b2f','#880e4f','#4a148c','#1b5e20',
+                   '#006064','#b71c1c','#f57f17','#37474f','#3e2723'];
+
 const US_SECTORS = [
   {
-    icon: '🤖', name: 'AI',
-    colors: ['#1565c0', '#4527a0', '#00695c'],
+    icon: '🤖', name: 'AI & 软件',
+    colors: COLORS_20,
     stocks: [
-      { code: 'NVDA', label: 'Nvidia',     display: 'NVDA' },
-      { code: 'MSFT', label: 'Microsoft',  display: 'MSFT' },
-      { code: 'META', label: 'Meta',       display: 'META' },
+      { code: 'NVDA', label: 'Nvidia',         display: 'NVDA' },
+      { code: 'MSFT', label: 'Microsoft',      display: 'MSFT' },
+      { code: 'META', label: 'Meta Platforms', display: 'META' },
+      { code: 'GOOGL',label: 'Alphabet',       display: 'GOOGL'},
+      { code: 'ORCL', label: 'Oracle',         display: 'ORCL' },
+      { code: 'PLTR', label: 'Palantir',       display: 'PLTR' },
+      { code: 'CRM',  label: 'Salesforce',     display: 'CRM'  },
+      { code: 'ADBE', label: 'Adobe',          display: 'ADBE' },
+      { code: 'NOW',  label: 'ServiceNow',     display: 'NOW'  },
+      { code: 'SNOW', label: 'Snowflake',      display: 'SNOW' },
+      { code: 'CRWD', label: 'CrowdStrike',    display: 'CRWD' },
+      { code: 'PANW', label: 'Palo Alto',      display: 'PANW' },
+      { code: 'NET',  label: 'Cloudflare',     display: 'NET'  },
+      { code: 'SHOP', label: 'Shopify',        display: 'SHOP' },
+      { code: 'UBER', label: 'Uber',           display: 'UBER' },
+      { code: 'NFLX', label: 'Netflix',        display: 'NFLX' },
+      { code: 'IBM',  label: 'IBM',            display: 'IBM'  },
+      { code: 'INTU', label: 'Intuit',         display: 'INTU' },
+      { code: 'WDAY', label: 'Workday',        display: 'WDAY' },
+      { code: 'TEAM', label: 'Atlassian',      display: 'TEAM' },
+    ]
+  },
+  {
+    icon: '💾', name: '半导体',
+    colors: COLORS_20,
+    stocks: [
+      { code: 'AMD',  label: 'AMD',                display: 'AMD'  },
+      { code: 'AVGO', label: 'Broadcom',           display: 'AVGO' },
+      { code: 'TSM',  label: 'TSMC',               display: 'TSM'  },
+      { code: 'INTC', label: 'Intel',              display: 'INTC' },
+      { code: 'QCOM', label: 'Qualcomm',           display: 'QCOM' },
+      { code: 'ARM',  label: 'Arm Holdings',       display: 'ARM'  },
+      { code: 'MU',   label: 'Micron',             display: 'MU'   },
+      { code: 'AMAT', label: 'Applied Materials',  display: 'AMAT' },
+      { code: 'LRCX', label: 'Lam Research',       display: 'LRCX' },
+      { code: 'KLAC', label: 'KLA',                display: 'KLAC' },
+      { code: 'ASML', label: 'ASML',               display: 'ASML' },
+      { code: 'MRVL', label: 'Marvell',            display: 'MRVL' },
+      { code: 'MCHP', label: 'Microchip',          display: 'MCHP' },
+      { code: 'ON',   label: 'onsemi',             display: 'ON'   },
+      { code: 'NXPI', label: 'NXP Semi',           display: 'NXPI' },
+      { code: 'TXN',  label: 'Texas Instruments',  display: 'TXN'  },
+      { code: 'ADI',  label: 'Analog Devices',     display: 'ADI'  },
+      { code: 'SMCI', label: 'Super Micro',        display: 'SMCI' },
+      { code: 'MPWR', label: 'Monolithic Power',   display: 'MPWR' },
+      { code: 'SWKS', label: 'Skyworks',           display: 'SWKS' },
     ]
   },
   {
     icon: '⚡', name: '清洁能源',
-    colors: ['#2e7d32', '#00695c', '#f57f17'],
+    colors: COLORS_20,
     stocks: [
-      { code: 'NEE',  label: 'NextEra Energy', display: 'NEE'  },
-      { code: 'ENPH', label: 'Enphase Energy', display: 'ENPH' },
-      { code: 'FSLR', label: 'First Solar',    display: 'FSLR' },
+      { code: 'NEE',  label: 'NextEra Energy',     display: 'NEE'  },
+      { code: 'ENPH', label: 'Enphase Energy',     display: 'ENPH' },
+      { code: 'FSLR', label: 'First Solar',        display: 'FSLR' },
+      { code: 'SEDG', label: 'SolarEdge',          display: 'SEDG' },
+      { code: 'RUN',  label: 'Sunrun',             display: 'RUN'  },
+      { code: 'PLUG', label: 'Plug Power',         display: 'PLUG' },
+      { code: 'BE',   label: 'Bloom Energy',       display: 'BE'   },
+      { code: 'ICLN', label: 'Clean Energy ETF',   display: 'ICLN' },
+      { code: 'TAN',  label: 'Solar ETF',          display: 'TAN'  },
+      { code: 'CCJ',  label: 'Cameco (Uranium)',   display: 'CCJ'  },
+      { code: 'UEC',  label: 'Uranium Energy',     display: 'UEC'  },
+      { code: 'NOVA', label: 'Sunnova',            display: 'NOVA' },
+      { code: 'ARRY', label: 'Array Tech',         display: 'ARRY' },
+      { code: 'DQ',   label: 'Daqo New Energy',    display: 'DQ'   },
+      { code: 'JKS',  label: 'JinkoSolar',         display: 'JKS'  },
+      { code: 'BEPC', label: 'Brookfield Renew.',  display: 'BEPC' },
+      { code: 'AMRC', label: 'Ameresco',           display: 'AMRC' },
+      { code: 'CWEN', label: 'Clearway Energy',    display: 'CWEN' },
+      { code: 'HASI', label: 'Hannon Armstrong',   display: 'HASI' },
+      { code: 'D',    label: 'Dominion Energy',    display: 'D'    },
     ]
   },
   {
-    icon: '🏗️', name: '有色金属',
-    colors: ['#5d4037', '#37474f', '#bf360c'],
+    icon: '🏗️', name: '有色金属 / 矿业',
+    colors: COLORS_20,
     stocks: [
-      { code: 'FCX', label: 'Freeport-McMoRan', display: 'FCX' },
-      { code: 'AA',  label: 'Alcoa',            display: 'AA'  },
-      { code: 'MP',  label: 'MP Materials',     display: 'MP'  },
+      { code: 'FCX',  label: 'Freeport-McMoRan',  display: 'FCX'  },
+      { code: 'AA',   label: 'Alcoa',             display: 'AA'   },
+      { code: 'MP',   label: 'MP Materials',      display: 'MP'   },
+      { code: 'NEM',  label: 'Newmont',           display: 'NEM'  },
+      { code: 'GOLD', label: 'Barrick Gold',      display: 'GOLD' },
+      { code: 'AEM',  label: 'Agnico Eagle',      display: 'AEM'  },
+      { code: 'KGC',  label: 'Kinross Gold',      display: 'KGC'  },
+      { code: 'AU',   label: 'AngloGold',         display: 'AU'   },
+      { code: 'SCCO', label: 'Southern Copper',   display: 'SCCO' },
+      { code: 'RIO',  label: 'Rio Tinto',         display: 'RIO'  },
+      { code: 'BHP',  label: 'BHP Group',         display: 'BHP'  },
+      { code: 'VALE', label: 'Vale',              display: 'VALE' },
+      { code: 'NUE',  label: 'Nucor (Steel)',     display: 'NUE'  },
+      { code: 'STLD', label: 'Steel Dynamics',    display: 'STLD' },
+      { code: 'CLF',  label: 'Cleveland-Cliffs',  display: 'CLF'  },
+      { code: 'X',    label: 'U.S. Steel',        display: 'X'    },
+      { code: 'WPM',  label: 'Wheaton Precious',  display: 'WPM'  },
+      { code: 'RGLD', label: 'Royal Gold',        display: 'RGLD' },
+      { code: 'PAAS', label: 'Pan Am Silver',     display: 'PAAS' },
+      { code: 'TECK', label: 'Teck Resources',    display: 'TECK' },
     ]
   },
   {
     icon: '🔋', name: '锂电 / EV',
-    colors: ['#0277bd', '#6a1b9a', '#558b2f'],
+    colors: COLORS_20,
     stocks: [
-      { code: 'TSLA', label: 'Tesla',           display: 'TSLA' },
-      { code: 'ALB',  label: 'Albemarle',       display: 'ALB'  },
-      { code: 'LAC',  label: 'Lithium Americas',display: 'LAC'  },
+      { code: 'TSLA', label: 'Tesla',             display: 'TSLA' },
+      { code: 'ALB',  label: 'Albemarle',         display: 'ALB'  },
+      { code: 'LAC',  label: 'Lithium Americas',  display: 'LAC'  },
+      { code: 'NIO',  label: 'NIO',               display: 'NIO'  },
+      { code: 'XPEV', label: 'XPeng',             display: 'XPEV' },
+      { code: 'LI',   label: 'Li Auto',           display: 'LI'   },
+      { code: 'RIVN', label: 'Rivian',            display: 'RIVN' },
+      { code: 'LCID', label: 'Lucid',             display: 'LCID' },
+      { code: 'F',    label: 'Ford',              display: 'F'    },
+      { code: 'GM',   label: 'General Motors',    display: 'GM'   },
+      { code: 'STLA', label: 'Stellantis',        display: 'STLA' },
+      { code: 'TM',   label: 'Toyota',            display: 'TM'   },
+      { code: 'SQM',  label: 'SQM',               display: 'SQM'  },
+      { code: 'PLL',  label: 'Piedmont Lithium',  display: 'PLL'  },
+      { code: 'SLI',  label: 'Standard Lithium',  display: 'SLI'  },
+      { code: 'QS',   label: 'QuantumScape',      display: 'QS'   },
+      { code: 'CHPT', label: 'ChargePoint',       display: 'CHPT' },
+      { code: 'EVGO', label: 'EVgo',              display: 'EVGO' },
+      { code: 'BLNK', label: 'Blink Charging',    display: 'BLNK' },
+      { code: 'ENVX', label: 'Enovix',            display: 'ENVX' },
     ]
   },
-  /* ── Buffett / Berkshire 13-F Q4 2024 — complete major positions ── */
+  /* Buffett / Berkshire 13-F core positions, merged into one */
   {
-    icon: '🎩', name: '巴菲特 — 科技·消费',
-    colors: ['#1565c0','#c62828','#6a1b9a','#e65100','#2e7d32'],
+    icon: '🎩', name: '巴菲特持仓',
+    colors: COLORS_20,
     stocks: [
-      { code: 'AAPL', label: 'Apple',       display: 'AAPL' },
-      { code: 'KO',   label: 'Coca-Cola',   display: 'KO'   },
-      { code: 'KHC',  label: 'Kraft Heinz', display: 'KHC'  },
-      { code: 'AMZN', label: 'Amazon',      display: 'AMZN' },
-      { code: 'VRSN', label: 'VeriSign',    display: 'VRSN' },
-    ]
-  },
-  {
-    icon: '🎩', name: '巴菲特 — 金融',
-    colors: ['#0d47a1','#1976d2','#0288d1','#0097a7','#00838f','#006064'],
-    stocks: [
-      { code: 'AXP', label: 'American Express', display: 'AXP' },
-      { code: 'BAC', label: 'Bank of America',  display: 'BAC' },
-      { code: 'MCO', label: "Moody's",          display: 'MCO' },
-      { code: 'CB',  label: 'Chubb',            display: 'CB'  },
-      { code: 'USB', label: 'U.S. Bancorp',     display: 'USB' },
-      { code: 'BK',  label: 'BNY Mellon',       display: 'BK'  },
-    ]
-  },
-  {
-    icon: '🎩', name: '巴菲特 — 能源·医疗',
-    colors: ['#e65100','#bf360c','#4e342e'],
-    stocks: [
-      { code: 'CVX', label: 'Chevron',    display: 'CVX' },
-      { code: 'OXY', label: 'Occidental', display: 'OXY' },
-      { code: 'DVA', label: 'DaVita',     display: 'DVA' },
+      { code: 'AAPL', label: 'Apple',              display: 'AAPL' },
+      { code: 'AXP',  label: 'American Express',   display: 'AXP'  },
+      { code: 'BAC',  label: 'Bank of America',    display: 'BAC'  },
+      { code: 'KO',   label: 'Coca-Cola',          display: 'KO'   },
+      { code: 'CVX',  label: 'Chevron',            display: 'CVX'  },
+      { code: 'OXY',  label: 'Occidental',         display: 'OXY'  },
+      { code: 'KHC',  label: 'Kraft Heinz',        display: 'KHC'  },
+      { code: 'MCO',  label: "Moody's",            display: 'MCO'  },
+      { code: 'CB',   label: 'Chubb',              display: 'CB'   },
+      { code: 'AMZN', label: 'Amazon',             display: 'AMZN' },
+      { code: 'VRSN', label: 'VeriSign',           display: 'VRSN' },
+      { code: 'KR',   label: 'Kroger',             display: 'KR'   },
+      { code: 'CHTR', label: 'Charter',            display: 'CHTR' },
+      { code: 'NU',   label: 'Nubank',             display: 'NU'   },
+      { code: 'AON',  label: 'Aon',                display: 'AON'  },
+      { code: 'COF',  label: 'Capital One',        display: 'COF'  },
+      { code: 'C',    label: 'Citigroup',          display: 'C'    },
+      { code: 'USB',  label: 'U.S. Bancorp',       display: 'USB'  },
+      { code: 'BK',   label: 'BNY Mellon',         display: 'BK'   },
+      { code: 'DVA',  label: 'DaVita',             display: 'DVA'  },
     ]
   },
 ];
@@ -1017,8 +1176,12 @@ async function toggleChart(market, idx) {
   }
 
   const canvasId = `chart-${market}-${idx}`;
+  const yrs = range === '3y' ? '3' : '2';
   panel.innerHTML = `
-    <div class="chart-label">近${range === '3y' ? '3' : '2'}年累计涨跌幅（%，以起点收盘价为基准）</div>
+    <div class="chart-panel-head">
+      <div class="chart-label">近${yrs}年累计涨跌幅（%，以起点收盘价为基准）</div>
+      <button class="chart-zoom-btn" onclick="openChartModal('${market}',${idx})">🔍 放大</button>
+    </div>
     <div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>`;
 
   if (chartInstances[key]) chartInstances[key].destroy();
@@ -1065,16 +1228,90 @@ async function toggleChart(market, idx) {
 }
 
 /* ══════════════════════════════════════
+   CHART FULLSCREEN MODAL
+══════════════════════════════════════ */
+let modalChart = null;
+
+function openChartModal(market, idx) {
+  const key = `${market}-${idx}`;
+  const src = chartInstances[key];
+  if (!src) return;
+  const sector = market === 'cn' ? CN_SECTORS[idx] : market === 'us' ? US_SECTORS[idx] : INDEX_SECTORS[idx];
+  const range  = sector.range || '2y';
+  const yrs    = range === '3y' ? '3' : '2';
+
+  document.getElementById('chart-modal-title').textContent = `${sector.icon}  ${sector.name}`;
+  document.getElementById('chart-modal-sub').textContent   = `近${yrs}年累计涨跌幅（%，以起点收盘价为基准）`;
+  document.getElementById('chart-modal').classList.add('open');
+
+  /* Re-create chart in the modal canvas using the same data */
+  if (modalChart) modalChart.destroy();
+  const datasets = src.data.datasets.map(ds => ({
+    ...ds,
+    borderWidth: 2.4,
+    pointHoverRadius: 5,
+  }));
+  modalChart = new Chart(document.getElementById('chart-modal-canvas'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          type: 'time',
+          time: { unit: 'month', displayFormats: { month: 'yy/MM' } },
+          grid: { color: '#fce4ec80' },
+          ticks: { color: '#7a4d63', font: { size: 11 }, maxTicksLimit: 18 }
+        },
+        y: {
+          grid: { color: '#fce4ec80' },
+          ticks: {
+            color: '#7a4d63', font: { size: 11 },
+            callback: v => (v >= 0 ? '+' : '') + v.toFixed(0) + '%'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#2d1b25', font: { size: 12 }, boxWidth: 14, padding: 12 }
+        },
+        tooltip: {
+          callbacks: {
+            title: items => new Date(items[0].parsed.x).toLocaleDateString('zh-CN',
+              { year: 'numeric', month: 'short', day: 'numeric' }),
+            label: ctx => ` ${ctx.dataset.label}：${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%`
+          }
+        }
+      }
+    },
+    plugins: [zeroLinePlugin]
+  });
+}
+
+function closeChartModal() {
+  document.getElementById('chart-modal').classList.remove('open');
+  if (modalChart) { modalChart.destroy(); modalChart = null; }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('chart-modal').classList.contains('open')) closeChartModal();
+});
+
+/* ══════════════════════════════════════
    NEWS
 ══════════════════════════════════════ */
 async function fetchNewsSource(src) {
-  const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(src.rss)}&count=6`;
+  /* rss2json free tier dropped the &count param — use default (10 items) and slice client-side */
+  const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(src.rss)}`;
   try {
     const res = await fetch(api, { signal: AbortSignal.timeout(9000) });
     if (!res.ok) return [];
     const data = await res.json();
     if (data.status !== 'ok') return [];
-    return (data.items || []).map(item => ({ ...item, _src: src }));
+    return (data.items || []).slice(0, 6).map(item => ({ ...item, _src: src }));
   } catch { return []; }
 }
 
