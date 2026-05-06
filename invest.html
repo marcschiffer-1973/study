@@ -205,10 +205,54 @@
       padding: 1rem; margin-top: .2rem;
     }
 
+    /* ── News section ── */
+    #news-section { border-top: 2px solid #fce4ec; }
+    .news-main { padding: .6rem 1rem 1.2rem; max-width: 960px; margin: 0 auto; }
+    .news-hdr {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .7rem 0 .6rem;
+    }
+    .news-hdr-title { font-size: .95rem; font-weight: 700; color: var(--pink-dark); }
+    .news-hdr-sub   { font-size: .75rem; color: var(--muted); flex: 1; }
+    .btn-news-refresh {
+      padding: .3rem .7rem; border: 1.5px solid var(--pink-mid);
+      border-radius: 8px; font-size: .75rem; font-weight: 600;
+      color: var(--pink-dark); background: #fff; cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-news-refresh:hover { background: var(--pink-light); }
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+      gap: .75rem;
+    }
+    .news-card {
+      background: #fff; border-radius: 12px;
+      border: 1.5px solid #fce4ec; padding: .85rem 1rem;
+      text-decoration: none; color: inherit; display: block;
+      box-shadow: 0 2px 8px rgba(233,30,140,.06);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .news-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(233,30,140,.14); }
+    .news-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: .4rem; }
+    .news-src  { font-size: .67rem; font-weight: 700; padding: .13rem .45rem; border-radius: 10px; }
+    .news-time { font-size: .67rem; color: var(--muted); }
+    .news-title {
+      font-size: .83rem; font-weight: 600; line-height: 1.35; color: var(--text);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      margin-bottom: .3rem;
+    }
+    .news-desc {
+      font-size: .73rem; color: var(--muted); line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .news-status { text-align: center; color: var(--muted); font-size: .82rem; padding: 1.5rem; }
+
     @media (max-width: 520px) {
       .grid { grid-template-columns: 1fr; }
       header { padding: .75rem 1rem; }
       .update-time { display: none; }
+      .news-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -248,8 +292,9 @@
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" id="tab-cn-btn" onclick="switchTab('cn')">🇨🇳 中国A股</button>
-    <button class="tab-btn"        id="tab-us-btn" onclick="switchTab('us')">🇺🇸 美股</button>
+    <button class="tab-btn active" id="tab-cn-btn"  onclick="switchTab('cn')">🇨🇳 中国A股</button>
+    <button class="tab-btn"        id="tab-us-btn"  onclick="switchTab('us')">🇺🇸 美股</button>
+    <button class="tab-btn"        id="tab-idx-btn" onclick="switchTab('idx')">🌍 全球指数</button>
   </div>
 
   <div id="tab-cn">
@@ -258,8 +303,25 @@
   <div id="tab-us" style="display:none">
     <main><div class="grid" id="grid-us"></div></main>
   </div>
+  <div id="tab-idx" style="display:none">
+    <main><div class="grid" id="grid-idx"></div></main>
+  </div>
 
-  <div class="note">数据来源：Yahoo Finance · 走势图为近2年每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议</div>
+  <!-- ── Financial News ── -->
+  <div id="news-section">
+    <div class="news-main">
+      <div class="news-hdr">
+        <span class="news-hdr-title">📰 财经资讯</span>
+        <span class="news-hdr-sub">Yahoo Finance · CNBC · MarketWatch</span>
+        <button class="btn-news-refresh" onclick="loadNews()">⟳ 刷新</button>
+      </div>
+      <div class="news-grid" id="news-grid">
+        <div class="news-status">资讯加载中…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">数据来源：Yahoo Finance · 走势图为每周收盘价累计涨跌幅 · 仅供参考，不构成投资建议</div>
 </div>
 
 <script>
@@ -347,6 +409,58 @@ const US_SECTORS = [
   },
 ];
 
+const INDEX_SECTORS = [
+  {
+    icon: '🇺🇸', name: '美国',
+    colors: ['#1565c0', '#0d47a1', '#1976d2'],
+    range: '3y',
+    stocks: [
+      { code: '^GSPC', label: 'S&P 500',   display: 'SPX'  },
+      { code: '^IXIC', label: 'NASDAQ',    display: 'COMP' },
+      { code: '^DJI',  label: 'Dow Jones', display: 'DJI'  },
+    ]
+  },
+  {
+    icon: '🇩🇪', name: '德国 / 欧洲',
+    colors: ['#b71c1c', '#e53935', '#ff6f00'],
+    range: '3y',
+    stocks: [
+      { code: '^GDAXI',    label: 'DAX 40',        display: 'DAX'  },
+      { code: '^STOXX50E', label: 'Euro Stoxx 50',  display: 'SX5E' },
+      { code: '^MDAXI',    label: 'MDAX',           display: 'MDAX' },
+    ]
+  },
+  {
+    icon: '🇨🇳', name: '中国 / 香港',
+    colors: ['#c62828', '#e91e8c', '#ff6f00'],
+    range: '3y',
+    stocks: [
+      { code: '000001.SS', label: '上证综指', display: 'SHCOMP' },
+      { code: '000300.SS', label: '沪深 300', display: 'CSI300' },
+      { code: '^HSI',      label: '恒生指数', display: 'HSI'    },
+    ]
+  },
+  {
+    icon: '🌏', name: '亚太 / 英国',
+    colors: ['#1b5e20', '#4527a0', '#e65100'],
+    range: '3y',
+    stocks: [
+      { code: '^N225', label: '日经 225', display: 'NKY' },
+      { code: '^FTSE', label: 'FTSE 100', display: 'UKX' },
+      { code: '^AXJO', label: 'ASX 200',  display: 'AS51'},
+    ]
+  },
+];
+
+const NEWS_SOURCES = [
+  { id: 'yahoo',       label: 'Yahoo Finance', color: '#6001d2', bg: '#f3e5ff',
+    rss: 'https://finance.yahoo.com/news/rssindex' },
+  { id: 'cnbc',        label: 'CNBC',          color: '#003d66', bg: '#e3f2fd',
+    rss: 'https://www.cnbc.com/id/100003114/device/rss/rss.html' },
+  { id: 'marketwatch', label: 'MarketWatch',   color: '#005b99', bg: '#e1f0fb',
+    rss: 'https://feeds.marketwatch.com/marketwatch/topstories/' },
+];
+
 /* ══════════════════════════════════════
    AUTH
 ══════════════════════════════════════ */
@@ -403,10 +517,10 @@ function updateMarketBadges() {
    TAB SWITCH
 ══════════════════════════════════════ */
 function switchTab(market) {
-  document.getElementById('tab-cn').style.display    = market === 'cn' ? '' : 'none';
-  document.getElementById('tab-us').style.display    = market === 'us' ? '' : 'none';
-  document.getElementById('tab-cn-btn').className = 'tab-btn' + (market === 'cn' ? ' active' : '');
-  document.getElementById('tab-us-btn').className = 'tab-btn' + (market === 'us' ? ' active' : '');
+  ['cn','us','idx'].forEach(m => {
+    document.getElementById(`tab-${m}`).style.display = market === m ? '' : 'none';
+    document.getElementById(`tab-${m}-btn`).className = 'tab-btn' + (market === m ? ' active' : '');
+  });
 }
 
 /* ══════════════════════════════════════
@@ -436,8 +550,11 @@ async function fetchQuotes(symbols) {
    RENDER SECTOR CARDS (skeleton + data)
 ══════════════════════════════════════ */
 function renderGrid(market, quoteMap) {
-  const sectors = market === 'cn' ? CN_SECTORS : US_SECTORS;
-  const currency = market === 'cn' ? '¥' : '$';
+  const sectors = market === 'cn' ? CN_SECTORS : market === 'us' ? US_SECTORS : INDEX_SECTORS;
+  const currency = market === 'cn' ? '¥' : market === 'us' ? '$' : '';
+  const fmtPrice = (p) => market === 'idx'
+    ? p.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+    : currency + p.toFixed(2);
   const gridEl = document.getElementById('grid-' + market);
 
   gridEl.innerHTML = sectors.map((s, idx) => {
@@ -461,7 +578,7 @@ function renderGrid(market, quoteMap) {
             <div class="stock-code">${st.display}</div>
           </div>
           <div class="stock-price-wrap">
-            <div class="stock-price ${up ? 'up' : 'down'}">${currency}${q.price.toFixed(market === 'cn' ? 2 : 2)}</div>
+            <div class="stock-price ${up ? 'up' : 'down'}">${fmtPrice(q.price)}</div>
             <span class="stock-change ${up ? 'up up-bg' : 'down down-bg'}">
               ${up ? '▲' : '▼'} ${Math.abs(q.pct).toFixed(2)}%
             </span>
@@ -489,7 +606,7 @@ function renderGrid(market, quoteMap) {
 
 async function loadMarket(market) {
   renderGrid(market, null);
-  const sectors = market === 'cn' ? CN_SECTORS : US_SECTORS;
+  const sectors = market === 'cn' ? CN_SECTORS : market === 'us' ? US_SECTORS : INDEX_SECTORS;
   const symbols = sectors.flatMap(s => s.stocks.map(st => st.code));
   const results = await fetchQuotes(symbols);
   const map = {};
@@ -510,7 +627,7 @@ async function loadMarket(market) {
 
 async function loadAll() {
   updateMarketBadges();
-  await Promise.all([loadMarket('cn'), loadMarket('us')]);
+  await Promise.all([loadMarket('cn'), loadMarket('us'), loadMarket('idx')]);
   const now = new Date();
   document.getElementById('update-time').textContent =
     '更新于 ' + now.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
@@ -522,8 +639,8 @@ async function loadAll() {
 const chartInstances = {};
 const chartLoaded    = {};
 
-async function fetchHistory(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1wk&range=2y`;
+async function fetchHistory(symbol, range = '2y') {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1wk&range=${range}`;
   const endpoints = [
     url,
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
@@ -586,8 +703,9 @@ async function toggleChart(market, idx) {
 
   panel.innerHTML = '<div class="chart-loading">走势图加载中…</div>';
 
-  const sector = market === 'cn' ? CN_SECTORS[idx] : US_SECTORS[idx];
-  const histories = await Promise.all(sector.stocks.map(s => fetchHistory(s.code)));
+  const sector = market === 'cn' ? CN_SECTORS[idx] : market === 'us' ? US_SECTORS[idx] : INDEX_SECTORS[idx];
+  const range  = sector.range || '2y';
+  const histories = await Promise.all(sector.stocks.map(s => fetchHistory(s.code, range)));
 
   const datasets = sector.stocks.map((stock, i) => {
     const h = histories[i];
@@ -613,7 +731,7 @@ async function toggleChart(market, idx) {
 
   const canvasId = `chart-${market}-${idx}`;
   panel.innerHTML = `
-    <div class="chart-label">近2年累计涨跌幅（%，以2年前收盘价为基准）</div>
+    <div class="chart-label">近${range === '3y' ? '3' : '2'}年累计涨跌幅（%，以起点收盘价为基准）</div>
     <div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>`;
 
   if (chartInstances[key]) chartInstances[key].destroy();
@@ -660,10 +778,59 @@ async function toggleChart(market, idx) {
 }
 
 /* ══════════════════════════════════════
+   NEWS
+══════════════════════════════════════ */
+async function fetchNewsSource(src) {
+  const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(src.rss)}&count=6`;
+  try {
+    const res = await fetch(api, { signal: AbortSignal.timeout(9000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (data.status !== 'ok') return [];
+    return (data.items || []).map(item => ({ ...item, _src: src }));
+  } catch { return []; }
+}
+
+async function loadNews() {
+  const grid = document.getElementById('news-grid');
+  grid.innerHTML = '<div class="news-status">资讯加载中…</div>';
+
+  const results = await Promise.all(NEWS_SOURCES.map(fetchNewsSource));
+  const all = results.flat().sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate)).slice(0, 12);
+
+  if (!all.length) {
+    grid.innerHTML = '<div class="news-status">⚠ 暂无资讯，请稍后刷新</div>';
+    return;
+  }
+
+  const now = new Date();
+  grid.innerHTML = all.map(item => {
+    const pub  = new Date(item.pubDate);
+    const diff = Math.floor((now - pub) / 60000);
+    const age  = diff < 1 ? '刚刚' : diff < 60 ? `${diff}分钟前`
+               : diff < 1440 ? `${Math.floor(diff/60)}小时前`
+               : pub.toLocaleDateString('zh-CN', { month:'short', day:'numeric' });
+    const desc = item.description
+      ? item.description.replace(/<[^>]*>/g,'').trim().slice(0, 90) + '…' : '';
+    const s = item._src;
+    return `
+      <a class="news-card" href="${item.link}" target="_blank" rel="noopener noreferrer">
+        <div class="news-meta">
+          <span class="news-src" style="color:${s.color};background:${s.bg}">${s.label}</span>
+          <span class="news-time">${age}</span>
+        </div>
+        <div class="news-title">${item.title}</div>
+        ${desc ? `<div class="news-desc">${desc}</div>` : ''}
+      </a>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════
    INIT + AUTO-REFRESH
 ══════════════════════════════════════ */
 function init() {
   loadAll();
+  loadNews();
 }
 
 // Auto-refresh every 5 min when any market is open
