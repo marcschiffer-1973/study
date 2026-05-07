@@ -375,6 +375,56 @@
     }
     .report-empty { text-align: center; color: var(--muted); padding: 1.2rem; font-size: .85rem; }
 
+    /* ── CN intraday flow ── */
+    .flow-stats {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      font-size: .8rem; margin-bottom: .7rem;
+      padding-bottom: .55rem; border-bottom: 1px dashed #fce4ec;
+    }
+    .flow-stat { display: flex; align-items: center; gap: .35rem; }
+    .flow-stat .num { font-weight: 700; }
+    .flow-status {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .12rem .55rem; border-radius: 14px;
+      font-size: .72rem; font-weight: 700;
+    }
+    .flow-status.live { background: #e8f5e9; color: #2e7d32; }
+    .flow-status.closed { background: #fce4ec; color: var(--pink-dark); }
+    .flow-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+    }
+    @media (max-width: 700px) { .flow-grid { grid-template-columns: 1fr; } }
+    .flow-block h4 {
+      font-size: .82rem; color: var(--pink-dark); font-weight: 700;
+      margin-bottom: .4rem; padding-bottom: .35rem;
+      border-bottom: 1px dashed #fce4ec;
+    }
+    .flow-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .35rem 0; gap: .5rem;
+      border-bottom: 1px dashed #fce4ec; font-size: .82rem;
+    }
+    .flow-row:last-child { border-bottom: none; }
+    .flow-row .rank {
+      flex-shrink: 0; width: 18px; font-size: .68rem;
+      color: var(--muted); font-weight: 600; text-align: center;
+    }
+    .flow-row .name {
+      flex: 1; min-width: 0; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .flow-row .code {
+      font-size: .68rem; color: var(--muted); margin-left: .3rem; flex-shrink: 0;
+    }
+    .flow-row .amt {
+      font-weight: 700; flex-shrink: 0; min-width: 60px; text-align: right;
+    }
+    .flow-row .pct {
+      font-size: .7rem; font-weight: 700;
+      padding: .1rem .35rem; border-radius: 4px;
+      flex-shrink: 0; min-width: 56px; text-align: center;
+    }
+
     /* ── Heatmap ── */
     .heat-group-title {
       font-size: .7rem; font-weight: 700;
@@ -526,6 +576,25 @@
   <!-- Daily Report tab -->
   <div id="tab-report">
     <div class="report-date" id="report-date"></div>
+    <div class="report-section" id="cnflow-section" style="display:none">
+      <div class="report-card">
+        <h3>
+          <span data-i18n="report_cnflow">🇨🇳 A股盘中资金流</span>
+          <span class="flow-status closed" id="cnflow-status" data-i18n="market_closed">休市</span>
+        </h3>
+        <div class="flow-stats" id="cnflow-stats"></div>
+        <div class="flow-grid">
+          <div class="flow-block">
+            <h4 data-i18n="flow_top_stocks">💰 主力净流入 Top 10</h4>
+            <div id="cnflow-stocks"><div class="report-empty" data-i18n="loading">加载中…</div></div>
+          </div>
+          <div class="flow-block">
+            <h4 data-i18n="flow_top_sectors">🏷️ 行业资金流向 Top 10</h4>
+            <div id="cnflow-sectors"><div class="report-empty" data-i18n="loading">加载中…</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="report-section">
       <div class="report-card">
         <h3><span data-i18n="report_indices">📈 主要指数</span></h3>
@@ -637,6 +706,15 @@ const I18N = {
     report_macro_sub:'地缘 · 央行 · 战争',
     report_heatmap:  '🗺️ 市场热力图',
     report_heatmap_sub:'悬停查看名称',
+    report_cnflow:   '🇨🇳 A股盘中资金流',
+    market_open:     '开盘中',
+    market_closed:   '休市',
+    flow_top_stocks: '💰 主力净流入 Top 10',
+    flow_top_sectors:'🏷️ 行业资金流向 Top 10',
+    flow_advancers:  '涨',
+    flow_decliners:  '跌',
+    flow_flat:       '平',
+    flow_avg_gain:   '平均涨幅',
     search_placeholder: '🔍 搜索代码或名称…',
     search_empty:    '无匹配股票',
     chart_btn:    '📈 走势图',
@@ -686,6 +764,15 @@ const I18N = {
     report_macro_sub:'Geopolitics · Central banks · War',
     report_heatmap:  '🗺️ Market Heatmap',
     report_heatmap_sub:'hover for names',
+    report_cnflow:   '🇨🇳 A-Share Capital Flow',
+    market_open:     'Open',
+    market_closed:   'Closed',
+    flow_top_stocks: '💰 Top Stocks by Net Inflow',
+    flow_top_sectors:'🏷️ Top Sectors by Net Inflow',
+    flow_advancers:  'up',
+    flow_decliners:  'down',
+    flow_flat:       'flat',
+    flow_avg_gain:   'avg %',
     search_placeholder: '🔍 Search ticker or name…',
     search_empty:    'No matching stocks',
     chart_btn:    '📈 Chart',
@@ -735,6 +822,15 @@ const I18N = {
     report_macro_sub:'Geopolitik · Notenbanken · Krieg',
     report_heatmap:  '🗺️ Markt-Heatmap',
     report_heatmap_sub:'Namen beim Hover',
+    report_cnflow:   '🇨🇳 A-Aktien Kapitalfluss',
+    market_open:     'Geöffnet',
+    market_closed:   'Geschlossen',
+    flow_top_stocks: '💰 Top Aktien nach Nettozufluss',
+    flow_top_sectors:'🏷️ Top Sektoren nach Nettozufluss',
+    flow_advancers:  'aufwärts',
+    flow_decliners:  'abwärts',
+    flow_flat:       'flach',
+    flow_avg_gain:   'Ø %',
     search_placeholder: '🔍 Ticker oder Name suchen…',
     search_empty:    'Keine Treffer',
     chart_btn:    '📈 Verlauf',
@@ -1755,12 +1851,127 @@ async function loadMarket(market) {
 
 async function loadAll() {
   updateMarketBadges();
-  await Promise.all([loadMarket('cn'), loadMarket('us'), loadMarket('idx')]);
+  await Promise.all([loadMarket('cn'), loadMarket('us'), loadMarket('idx'), loadCNFlow()]);
   renderReport();
   const now = new Date();
   const locale = lang === 'zh' ? 'zh-CN' : (lang === 'de' ? 'de-DE' : 'en-US');
   document.getElementById('update-time').textContent =
     t('updated') + now.toLocaleString(locale, { timeZone: 'Asia/Shanghai', hour12: false });
+}
+
+/* ══════════════════════════════════════
+   CN INTRADAY CAPITAL FLOW (East Money)
+══════════════════════════════════════ */
+const EM_BASE = 'https://push2.eastmoney.com/api/qt/clist/get';
+/* fs filters: A-shares main boards + ChiNext + STAR (excludes B-shares) */
+const EM_FS_ASHARES = 'm:0+t:6+f:!2,m:0+t:13+f:!2,m:0+t:80+f:!2,m:1+t:2+f:!2,m:1+t:23+f:!2';
+/* Industry sectors */
+const EM_FS_SECTORS = 'm:90+t:2+f:!50';
+
+async function emFetch(fs, fields, n = 10) {
+  const url = `${EM_BASE}?fid=f62&po=1&pz=${n}&pn=1&np=1&fltt=2&invt=2&fs=${fs}&fields=${fields}`;
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d?.data?.diff || null;
+  } catch { return null; }
+}
+
+let CN_FLOW = { stocks: null, sectors: null };
+
+async function loadCNFlow() {
+  const [stocks, sectors] = await Promise.all([
+    emFetch(EM_FS_ASHARES, 'f12,f14,f2,f3,f62', 10),
+    emFetch(EM_FS_SECTORS, 'f12,f14,f3,f62,f184', 10),
+  ]);
+  CN_FLOW = { stocks, sectors };
+}
+
+function fmtAmount(n) {
+  if (n == null || isNaN(n)) return '—';
+  const abs = Math.abs(n);
+  const sign = n >= 0 ? '+' : '−';
+  if (lang === 'zh') {
+    if (abs >= 1e8) return sign + (abs / 1e8).toFixed(2) + '亿';
+    if (abs >= 1e4) return sign + (abs / 1e4).toFixed(1) + '万';
+    return sign + abs.toFixed(0);
+  }
+  if (abs >= 1e9) return sign + (abs / 1e9).toFixed(2) + 'B';
+  if (abs >= 1e6) return sign + (abs / 1e6).toFixed(2) + 'M';
+  if (abs >= 1e3) return sign + (abs / 1e3).toFixed(2) + 'K';
+  return sign + abs.toFixed(0);
+}
+
+function renderCNFlow() {
+  const sec = document.getElementById('cnflow-section');
+  if (!sec) return;
+  /* Compute breadth from already-fetched CN quotes */
+  const cn = [];
+  CN_SECTORS.forEach(s => s.stocks.forEach(st => {
+    const q = QUOTES.cn[st.code];
+    if (q && !isNaN(q.pct)) cn.push(q);
+  }));
+
+  /* Show the section once we have either flow data OR breadth data */
+  const haveFlow = CN_FLOW.stocks?.length || CN_FLOW.sectors?.length;
+  if (!haveFlow && !cn.length) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+
+  /* Status pill */
+  const isOpen = isCNOpen();
+  const statusEl = document.getElementById('cnflow-status');
+  statusEl.textContent = isOpen ? t('market_open') : t('market_closed');
+  statusEl.className = 'flow-status ' + (isOpen ? 'live' : 'closed');
+
+  /* Breadth stats */
+  const adv = cn.filter(q => q.pct > 0).length;
+  const dec = cn.filter(q => q.pct < 0).length;
+  const flat = cn.length - adv - dec;
+  const avg = cn.length ? cn.reduce((s,q) => s + q.pct, 0) / cn.length : 0;
+  const avgUp = avg >= 0;
+  document.getElementById('cnflow-stats').innerHTML = `
+    <span class="flow-stat"><span class="num up">${adv}</span> ${t('flow_advancers')}</span>
+    <span class="flow-stat"><span class="num down">${dec}</span> ${t('flow_decliners')}</span>
+    <span class="flow-stat"><span class="num">${flat}</span> ${t('flow_flat')}</span>
+    <span class="flow-stat">${t('flow_avg_gain')}:
+      <span class="num ${avgUp?'up':'down'}">${avgUp?'+':''}${avg.toFixed(2)}%</span>
+    </span>
+  `;
+
+  /* Top stocks by main capital net inflow */
+  const stocksEl = document.getElementById('cnflow-stocks');
+  if (CN_FLOW.stocks?.length) {
+    stocksEl.innerHTML = CN_FLOW.stocks.map((x, i) => {
+      const up = (x.f3 ?? 0) >= 0;
+      const inflowUp = (x.f62 ?? 0) >= 0;
+      return `<div class="flow-row">
+        <span class="rank">${i+1}</span>
+        <div class="name">${x.f14}<span class="code">${x.f12}</span></div>
+        <span class="amt ${inflowUp?'up':'down'}">${fmtAmount(x.f62)}</span>
+        <span class="pct ${up?'up up-bg':'down down-bg'}">${up?'+':''}${(x.f3 ?? 0).toFixed(2)}%</span>
+      </div>`;
+    }).join('');
+  } else {
+    stocksEl.innerHTML = `<div class="report-empty">${t('news_empty')}</div>`;
+  }
+
+  /* Top sectors by net inflow */
+  const secEl = document.getElementById('cnflow-sectors');
+  if (CN_FLOW.sectors?.length) {
+    secEl.innerHTML = CN_FLOW.sectors.map((x, i) => {
+      const up = (x.f3 ?? 0) >= 0;
+      const inflowUp = (x.f62 ?? 0) >= 0;
+      return `<div class="flow-row">
+        <span class="rank">${i+1}</span>
+        <div class="name">${x.f14}</div>
+        <span class="amt ${inflowUp?'up':'down'}">${fmtAmount(x.f62)}</span>
+        <span class="pct ${up?'up up-bg':'down down-bg'}">${up?'+':''}${(x.f3 ?? 0).toFixed(2)}%</span>
+      </div>`;
+    }).join('');
+  } else {
+    secEl.innerHTML = `<div class="report-empty">${t('news_empty')}</div>`;
+  }
 }
 
 /* ══════════════════════════════════════
@@ -1870,6 +2081,7 @@ function renderReport() {
         </div>`;
       }).join('');
 
+  renderCNFlow();
   renderHeatmap();
 }
 
