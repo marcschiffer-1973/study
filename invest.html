@@ -375,6 +375,62 @@
     }
     .report-empty { text-align: center; color: var(--muted); padding: 1.2rem; font-size: .85rem; }
 
+    /* ── Heatmap ── */
+    .heat-group-title {
+      font-size: .7rem; font-weight: 700;
+      color: var(--muted); letter-spacing: .03em;
+      margin: .7rem 0 .35rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .heat-group-title:first-child { margin-top: 0; }
+    .heat-group-title .gname { flex: 1; }
+    .heat-group-title .gavg {
+      font-size: .68rem; font-weight: 700;
+      padding: 1px 6px; border-radius: 4px;
+    }
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+      gap: 3px;
+    }
+    .heat-tile {
+      padding: .35rem .2rem; border-radius: 5px;
+      text-align: center; font-weight: 700;
+      min-height: 44px;
+      display: flex; flex-direction: column; justify-content: center;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .heat-tile:hover { transform: scale(1.08); box-shadow: 0 3px 10px rgba(0,0,0,.18); z-index: 2; }
+    .heat-tile .h-code {
+      font-size: .6rem; opacity: .9;
+      white-space: nowrap; overflow: hidden;
+      font-family: -apple-system, "Segoe UI", monospace;
+      letter-spacing: .02em;
+    }
+    .heat-tile .h-pct { font-size: .76rem; margin-top: 1px; }
+    .heat-tile.dark { color: #fff; }
+    .heat-tile.light { color: #1a1a1a; }
+    .heat-tile.empty { background: #f0f0f0; color: #999; }
+
+    /* ── Search bar ── */
+    .search-bar { max-width: 960px; margin: 0 auto; padding: 0 1rem .3rem; }
+    #search-input {
+      width: 100%; padding: .55rem .9rem;
+      border: 1.5px solid #fce4ec; border-radius: 10px;
+      font-size: .88rem; background: #fff; outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    #search-input:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(233,30,140,.12);
+    }
+    .search-empty {
+      max-width: 960px; margin: 1rem auto 0; padding: 1.5rem 1rem;
+      text-align: center; color: var(--muted); font-size: .9rem;
+      display: none;
+    }
+    .search-empty.show { display: block; }
+
     /* ── Language toggle ── */
     .lang-toggle {
       display: inline-flex; gap: 2px;
@@ -461,6 +517,12 @@
     <button class="tab-btn"        id="tab-idx-btn"    data-i18n="tab_idx"    onclick="switchTab('idx')">🌍 全球指数</button>
   </div>
 
+  <div class="search-bar" id="search-bar" style="display:none">
+    <input id="search-input" type="search" autocomplete="off" oninput="onSearch(this.value)"
+           placeholder="🔍 搜索代码或名称…" data-i18n-attr="placeholder|search_placeholder" />
+  </div>
+  <div class="search-empty" id="search-empty" data-i18n="search_empty">无匹配</div>
+
   <!-- Daily Report tab -->
   <div id="tab-report">
     <div class="report-date" id="report-date"></div>
@@ -484,6 +546,12 @@
       <div class="report-card">
         <h3><span data-i18n="report_sectors">🏷️ 板块表现</span><span class="meta" data-i18n="report_sorted">按平均涨幅</span></h3>
         <div id="report-sectors"></div>
+      </div>
+    </div>
+    <div class="report-section">
+      <div class="report-card">
+        <h3><span data-i18n="report_heatmap">🗺️ 市场热力图</span><span class="meta" data-i18n="report_heatmap_sub">悬停查看名称</span></h3>
+        <div id="report-heatmap"><div class="report-empty" data-i18n="loading">加载中…</div></div>
       </div>
     </div>
     <div class="report-section">
@@ -567,6 +635,10 @@ const I18N = {
     report_date_pre:'今日',
     report_macro:    '🌍 全球大事',
     report_macro_sub:'地缘 · 央行 · 战争',
+    report_heatmap:  '🗺️ 市场热力图',
+    report_heatmap_sub:'悬停查看名称',
+    search_placeholder: '🔍 搜索代码或名称…',
+    search_empty:    '无匹配股票',
     chart_btn:    '📈 走势图',
     chart_close:  '📈 收起',
     chart_zoom:   '🔍 放大',
@@ -612,6 +684,10 @@ const I18N = {
     report_date_pre:'Today',
     report_macro:    '🌍 Global Headlines',
     report_macro_sub:'Geopolitics · Central banks · War',
+    report_heatmap:  '🗺️ Market Heatmap',
+    report_heatmap_sub:'hover for names',
+    search_placeholder: '🔍 Search ticker or name…',
+    search_empty:    'No matching stocks',
     chart_btn:    '📈 Chart',
     chart_close:  '📈 Hide',
     chart_zoom:   '🔍 Enlarge',
@@ -657,6 +733,10 @@ const I18N = {
     report_date_pre:'Heute',
     report_macro:    '🌍 Welt-Schlagzeilen',
     report_macro_sub:'Geopolitik · Notenbanken · Krieg',
+    report_heatmap:  '🗺️ Markt-Heatmap',
+    report_heatmap_sub:'Namen beim Hover',
+    search_placeholder: '🔍 Ticker oder Name suchen…',
+    search_empty:    'Keine Treffer',
     chart_btn:    '📈 Verlauf',
     chart_close:  '📈 Ausblenden',
     chart_zoom:   '🔍 Vergrößern',
@@ -691,6 +771,12 @@ const SECTOR_I18N = {
   '有色金属 / 矿业': { en: 'Metals & Mining',      de: 'Metalle & Bergbau' },
   '锂电 / EV':      { en: 'Battery & EV',          de: 'Akku & E-Fahrzeuge' },
   '巴菲特持仓':     { en: 'Buffett Holdings',      de: 'Buffett-Bestände' },
+  '银行金融':       { en: 'Banks & Insurance',     de: 'Banken & Versicherer' },
+  '医药生物':       { en: 'Pharma & Biotech',      de: 'Pharma & Biotech' },
+  '消费白酒食品':   { en: 'Consumer & Liquor',     de: 'Konsum & Spirituosen' },
+  '金融':           { en: 'Financials',            de: 'Finanzwerte' },
+  '医药':           { en: 'Healthcare',            de: 'Gesundheit' },
+  '消费':           { en: 'Consumer',              de: 'Konsum' },
   '美国':           { en: 'United States',         de: 'USA' },
   '德国 / 欧洲':    { en: 'Germany / Europe',      de: 'Deutschland / Europa' },
   '中国 / 香港':    { en: 'China / Hong Kong',     de: 'China / Hongkong' },
@@ -733,6 +819,9 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.dataset.i18n);
   });
+  /* Search input placeholder is the only translatable attribute we have */
+  const si = document.getElementById('search-input');
+  if (si) si.placeholder = t('search_placeholder');
   /* Highlight active language button */
   document.querySelectorAll('.lang-toggle button').forEach(b => {
     b.classList.toggle('active', b.dataset.lang === lang);
@@ -747,6 +836,11 @@ function applyI18n() {
 ══════════════════════════════════════ */
 const PASSWORD = '1234';
 const KEY = 'invest_auth';
+
+const COLORS_20 = ['#e91e8c','#9c27b0','#ff6f00','#c2185b','#1565c0',
+                   '#2e7d32','#00695c','#bf360c','#4527a0','#e65100',
+                   '#0277bd','#558b2f','#880e4f','#4a148c','#1b5e20',
+                   '#006064','#b71c1c','#f57f17','#37474f','#3e2723'];
 
 const CN_SECTORS = [
   {
@@ -865,12 +959,115 @@ const CN_SECTORS = [
       { code: '300274.SZ', label: '阳光电源', display: '300274' },
     ]
   },
+  {
+    icon: '🏦', name: '银行金融',
+    colors: COLORS_20,
+    stocks: [
+      { code: '601398.SS', label: '工商银行', display: '601398' },
+      { code: '601939.SS', label: '建设银行', display: '601939' },
+      { code: '601288.SS', label: '农业银行', display: '601288' },
+      { code: '601988.SS', label: '中国银行', display: '601988' },
+      { code: '601328.SS', label: '交通银行', display: '601328' },
+      { code: '601658.SS', label: '邮储银行', display: '601658' },
+      { code: '600036.SS', label: '招商银行', display: '600036' },
+      { code: '601166.SS', label: '兴业银行', display: '601166' },
+      { code: '600000.SS', label: '浦发银行', display: '600000' },
+      { code: '601998.SS', label: '中信银行', display: '601998' },
+      { code: '600016.SS', label: '民生银行', display: '600016' },
+      { code: '601818.SS', label: '光大银行', display: '601818' },
+      { code: '000001.SZ', label: '平安银行', display: '000001' },
+      { code: '600015.SS', label: '华夏银行', display: '600015' },
+      { code: '601169.SS', label: '北京银行', display: '601169' },
+      { code: '601009.SS', label: '南京银行', display: '601009' },
+      { code: '002142.SZ', label: '宁波银行', display: '002142' },
+      { code: '601229.SS', label: '上海银行', display: '601229' },
+      { code: '600919.SS', label: '江苏银行', display: '600919' },
+      { code: '601318.SS', label: '中国平安', display: '601318' },
+      { code: '601628.SS', label: '中国人寿', display: '601628' },
+      { code: '601601.SS', label: '中国太保', display: '601601' },
+      { code: '601336.SS', label: '新华保险', display: '601336' },
+      { code: '601319.SS', label: '中国人保', display: '601319' },
+      { code: '600030.SS', label: '中信证券', display: '600030' },
+      { code: '601688.SS', label: '华泰证券', display: '601688' },
+      { code: '601211.SS', label: '国泰君安', display: '601211' },
+      { code: '600999.SS', label: '招商证券', display: '600999' },
+      { code: '600837.SS', label: '海通证券', display: '600837' },
+      { code: '300059.SZ', label: '东方财富', display: '300059' },
+    ]
+  },
+  {
+    icon: '💊', name: '医药生物',
+    colors: COLORS_20,
+    stocks: [
+      { code: '600276.SS', label: '恒瑞医药', display: '600276' },
+      { code: '603259.SS', label: '药明康德', display: '603259' },
+      { code: '300760.SZ', label: '迈瑞医疗', display: '300760' },
+      { code: '000661.SZ', label: '长春高新', display: '000661' },
+      { code: '600436.SS', label: '片仔癀',   display: '600436' },
+      { code: '000538.SZ', label: '云南白药', display: '000538' },
+      { code: '600085.SS', label: '同仁堂',   display: '600085' },
+      { code: '600196.SS', label: '复星医药', display: '600196' },
+      { code: '002821.SZ', label: '凯莱英',   display: '002821' },
+      { code: '300347.SZ', label: '泰格医药', display: '300347' },
+      { code: '300759.SZ', label: '康龙化成', display: '300759' },
+      { code: '300122.SZ', label: '智飞生物', display: '300122' },
+      { code: '300601.SZ', label: '康泰生物', display: '300601' },
+      { code: '300142.SZ', label: '沃森生物', display: '300142' },
+      { code: '002007.SZ', label: '华兰生物', display: '002007' },
+      { code: '002223.SZ', label: '鱼跃医疗', display: '002223' },
+      { code: '600867.SS', label: '通化东宝', display: '600867' },
+      { code: '600332.SS', label: '白云山',   display: '600332' },
+      { code: '002422.SZ', label: '科伦药业', display: '002422' },
+      { code: '300003.SZ', label: '乐普医疗', display: '300003' },
+      { code: '603658.SS', label: '安图生物', display: '603658' },
+      { code: '002001.SZ', label: '新和成',   display: '002001' },
+      { code: '002294.SZ', label: '信立泰',   display: '002294' },
+      { code: '688235.SS', label: '百济神州', display: '688235' },
+      { code: '688180.SS', label: '君实生物', display: '688180' },
+      { code: '600664.SS', label: '哈药股份', display: '600664' },
+      { code: '600056.SS', label: '中国医药', display: '600056' },
+      { code: '600420.SS', label: '现代制药', display: '600420' },
+      { code: '002773.SZ', label: '康弘药业', display: '002773' },
+      { code: '600511.SS', label: '国药股份', display: '600511' },
+    ]
+  },
+  {
+    icon: '🍷', name: '消费白酒食品',
+    colors: COLORS_20,
+    stocks: [
+      { code: '600519.SS', label: '贵州茅台', display: '600519' },
+      { code: '000858.SZ', label: '五粮液',   display: '000858' },
+      { code: '600809.SS', label: '山西汾酒', display: '600809' },
+      { code: '000568.SZ', label: '泸州老窖', display: '000568' },
+      { code: '000596.SZ', label: '古井贡酒', display: '000596' },
+      { code: '002304.SZ', label: '洋河股份', display: '002304' },
+      { code: '603369.SS', label: '今世缘',   display: '603369' },
+      { code: '600702.SS', label: '舍得酒业', display: '600702' },
+      { code: '600600.SS', label: '青岛啤酒', display: '600600' },
+      { code: '600132.SS', label: '重庆啤酒', display: '600132' },
+      { code: '000729.SZ', label: '燕京啤酒', display: '000729' },
+      { code: '605499.SS', label: '东鹏饮料', display: '605499' },
+      { code: '603288.SS', label: '海天味业', display: '603288' },
+      { code: '600887.SS', label: '伊利股份', display: '600887' },
+      { code: '600872.SS', label: '中炬高新', display: '600872' },
+      { code: '000895.SZ', label: '双汇发展', display: '000895' },
+      { code: '603345.SS', label: '安井食品', display: '603345' },
+      { code: '603866.SS', label: '桃李面包', display: '603866' },
+      { code: '002216.SZ', label: '三全食品', display: '002216' },
+      { code: '002311.SZ', label: '海大集团', display: '002311' },
+      { code: '600315.SS', label: '上海家化', display: '600315' },
+      { code: '603605.SS', label: '珀莱雅',   display: '603605' },
+      { code: '000333.SZ', label: '美的集团', display: '000333' },
+      { code: '600690.SS', label: '海尔智家', display: '600690' },
+      { code: '000651.SZ', label: '格力电器', display: '000651' },
+      { code: '002508.SZ', label: '老板电器', display: '002508' },
+      { code: '002032.SZ', label: '苏泊尔',   display: '002032' },
+      { code: '002242.SZ', label: '九阳股份', display: '002242' },
+      { code: '600398.SS', label: '海澜之家', display: '600398' },
+      { code: '600612.SS', label: '老凤祥',   display: '600612' },
+    ]
+  },
 ];
-
-const COLORS_20 = ['#e91e8c','#9c27b0','#ff6f00','#c2185b','#1565c0',
-                   '#2e7d32','#00695c','#bf360c','#4527a0','#e65100',
-                   '#0277bd','#558b2f','#880e4f','#4a148c','#1b5e20',
-                   '#006064','#b71c1c','#f57f17','#37474f','#3e2723'];
 
 const US_SECTORS = [
   {
@@ -1028,6 +1225,118 @@ const US_SECTORS = [
       { code: 'USB',  label: 'U.S. Bancorp',       display: 'USB'  },
       { code: 'BK',   label: 'BNY Mellon',         display: 'BK'   },
       { code: 'DVA',  label: 'DaVita',             display: 'DVA'  },
+    ]
+  },
+  {
+    icon: '🏦', name: '金融',
+    colors: COLORS_20,
+    stocks: [
+      { code: 'JPM',  label: 'JPMorgan Chase',    display: 'JPM'  },
+      { code: 'WFC',  label: 'Wells Fargo',       display: 'WFC'  },
+      { code: 'GS',   label: 'Goldman Sachs',     display: 'GS'   },
+      { code: 'MS',   label: 'Morgan Stanley',    display: 'MS'   },
+      { code: 'PNC',  label: 'PNC Financial',     display: 'PNC'  },
+      { code: 'TFC',  label: 'Truist',            display: 'TFC'  },
+      { code: 'STT',  label: 'State Street',      display: 'STT'  },
+      { code: 'SCHW', label: 'Charles Schwab',    display: 'SCHW' },
+      { code: 'BLK',  label: 'BlackRock',         display: 'BLK'  },
+      { code: 'V',    label: 'Visa',              display: 'V'    },
+      { code: 'MA',   label: 'Mastercard',        display: 'MA'   },
+      { code: 'PYPL', label: 'PayPal',            display: 'PYPL' },
+      { code: 'SQ',   label: 'Block (Square)',    display: 'SQ'   },
+      { code: 'DFS',  label: 'Discover',          display: 'DFS'  },
+      { code: 'AIG',  label: 'AIG',               display: 'AIG'  },
+      { code: 'MET',  label: 'MetLife',           display: 'MET'  },
+      { code: 'PRU',  label: 'Prudential',        display: 'PRU'  },
+      { code: 'ALL',  label: 'Allstate',          display: 'ALL'  },
+      { code: 'PGR',  label: 'Progressive',       display: 'PGR'  },
+      { code: 'MMC',  label: 'Marsh & McLennan',  display: 'MMC'  },
+      { code: 'SPGI', label: 'S&P Global',        display: 'SPGI' },
+      { code: 'NDAQ', label: 'Nasdaq Inc',        display: 'NDAQ' },
+      { code: 'ICE',  label: 'ICE',               display: 'ICE'  },
+      { code: 'CME',  label: 'CME Group',         display: 'CME'  },
+      { code: 'COIN', label: 'Coinbase',          display: 'COIN' },
+      { code: 'HOOD', label: 'Robinhood',         display: 'HOOD' },
+      { code: 'RY',   label: 'Royal Bank Canada', display: 'RY'   },
+      { code: 'TD',   label: 'Toronto-Dominion',  display: 'TD'   },
+      { code: 'HSBC', label: 'HSBC',              display: 'HSBC' },
+      { code: 'UBS',  label: 'UBS Group',         display: 'UBS'  },
+    ]
+  },
+  {
+    icon: '💊', name: '医药',
+    colors: COLORS_20,
+    stocks: [
+      { code: 'JNJ',  label: 'Johnson & Johnson', display: 'JNJ'  },
+      { code: 'LLY',  label: 'Eli Lilly',         display: 'LLY'  },
+      { code: 'PFE',  label: 'Pfizer',            display: 'PFE'  },
+      { code: 'MRK',  label: 'Merck',             display: 'MRK'  },
+      { code: 'ABBV', label: 'AbbVie',            display: 'ABBV' },
+      { code: 'BMY',  label: 'Bristol-Myers',     display: 'BMY'  },
+      { code: 'GILD', label: 'Gilead',            display: 'GILD' },
+      { code: 'AMGN', label: 'Amgen',             display: 'AMGN' },
+      { code: 'TMO',  label: 'Thermo Fisher',     display: 'TMO'  },
+      { code: 'DHR',  label: 'Danaher',           display: 'DHR'  },
+      { code: 'UNH',  label: 'UnitedHealth',      display: 'UNH'  },
+      { code: 'CVS',  label: 'CVS Health',        display: 'CVS'  },
+      { code: 'CI',   label: 'Cigna',             display: 'CI'   },
+      { code: 'ELV',  label: 'Elevance',          display: 'ELV'  },
+      { code: 'HUM',  label: 'Humana',            display: 'HUM'  },
+      { code: 'NVO',  label: 'Novo Nordisk',      display: 'NVO'  },
+      { code: 'AZN',  label: 'AstraZeneca',       display: 'AZN'  },
+      { code: 'GSK',  label: 'GSK',               display: 'GSK'  },
+      { code: 'NVS',  label: 'Novartis',          display: 'NVS'  },
+      { code: 'SNY',  label: 'Sanofi',            display: 'SNY'  },
+      { code: 'MRNA', label: 'Moderna',           display: 'MRNA' },
+      { code: 'BNTX', label: 'BioNTech',          display: 'BNTX' },
+      { code: 'REGN', label: 'Regeneron',         display: 'REGN' },
+      { code: 'VRTX', label: 'Vertex',            display: 'VRTX' },
+      { code: 'BIIB', label: 'Biogen',            display: 'BIIB' },
+      { code: 'ALNY', label: 'Alnylam',           display: 'ALNY' },
+      { code: 'ZTS',  label: 'Zoetis',            display: 'ZTS'  },
+      { code: 'ISRG', label: 'Intuitive Surgical',display: 'ISRG' },
+      { code: 'ILMN', label: 'Illumina',          display: 'ILMN' },
+      { code: 'EW',   label: 'Edwards Life.',     display: 'EW'   },
+      { code: 'MDT',  label: 'Medtronic',         display: 'MDT'  },
+      { code: 'SYK',  label: 'Stryker',           display: 'SYK'  },
+      { code: 'ABT',  label: 'Abbott',            display: 'ABT'  },
+      { code: 'BSX',  label: 'Boston Scientific', display: 'BSX'  },
+    ]
+  },
+  {
+    icon: '🛒', name: '消费',
+    colors: COLORS_20,
+    stocks: [
+      { code: 'WMT',  label: 'Walmart',           display: 'WMT'  },
+      { code: 'COST', label: 'Costco',            display: 'COST' },
+      { code: 'PG',   label: 'Procter & Gamble',  display: 'PG'   },
+      { code: 'PEP',  label: 'PepsiCo',           display: 'PEP'  },
+      { code: 'MCD',  label: "McDonald's",        display: 'MCD'  },
+      { code: 'SBUX', label: 'Starbucks',         display: 'SBUX' },
+      { code: 'NKE',  label: 'Nike',              display: 'NKE'  },
+      { code: 'LULU', label: 'Lululemon',         display: 'LULU' },
+      { code: 'HD',   label: 'Home Depot',        display: 'HD'   },
+      { code: 'LOW',  label: "Lowe's",            display: 'LOW'  },
+      { code: 'TGT',  label: 'Target',            display: 'TGT'  },
+      { code: 'DG',   label: 'Dollar General',    display: 'DG'   },
+      { code: 'DLTR', label: 'Dollar Tree',       display: 'DLTR' },
+      { code: 'DIS',  label: 'Disney',            display: 'DIS'  },
+      { code: 'CMG',  label: 'Chipotle',          display: 'CMG'  },
+      { code: 'YUM',  label: 'Yum! Brands',       display: 'YUM'  },
+      { code: 'MDLZ', label: 'Mondelez',          display: 'MDLZ' },
+      { code: 'EL',   label: 'Estée Lauder',      display: 'EL'   },
+      { code: 'CL',   label: 'Colgate-Palmolive', display: 'CL'   },
+      { code: 'PM',   label: 'Philip Morris',     display: 'PM'   },
+      { code: 'MO',   label: 'Altria',            display: 'MO'   },
+      { code: 'UL',   label: 'Unilever',          display: 'UL'   },
+      { code: 'KMB',  label: 'Kimberly-Clark',    display: 'KMB'  },
+      { code: 'GIS',  label: 'General Mills',     display: 'GIS'  },
+      { code: 'HSY',  label: 'Hershey',           display: 'HSY'  },
+      { code: 'CLX',  label: 'Clorox',            display: 'CLX'  },
+      { code: 'CHWY', label: 'Chewy',             display: 'CHWY' },
+      { code: 'ULTA', label: 'Ulta Beauty',       display: 'ULTA' },
+      { code: 'BKNG', label: 'Booking',           display: 'BKNG' },
+      { code: 'ABNB', label: 'Airbnb',            display: 'ABNB' },
     ]
   },
 ];
@@ -1240,6 +1549,9 @@ function switchTab(market) {
     document.getElementById(`tab-${m}`).style.display = market === m ? '' : 'none';
     document.getElementById(`tab-${m}-btn`).className = 'tab-btn' + (market === m ? ' active' : '');
   });
+  /* Search bar makes sense on stock tabs only, not on the report */
+  document.getElementById('search-bar').style.display = market === 'report' ? 'none' : '';
+  if (market !== 'report') applySearch();
 }
 
 /* ══════════════════════════════════════
@@ -1312,18 +1624,19 @@ async function fetchTencent(symbols) {
   const mapping = symbols.map(yh => ({ yh, tc: toTencentSymbol(yh) })).filter(m => m.tc);
   if (!mapping.length) return [];
   const BATCH = 60;
-  const all = [];
-  for (let i = 0; i < mapping.length; i += BATCH) {
-    const chunk = mapping.slice(i, i + BATCH);
+  const chunks = [];
+  for (let i = 0; i < mapping.length; i += BATCH) chunks.push(mapping.slice(i, i + BATCH));
+  /* Fire all batches in parallel — Tencent is fast enough that 10+ concurrent requests are fine */
+  const results = await Promise.all(chunks.map(async chunk => {
     try {
       const res = await fetch(`https://qt.gtimg.cn/q=${chunk.map(m => m.tc).join(',')}`,
                               { signal: AbortSignal.timeout(10000) });
-      if (!res.ok) continue;
+      if (!res.ok) return [];
       const text = await res.text();
-      all.push(...parseTencent(text, chunk));
-    } catch {}
-  }
-  return all;
+      return parseTencent(text, chunk);
+    } catch { return []; }
+  }));
+  return results.flat();
 }
 
 /* Yahoo fallback for symbols Tencent can't serve (DAX, FTSE, ^TNX, EURUSD=X, …) */
@@ -1428,6 +1741,7 @@ async function loadMarket(market) {
   if (results) results.forEach(q => { map[q.symbol] = { price: q.price, pct: q.pct }; });
   QUOTES[market] = map;
   renderGrid(market, map);
+  applySearch();
 
   // Re-open any previously open charts
   Object.keys(chartLoaded).forEach(key => {
@@ -1555,6 +1869,104 @@ function renderReport() {
           <span class="sector-pct ${up?'up up-bg':'down down-bg'}">${up?'+':''}${s.avg.toFixed(2)}%</span>
         </div>`;
       }).join('');
+
+  renderHeatmap();
+}
+
+/* ══════════════════════════════════════
+   HEATMAP
+══════════════════════════════════════ */
+function heatColor(pct) {
+  const x = Math.max(-6, Math.min(6, pct));
+  if (x >= 0) {
+    const t = x / 6;
+    return `rgb(${Math.round(245 - t*219)},${Math.round(245 - t*118)},${Math.round(245 - t*185)})`;
+  } else {
+    const t = -x / 6;
+    return `rgb(${Math.round(245 - t*47)},${Math.round(245 - t*205)},${Math.round(245 - t*205)})`;
+  }
+}
+
+function renderHeatmap() {
+  const container = document.getElementById('report-heatmap');
+  if (!container) return;
+  const groups = [];
+  ['cn','us'].forEach(market => {
+    const sectors = market === 'cn' ? CN_SECTORS : US_SECTORS;
+    sectors.forEach(sec => {
+      const tiles = sec.stocks.map(st => {
+        const q = QUOTES[market][st.code];
+        return { display: st.display, label: st.label, q };
+      });
+      const valid = tiles.filter(t => t.q && !isNaN(t.q.pct));
+      const avg = valid.length ? valid.reduce((s,t) => s + t.q.pct, 0) / valid.length : 0;
+      groups.push({ name: sectorName(sec), icon: sec.icon, tiles, avg });
+    });
+  });
+
+  if (!groups.some(g => g.tiles.some(t => t.q))) {
+    container.innerHTML = `<div class="report-empty">${t('loading')}</div>`;
+    return;
+  }
+
+  container.innerHTML = groups.map(g => {
+    const avgUp = g.avg >= 0;
+    const avgBg = avgUp ? '#e8f5e9' : '#ffebee';
+    const avgFg = avgUp ? '#2e7d32' : '#c62828';
+    const tiles = g.tiles.map(t => {
+      if (!t.q || isNaN(t.q.pct)) {
+        return `<div class="heat-tile empty"><span class="h-code">${t.display}</span></div>`;
+      }
+      const pct = t.q.pct;
+      const bg = heatColor(pct);
+      const isDark = Math.abs(pct) > 2.4;
+      return `<div class="heat-tile ${isDark?'dark':'light'}" style="background:${bg}" title="${t.label} ${pct>=0?'+':''}${pct.toFixed(2)}%">
+        <span class="h-code">${t.display}</span>
+        <span class="h-pct">${pct>=0?'+':''}${pct.toFixed(1)}%</span>
+      </div>`;
+    }).join('');
+    return `
+      <div class="heat-group-title">
+        <span>${g.icon}</span>
+        <span class="gname">${g.name}</span>
+        <span class="gavg" style="background:${avgBg};color:${avgFg}">${avgUp?'+':''}${g.avg.toFixed(2)}%</span>
+      </div>
+      <div class="heatmap">${tiles}</div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════
+   SEARCH (filter visible stock cards across active tab)
+══════════════════════════════════════ */
+let searchQuery = '';
+function onSearch(q) { searchQuery = (q || '').trim().toLowerCase(); applySearch(); }
+
+function applySearch() {
+  const empty = document.getElementById('search-empty');
+  if (empty) empty.classList.remove('show');
+  const visibleTab = ['cn','us','idx'].find(m =>
+    document.getElementById(`tab-${m}`).style.display !== 'none');
+  if (!visibleTab) return;
+  const root = document.getElementById(`tab-${visibleTab}`);
+  let totalVisible = 0;
+  root.querySelectorAll('.sector-card').forEach(card => {
+    if (!searchQuery) {
+      card.style.display = '';
+      card.querySelectorAll('.stock-row').forEach(r => r.style.display = '');
+      totalVisible++;
+      return;
+    }
+    let any = false;
+    card.querySelectorAll('.stock-row').forEach(row => {
+      const txt = (row.querySelector('.stock-name')?.textContent + ' ' +
+                   row.querySelector('.stock-code')?.textContent).toLowerCase();
+      const m = txt.includes(searchQuery);
+      row.style.display = m ? '' : 'none';
+      if (m) { any = true; totalVisible++; }
+    });
+    card.style.display = any ? '' : 'none';
+  });
+  if (searchQuery && totalVisible === 0 && empty) empty.classList.add('show');
 }
 
 /* ══════════════════════════════════════
