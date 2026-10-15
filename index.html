@@ -946,7 +946,7 @@
     </div>
 
     <div class="tt-note">
-      ⚠ <strong>Schedule conflict:</strong> Deep Learning 1 (2nd session) and Data Integration &amp; Large-scale Analysis both run Thu 16:00–18:00 &nbsp;·&nbsp; Python für Ingenieure: Group 2 (Wed) — Group 1 (Mon) clashes with Privacy Fundamentals, so the MLE tutorial is taken on Friday &nbsp;·&nbsp; Web-Service Engineering has no weekly lecture — milestone 14–15 Dec, final presentation Feb 2027 &nbsp;·&nbsp; Internet of Services Lab project: milestone Fri 11 Dec 16:00, final Fri 12 Feb 16:00 (MAR 0.011)
+      ⚠ <strong>Schedule conflict:</strong> Deep Learning 1 (2nd session) and Data Integration &amp; Large-scale Analysis both run Thu 16:00–18:00 &nbsp;·&nbsp; Python für Ingenieure: Group 2 (Wed) — Group 1 (Mon) clashes with Privacy Fundamentals, so the MLE tutorial is taken on Friday &nbsp;·&nbsp; Web-Service Engineering has no weekly lecture — milestone 14–15 Dec, final presentation Feb 2027 &nbsp;·&nbsp; Internet of Services Lab project: milestone Fri 11 Dec 16:00, final Fri 12 Feb 16:00 (MAR 0.011) &nbsp;·&nbsp; Internet of Services Lab seminar: final Fri 12 Feb 10:00 (MAR 0.007)
     </div>
 
   </div><!-- /.tt-outer wrapper -->
@@ -1921,80 +1921,109 @@
   // ── Campus Map ──
   const BUILDINGS = [
     {
-      id: 'H',
-      name: 'Hauptgebäude (H)',
-      abbr: 'H',
-      lat: 52.51222, lng: 13.32647,
-      color: '#c0392b',
+      id: 'HE',
+      name: 'Hochspannungs­gebäude (HE)',
+      abbr: 'HE',
+      lat: 52.51429, lng: 13.32681,
+      color: '#8e44ad',
       courses: [
-        { name: 'Data Protection Law', rooms: 'H 0107', time: 'Mon 10:00–12:00 & Thu 14:00–16:00' },
-        { name: 'Data Science Toolbox', rooms: 'H 0110', time: 'Tue 14:00–16:00' },
-        { name: 'Data Science Toolbox Exercise', rooms: 'H 0110', time: 'Tue 16:00–18:00 (biweekly)' },
-        { name: 'Social & Economic Network Analysis', rooms: 'H 0112', time: 'Wed 16:00–18:00' },
-        { name: 'Social & Econ. Network Analysis Ex. A', rooms: 'H 0111', time: 'Thu 10:00–12:00' },
-        { name: 'NLP Exam 1', rooms: 'H 0104', time: '29 Jul 2026, 11:00–12:30' },
+        { name: 'Machine Learning 1', rooms: 'HE 101', time: 'Thu 14:00–16:00' },
+        { name: 'Python für Ingenieure Exam 1', rooms: 'HE 101', time: '18 Jan 2027, 16:00–20:30' },
+        { name: 'Python für Ingenieure Exam 2', rooms: 'HE 101', time: '25 Jan 2027, 16:00–20:30' },
+        { name: 'Machine Learning Engineering Exam 1', rooms: 'HE 101', time: '16 Feb 2027, 14:00–17:15' },
+        { name: 'Machine Learning 1 Exam 1', rooms: 'HE 101', time: '04 Mar 2027, 10:30–13:30' },
+        { name: 'Machine Learning 1 Exam 2', rooms: 'HE 101', time: '25 Mar 2027, 14:30–17:30' },
+        { name: 'Machine Learning Engineering Exam 2', rooms: 'HE 101', time: '31 Mar 2027, 14:00–17:15' },
       ]
     },
     {
       id: 'MA',
       name: 'Mathematikgebäude (MA)',
       abbr: 'MA',
-      lat: 52.51268, lng: 13.32198,
+      lat: 52.51385, lng: 13.32581,
       color: '#2980b9',
       courses: [
-        { name: 'NLP — first session', rooms: 'MA 001', time: 'Tue 10:00–12:00 (14 Apr, in-person)' },
-        { name: 'Python for ML', rooms: 'MA 043', time: 'Mon 16:15–17:45 (not every week)' },
+        { name: 'Deep Learning 1', rooms: 'MA 001', time: 'Mon 14:00–16:00' },
+        { name: 'Machine Learning Engineering', rooms: 'MA 043', time: 'Tue 16:00–18:00' },
+        { name: 'Machine Learning 1 Exercise', rooms: 'MA 001', time: 'Thu 12:00–14:00' },
+        { name: 'Data Integration & Large-scale Analysis', rooms: 'MA 041', time: 'Thu 16:00–18:00' },
+        { name: 'Deep Learning 1 Exam 1', rooms: 'MA 001', time: '18 Feb 2027, 11:00–14:00 (with A 151)' },
+        { name: 'Machine Learning 1 Exam 2', rooms: 'MA 042', time: '25 Mar 2027, 14:30–17:30 (with HE 101)' },
+      ]
+    },
+    {
+      id: 'EW',
+      name: 'Eugene-Paul-Wigner-Gebäude (EW)',
+      abbr: 'EW',
+      lat: 52.51071, lng: 13.32466,
+      color: '#c0392b',
+      courses: [
+        { name: 'Deep Learning 1', rooms: 'EW 203', time: 'Thu 16:00–18:00' },
+      ]
+    },
+    {
+      id: 'HFT',
+      name: 'Hochfrequenztechnik (HFT)',
+      abbr: 'HFT',
+      lat: 52.51586, lng: 13.32606,
+      color: '#27ae60',
+      courses: [
+        { name: 'Privacy Fundamentals', rooms: 'HFT-TA 125', time: 'Mon 10:00–12:00' },
+        { name: 'Python für Ingenieure (Group 2)', rooms: 'HFT-TA 125', time: 'Wed 10:00–12:00' },
+      ]
+    },
+    {
+      id: 'EB',
+      name: 'Erweiterungsbau (EB)',
+      abbr: 'EB',
+      lat: 52.51203, lng: 13.32428,
+      color: '#0097a7',
+      courses: [
+        { name: 'AI Agents', rooms: 'EB 107', time: 'Thu 10:00–12:00' },
+      ]
+    },
+    {
+      id: 'SG',
+      name: 'Severin-Gelände (SG)',
+      abbr: 'SG',
+      lat: 52.51878, lng: 13.32183,
+      color: '#2c3e50',
+      courses: [
+        { name: 'ML1 Math Foundations (optional)', rooms: 'SG04 501', time: 'Wed 12:00–14:00' },
+        { name: 'MLE Tutorial', rooms: 'SG04 501', time: 'Fri 10:00–12:00' },
+        { name: 'ML1 Math Foundations Exercise (optional)', rooms: 'SG04 501', time: 'Fri 14:00–16:00' },
       ]
     },
     {
       id: 'MAR',
       name: 'Marchstraße (MAR)',
       abbr: 'MAR',
-      lat: 52.51455, lng: 13.32353,
-      color: '#8e44ad',
+      lat: 52.51663, lng: 13.32354,
+      color: '#d35400',
       courses: [
-        { name: 'Python for ML Tutorial', rooms: 'MAR 0.009', time: 'Wed & Fri 16:00–18:00' },
-      ]
-    },
-    {
-      id: 'BH',
-      name: 'Bergbau-Hochhaus (BH-N)',
-      abbr: 'BH-N',
-      lat: 52.51125, lng: 13.32280,
-      color: '#2c3e50',
-      courses: [
-        { name: 'Architecture of ML Systems', rooms: 'BH-N 243', time: 'Thu 16:00–18:00' },
-      ]
-    },
-    {
-      id: 'HE',
-      name: 'Hochspannungs­gebäude (HE)',
-      abbr: 'HE',
-      lat: 52.51338, lng: 13.32760,
-      color: '#8e44ad',
-      courses: [
-        { name: 'Python for ML Exam 1', rooms: 'HE 101', time: '05 Aug 2026, 14:30–16:30' },
-        { name: 'Python for ML Exam 2', rooms: 'HE 101', time: '06 Oct 2026, 10:30–12:30' },
-      ]
-    },
-    {
-      id: 'FR',
-      name: 'Fraunhofer­gebäude (FR)',
-      abbr: 'FR',
-      lat: 52.51380, lng: 13.32920,
-      color: '#2c3e50',
-      courses: [
-        { name: 'AMLS Office Hours', rooms: 'FR 772', time: 'Tue 15:00–16:30' },
+        { name: 'Internet of Services Lab — milestone', rooms: 'MAR 0.011', time: '11 Dec 2026, 16:00–18:00' },
+        { name: 'Internet of Services Lab (Seminar) — final', rooms: 'MAR 0.007', time: '12 Feb 2027, 10:00–11:30' },
+        { name: 'Internet of Services Lab — final', rooms: 'MAR 0.011', time: '12 Feb 2027, 16:00–17:30' },
       ]
     },
     {
       id: 'A',
       name: 'Architektur­gebäude (A)',
       abbr: 'A',
-      lat: 52.51472, lng: 13.32518,
-      color: '#2980b9',
+      lat: 52.51337, lng: 13.324,
+      color: '#c0392b',
       courses: [
-        { name: 'NLP Exam 2', rooms: 'A 151', time: '07 Oct 2026, 14:30–16:00' },
+        { name: 'Deep Learning 1 Exam 1', rooms: 'A 151', time: '18 Feb 2027, 11:00–14:00 (with MA 001)' },
+      ]
+    },
+    {
+      id: 'H',
+      name: 'Hauptgebäude (H)',
+      abbr: 'H',
+      lat: 52.51212, lng: 13.327,
+      color: '#c0392b',
+      courses: [
+        { name: 'Deep Learning 1 Exam 2', rooms: 'H 0104', time: '08 Apr 2027, 14:00–17:00' },
       ]
     },
   ];
@@ -2014,7 +2043,9 @@
     });
   }
 
-  const map = L.map('campus-map').setView([52.51280, 13.32500], 16);
+  const mapBounds = L.latLngBounds(BUILDINGS.map(b => [b.lat, b.lng]));
+  const map = L.map('campus-map').setView(mapBounds.getCenter(), 16);
+  setTimeout(() => { map.invalidateSize(); map.fitBounds(mapBounds, { padding: [30, 30], maxZoom: 17 }); }, 0);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
