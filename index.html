@@ -777,7 +777,7 @@
     <div class="timeline-card" style="--color: var(--s3)">
       <div class="sem-label">Semester 2 — In Progress</div>
       <h3>DIA, Deep Learning &amp; MLE</h3>
-      <p>WiSe 2026/27 · 6 modules: DIA, Deep Learning 1, ML Engineering, Machine Learning 1 (retake) + ML1-X, Python für Ingenieure, AI Agents &amp; Privacy.</p>
+      <p>WiSe 2026/27 · 6 modules: DIA, Deep Learning 1, ML Engineering, Machine Learning 1 (retake), Math Foundations for ML, Python für Ingenieure, AI Agents &amp; Privacy.</p>
       <a href="#sem2">View modules →</a>
     </div>
     <div class="timeline-card" style="--color: var(--s4)">
@@ -867,9 +867,9 @@
               <span>HFT-TA 125 · Group 2</span>
             </div>
             <div class="tt-ev" style="--c:#2980b9;top:180px;height:120px">
-              <b>ML1-X Math Foundations</b>
-              <span>12:00–14:00</span>
-              <span>SG04 501 · ML1-X</span>
+              <b>Math Foundations for ML</b>
+              <span>12:15–13:45</span>
+              <span>SG04 501 · until 25 Nov</span>
             </div>
           </div>
         </div>
@@ -916,9 +916,9 @@
               <span>SG04 501</span>
             </div>
             <div class="tt-ev" style="--c:#2980b9;top:300px;height:120px">
-              <b>ML1-X Math Foundations Exercise</b>
-              <span>14:00–16:00</span>
-              <span>SG04 501 · ML1-X</span>
+              <b>Math Foundations for ML Exercise</b>
+              <span>14:15–15:45</span>
+              <span>SG04 501 · until 27 Nov</span>
             </div>
           </div>
         </div>
@@ -1242,7 +1242,7 @@
       <p style="margin-top:.6rem;font-size:.8rem;color:#555;">
         📅 <strong>Thu 14:00–16:00</strong> lecture · HE 101 · starts 15 Oct 2026<br>
         🔁 Exercise: <strong>Thu 12:00–14:00</strong> · MA 001<br>
-        ➕ ML1-X (+3 CP): Mathematical Foundations — Wed 12:00–14:00 lecture · Fri 14:00–16:00 exercise · SG04 501<br>
+        ➕ Mathematical Foundations for ML (+3 CP, elective for ML1-X / DL1): Wed 12:15–13:45 lecture · Fri 14:15–15:45 exercise · SG04 501 · 5 weeks from 21 Oct · weekly homework (groups of 2–3, due Wed 12:00, ≥50% to sit exam) · 🗓 Test: 02 Dec 2026, 12:15–13:45 · retake 16 Dec · 🔗 ISIS 50943<br>
         👨‍🏫 Prof. Dr. Klaus-Robert Müller · Dr. Jacob Kauffmann · 🔗 ISIS 49770<br>
         🗓 Exam 1: Thu 04 Mar 2027, 10:30–13:30, HE 101<br>
         🗓 Exam 2: Thu 25 Mar 2027, 14:30–17:30, HE 101 / MA 042
@@ -1668,8 +1668,8 @@
     'Privacy Fundamentals':                { time:'Mon 10:00–12:00 · from 12 Oct', room:'HFT-TA 125', note:'Part of the SNET module AI Agents &amp; Privacy (6 LP, oral exam) · Prof. Axel Küpper' },
     'Machine Learning 1':                  { time:'Thu 14:00–16:00 · from 15 Oct', room:'HE 101', note:'Prof. Dr. Klaus-Robert Müller · Dr. Jacob Kauffmann · ISIS 49770 · Exam 1: Thu 4 Mar 2027, 10:30, HE 101' },
     'Machine Learning 1 Exercise':         { time:'Thu 12:00–14:00', room:'MA 001', note:'ML1 exercise' },
-    'ML1-X Math Foundations':              { time:'Wed 12:00–14:00', room:'SG04 501', note:'Mathematical Foundations for ML (ML1-X, +3 CP)' },
-    'ML1-X Math Foundations Exercise':     { time:'Fri 14:00–16:00', room:'SG04 501', note:'Mathematical Foundations for ML (ML1-X, +3 CP)' },
+    'Math Foundations for ML':             { time:'Wed 12:15–13:45 · 21 Oct – 25 Nov', room:'SG04 501', note:'Martin Michajlow et al. · ISIS 50943 · homework due Wed 12:00 · Test: 02 Dec 2026, 12:15' },
+    'Math Foundations for ML Exercise':    { time:'Fri 14:15–15:45 · until 27 Nov', room:'SG04 501', note:'Discussion of exercise sheets' },
     'AI Agents':                           { time:'Thu 10:00–12:00 · from 15 Oct', room:'EB 107', note:'Sandro Rodriguez Garzon · Part of the SNET module AI Agents &amp; Privacy (6 LP, oral exam)' },
   };
 
@@ -1761,6 +1761,9 @@
 
   // ── Exam countdown ──
   const EXAMS = [
+    { course:'Math Foundations for ML', label:'Homework 1 due', date:'2026-10-28T12:00', room:'ISIS', color:'#2980b9', deadline:'Group PDF' },
+    { course:'Math Foundations for ML', label:'Test', date:'2026-12-02T12:15', room:'TBA', color:'#2980b9', deadline:'≥50% homework points required' },
+    { course:'Math Foundations for ML', label:'Test (retake)', date:'2026-12-16T12:15', room:'TBA', color:'#2980b9', deadline:'' },
     { course:'Python für Ingenieure', label:'Exam 1', date:'2027-01-18T16:00', room:'HE 101', color:'#27ae60', deadline:'' },
     { course:'Python für Ingenieure', label:'Exam 2', date:'2027-01-25T16:00', room:'HE 101', color:'#27ae60', deadline:'' },
     { course:'Machine Learning Engineering', label:'Exam 1', date:'2027-02-16T14:00', room:'HE 101', color:'#8e44ad', deadline:'' },
@@ -1897,9 +1900,9 @@
       lat: 52.51878, lng: 13.32183,
       color: '#2c3e50',
       courses: [
-        { name: 'ML1-X Math Foundations', rooms: 'SG04 501', time: 'Wed 12:00–14:00' },
+        { name: 'Math Foundations for ML', rooms: 'SG04 501', time: 'Wed 12:15–13:45 (until 25 Nov)' },
         { name: 'MLE Tutorial', rooms: 'SG04 501', time: 'Fri 10:00–12:00' },
-        { name: 'ML1-X Math Foundations Exercise', rooms: 'SG04 501', time: 'Fri 14:00–16:00' },
+        { name: 'Math Foundations for ML Exercise', rooms: 'SG04 501', time: 'Fri 14:15–15:45 (until 27 Nov)' },
       ]
     },
     {
