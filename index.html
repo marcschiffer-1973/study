@@ -1258,8 +1258,10 @@
         📅 Intro: Tue 13 Oct 2026, 12:00–14:00, MA 001<br>
         🔁 <strong>Group 2: Wed 10:00–12:00</strong> · HFT-TA 125 · from 21 Oct ✅<br>
         <span style="color:#999;">Group 1: Mon 10:00–12:00 · E-N 191 — clashes with Privacy Fundamentals</span><br>
-        🗓 Exam 1: Mon 18 Jan 2027, 16:00–20:30, HE 101<br>
-        🗓 Exam 2: Mon 25 Jan 2027, 16:00–20:30, HE 101
+        📝 <strong>Homework phase (14 Oct – 29 Nov):</strong> weekly Python quiz · homework due <strong>Sun 08 Nov</strong> · HA discussion (mandatory): <strong>Wed 25 Nov, 10:00, Zoom</strong> (group "HA interessiert")<br>
+        ⏰ <strong>Exam registration in MOSES: Sun 22 Nov</strong><br>
+        📦 <strong>Portfolio phase (30 Nov – 14 Feb):</strong> Online test 1 Thu 03 Dec · group choice for PAs by Sun 06 Dec · PA1 due Sun 20 Dec · Online test 2 Thu 07 Jan (+ book final-test slot) · PA2 due Sun 17 Jan · PA3 due Sun 31 Jan<br>
+        🗓 Final test: Mon 18 Jan 2027, 17:00, HE 101 · 2nd date Mon 25 Jan 2027, 17:00, HE 101
       </p>
       <span class="credits">6 ECTS (to confirm)</span>
     </div>
@@ -1664,7 +1666,7 @@
     'Deep Learning 1':                     { time:'Mon 14:00–16:00 & Thu 16:00–18:00', room:'MA 001 (Mon) · EW 203 (Thu)', note:'Dr. Oliver Eberle · Dr. Niklas Gebauer · ISIS 50013 · Exam 1: Thu 18 Feb 2027, 11:00' },
     'Machine Learning Engineering':        { time:'Tue 16:00–18:00', room:'MA 043', note:'Jannik Wolff et al. · ISIS 49700 · Exam 1: Tue 16 Feb 2027, 14:00, HE 101' },
     'MLE Tutorial':                        { time:'Fri 10:00–12:00', room:'SG04 501', note:'Machine Learning Engineering tutorial · Wed session clashes with Python für Ingenieure' },
-    'Python für Ingenieure':               { time:'Wed 10:00–12:00 (Group 2) · from 21 Oct', room:'HFT-TA 125', note:'FG Technische Akustik · Exam 1: Mon 18 Jan 2027, 16:00, HE 101' },
+    'Python für Ingenieure':               { time:'Wed 10:00–12:00 (Group 2) · from 21 Oct', room:'HFT-TA 125', note:'FG Technische Akustik · Homework due 08 Nov · Final test: Mon 18 Jan 2027, 17:00, HE 101' },
     'Privacy Fundamentals':                { time:'Mon 10:00–12:00 · from 12 Oct', room:'HFT-TA 125', note:'Part of the SNET module AI Agents &amp; Privacy (6 LP, oral exam) · Prof. Axel Küpper' },
     'Machine Learning 1':                  { time:'Thu 14:00–16:00 · from 15 Oct', room:'HE 101', note:'Prof. Dr. Klaus-Robert Müller · Dr. Jacob Kauffmann · ISIS 49770 · Exam 1: Thu 4 Mar 2027, 10:30, HE 101' },
     'Machine Learning 1 Exercise':         { time:'Thu 12:00–14:00', room:'MA 001', note:'ML1 exercise' },
@@ -1761,11 +1763,20 @@
 
   // ── Exam countdown ──
   const EXAMS = [
+    { course:'Python für Ingenieure', label:'Homework due', date:'2026-11-08T23:59', room:'ISIS', color:'#27ae60', deadline:'' },
+    { course:'Python für Ingenieure', label:'Exam registration', date:'2026-11-22T23:59', room:'MOSES', color:'#27ae60', deadline:'Required for portfolio exam' },
+    { course:'Python für Ingenieure', label:'HA discussion (mandatory)', date:'2026-11-25T10:00', room:'Zoom (English)', color:'#27ae60', deadline:'Group HA interessiert' },
+    { course:'Python für Ingenieure', label:'Online test 1', date:'2026-12-03T00:00', room:'Online', color:'#27ae60', deadline:'' },
+    { course:'Python für Ingenieure', label:'PA group choice', date:'2026-12-06T23:59', room:'ISIS', color:'#27ae60', deadline:'Only with admission' },
+    { course:'Python für Ingenieure', label:'PA1 due', date:'2026-12-20T23:59', room:'ISIS', color:'#27ae60', deadline:'' },
+    { course:'Python für Ingenieure', label:'Online test 2', date:'2027-01-07T00:00', room:'Online', color:'#27ae60', deadline:'Also: book final-test slot' },
+    { course:'Python für Ingenieure', label:'PA2 due', date:'2027-01-17T23:59', room:'ISIS', color:'#27ae60', deadline:'' },
+    { course:'Python für Ingenieure', label:'Final test (1st date)', date:'2027-01-18T17:00', room:'HE 101', color:'#27ae60', deadline:'' },
+    { course:'Python für Ingenieure', label:'Final test (2nd date)', date:'2027-01-25T17:00', room:'HE 101', color:'#27ae60', deadline:'' },
+    { course:'Python für Ingenieure', label:'PA3 due', date:'2027-01-31T23:59', room:'ISIS', color:'#27ae60', deadline:'' },
     { course:'Math Foundations for ML', label:'Homework 1 due', date:'2026-10-28T12:00', room:'ISIS', color:'#2980b9', deadline:'Group PDF' },
     { course:'Math Foundations for ML', label:'Test', date:'2026-12-02T12:15', room:'TBA', color:'#2980b9', deadline:'≥50% homework points required' },
     { course:'Math Foundations for ML', label:'Test (retake)', date:'2026-12-16T12:15', room:'TBA', color:'#2980b9', deadline:'' },
-    { course:'Python für Ingenieure', label:'Exam 1', date:'2027-01-18T16:00', room:'HE 101', color:'#27ae60', deadline:'' },
-    { course:'Python für Ingenieure', label:'Exam 2', date:'2027-01-25T16:00', room:'HE 101', color:'#27ae60', deadline:'' },
     { course:'Machine Learning Engineering', label:'Exam 1', date:'2027-02-16T14:00', room:'HE 101', color:'#8e44ad', deadline:'' },
     { course:'Deep Learning 1', label:'Exam 1', date:'2027-02-18T11:00', room:'A 151 / MA 001', color:'#c0392b', deadline:'' },
     { course:'Machine Learning 1', label:'Exam 1', date:'2027-03-04T10:30', room:'HE 101', color:'#2980b9', deadline:'Retake' },
@@ -1773,6 +1784,7 @@
     { course:'Machine Learning 1', label:'Exam 2', date:'2027-03-25T14:30', room:'HE 101 / MA 042', color:'#2980b9', deadline:'' },
     { course:'Deep Learning 1', label:'Exam 2', date:'2027-04-08T14:00', room:'H 0104', color:'#c0392b', deadline:'' },
   ];
+  EXAMS.sort((a, b) => a.date.localeCompare(b.date));
 
   (function buildExams() {
     const grid = document.getElementById('exam-grid');
