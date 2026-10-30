@@ -1203,7 +1203,8 @@
         📅 <strong>Thu 16:00–18:00</strong> · MA 041 · starts 15 Oct 2026<br>
         👨‍🏫 Prof. Matthias Böhm (DAMS)<br>
         ⚠️ Same slot as Deep Learning 1 (Thu 16:00–18:00)<br>
-        🗓 Exam: TBA
+        📝 Exercise "Ship Collision Detection" (pass/fail, exam prerequisite; ≥90% → +5 exam points) · due <strong>Thu 28 Jan 2027</strong> · 🔗 ISIS 49228<br>
+        🗓 Exam (pick one, 16:00): <strong>Thu 04 Feb 2027</strong> · Thu 25 Feb 2027 · Thu 18 Mar 2027 · written (oral if &lt;35 students)
       </p>
       <span class="credits">6 ECTS</span>
     </div>
@@ -1662,7 +1663,7 @@
 
   // ── Timetable popup ──
   const TT_INFO = {
-    'Data Integration & Large-scale Analysis': { time:'Thu 16:00–18:00 · from 15 Oct', room:'MA 041', note:'Prof. Matthias Böhm (DAMS) · ⚠ Same slot as Deep Learning 1 (Thu)' },
+    'Data Integration & Large-scale Analysis': { time:'Thu 16:00–18:00 · from 15 Oct', room:'MA 041', note:'Prof. Matthias Böhm (DAMS) · ⚠ Same slot as Deep Learning 1 (Thu) · Exam: 04 Feb / 25 Feb / 18 Mar 2027, 16:00' },
     'Deep Learning 1':                     { time:'Mon 14:00–16:00 & Thu 16:00–18:00', room:'MA 001 (Mon) · EW 203 (Thu)', note:'Dr. Oliver Eberle · Dr. Niklas Gebauer · ISIS 50013 · Exam 1: Thu 18 Feb 2027, 11:00' },
     'Machine Learning Engineering':        { time:'Tue 16:00–18:00', room:'MA 043', note:'Jannik Wolff et al. · ISIS 49700 · Exam 1: Tue 16 Feb 2027, 14:00, HE 101' },
     'MLE Tutorial':                        { time:'Fri 10:00–12:00', room:'SG04 501', note:'Machine Learning Engineering tutorial · Wed session clashes with Python für Ingenieure' },
@@ -1763,6 +1764,10 @@
 
   // ── Exam countdown ──
   const EXAMS = [
+    { course:'Data Integration & Large-scale Analysis', label:'Exercise submission', date:'2027-01-28T23:59', room:'ISIS', color:'#2c3e50', deadline:'Exam prerequisite' },
+    { course:'Data Integration & Large-scale Analysis', label:'Exam (1st date)', date:'2027-02-04T16:00', room:'TBA', color:'#2c3e50', deadline:'Pick one of three dates' },
+    { course:'Data Integration & Large-scale Analysis', label:'Exam (2nd date)', date:'2027-02-25T16:00', room:'TBA', color:'#2c3e50', deadline:'' },
+    { course:'Data Integration & Large-scale Analysis', label:'Exam (3rd date)', date:'2027-03-18T16:00', room:'TBA', color:'#2c3e50', deadline:'' },
     { course:'Python für Ingenieure', label:'Homework due', date:'2026-11-08T23:59', room:'ISIS', color:'#27ae60', deadline:'' },
     { course:'Python für Ingenieure', label:'Exam registration', date:'2026-11-22T23:59', room:'MOSES', color:'#27ae60', deadline:'Required for portfolio exam' },
     { course:'Python für Ingenieure', label:'HA discussion (mandatory)', date:'2026-11-25T10:00', room:'Zoom (English)', color:'#27ae60', deadline:'Group HA interessiert' },
