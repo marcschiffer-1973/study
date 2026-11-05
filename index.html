@@ -570,6 +570,28 @@
     .exam-card.soon .ec-days { color: #c0392b; }
 
     /* ── Study Log ── */
+
+    /* ── Weekly plan ── */
+    #plan { padding: 4rem 2rem; }
+    .wp-wrap { max-width: 900px; margin: 0 auto; }
+    .wp-tabs { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.2rem; }
+    .wp-tab { border: 1px solid var(--tu-border); background: #fff; border-radius: 999px; padding: .35rem .9rem; font-size: .85rem; cursor: pointer; color: var(--tu-gray); }
+    .wp-tab.is-active { background: var(--tu-red); border-color: var(--tu-red); color: #fff; font-weight: 700; }
+    .wp-tab.is-today:not(.is-active) { border-color: var(--tu-red); color: var(--tu-red); }
+    .wp-list { display: flex; flex-direction: column; gap: .5rem; }
+    .wp-item { display: grid; grid-template-columns: 7.2rem 1fr; gap: .8rem; align-items: start; background: #fff; border: 1px solid var(--tu-border); border-left: 4px solid var(--c, #999); border-radius: var(--radius); padding: .65rem .9rem; }
+    .wp-item.class { background: var(--tu-light); }
+    .wp-time { font-variant-numeric: tabular-nums; font-size: .82rem; color: var(--tu-gray); font-weight: 600; }
+    .wp-what { font-size: .9rem; color: var(--tu-dark); }
+    .wp-what small { display: block; color: #777; font-size: .78rem; margin-top: .1rem; }
+    .wp-kind { display: inline-block; font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: .05rem .4rem; border-radius: 4px; margin-right: .35rem; vertical-align: 1px; }
+    .wp-kind.class { background: #e8e8e8; color: #555; }
+    .wp-kind.study { background: #fdecea; color: var(--tu-red); }
+    .wp-sum { text-align: center; font-size: .8rem; color: var(--tu-gray); margin-top: .8rem; }
+    .wp-due { margin-top: 1.6rem; background: #fff8e6; border: 1px solid #f3d27a; border-radius: var(--radius); padding: .8rem 1rem; font-size: .85rem; }
+    .wp-due h4 { font-size: .85rem; margin-bottom: .4rem; }
+    .wp-due li { margin-left: 1.1rem; margin-bottom: .15rem; }
+    @media (max-width: 520px) { #plan { padding: 3rem 1rem; } .wp-item { grid-template-columns: 1fr; gap: .2rem; } }
     #studylog { padding: 4rem 2rem; background: var(--tu-light); }
 
     .sl-header { display:flex; align-items:center; justify-content:space-between; max-width:860px; margin:0 auto 1.5rem; flex-wrap:wrap; gap:.8rem; }
@@ -719,6 +741,7 @@
   <ul class="nav-links">
     <li><a href="#overview">Overview</a></li>
     <li><a href="#timetable">Timetable</a></li>
+    <li><a href="#plan">Plan</a></li>
     <li><a href="#studylog">Study Log</a></li>
     <li><a href="#exams">Exams</a></li>
     <li><a href="#map">Map</a></li>
@@ -943,6 +966,20 @@
 </section>
 
 <!-- ── Study Log ── -->
+<!-- ── Weekly Plan ── -->
+<section id="plan">
+  <div class="section-title">
+    <h2>Weekly Plan</h2>
+    <p>Classes + fixed study blocks — follow today's list</p>
+  </div>
+  <div class="wp-wrap">
+    <div class="wp-tabs" id="wp-tabs"></div>
+    <div class="wp-list" id="wp-list"></div>
+    <div class="wp-sum" id="wp-sum"></div>
+    <div class="wp-due" id="wp-due"></div>
+  </div>
+</section>
+
 <section id="studylog">
   <div class="section-title">
     <h2>Study Time Log</h2>
@@ -1826,6 +1863,106 @@
       `;
       grid.appendChild(card);
     });
+  })();
+
+
+  // ── Weekly plan ──
+  // kind: class = fixed lecture/exercise, study = self-study block. from/until (YYYY-MM-DD) limit a block to a phase.
+  const WP_C = { privacy:'#0097a7', agents:'#0097a7', dl1:'#c0392b', mle:'#8e44ad', ml1:'#2980b9', math:'#2980b9', py:'#27ae60', dia:'#2c3e50', misc:'#999' };
+  const WEEK_PLAN = [
+    [ // Mon
+      { t:'08:30–10:00', k:'study', c:'math', w:'Math Foundations homework', n:'Work on the current sheet with your group', until:'2026-11-24' },
+      { t:'08:30–10:00', k:'study', c:'math', w:'Math Foundations test prep', n:'Redo homework sheets — test Wed 02 Dec', from:'2026-11-25', until:'2026-12-01' },
+      { t:'08:30–10:00', k:'study', c:'dl1', w:'DL1 exercise sheet', from:'2026-12-02' },
+      { t:'10:00–12:00', k:'class', c:'privacy', w:'Privacy Fundamentals', n:'HFT-TA 125' },
+      { t:'13:00–14:00', k:'study', c:'privacy', w:'Privacy — rewrite today\'s notes', n:'Oral exam in Feb: summarise each lecture in 5 bullet points' },
+      { t:'14:00–16:00', k:'class', c:'dl1', w:'Deep Learning 1', n:'MA 001' },
+      { t:'16:00–18:00', k:'study', c:'dl1', w:'DL1 exercise sheet / review', n:'Same day as the lecture while it is fresh' },
+      { t:'20:00–20:30', k:'study', c:'py', w:'Python quiz of the week', until:'2026-11-29' },
+      { t:'20:00–21:00', k:'study', c:'py', w:'Python PA — small chunk', from:'2026-11-30' },
+    ],
+    [ // Tue
+      { t:'09:00–12:00', k:'study', c:'dia', w:'DIA exercise "Ship Collision Detection"', n:'≈80–90 h until 28 Jan → ~7 h/week' },
+      { t:'13:00–15:00', k:'study', c:'math', w:'Math Foundations homework — finish', n:'Due Wed 12:00', until:'2026-11-24' },
+      { t:'13:00–15:00', k:'study', c:'mle', w:'MLE exercises / project', from:'2026-11-25' },
+      { t:'15:00–16:00', k:'study', c:'mle', w:'MLE — skim today\'s slides' },
+      { t:'16:00–18:00', k:'class', c:'mle', w:'Machine Learning Engineering', n:'MA 043' },
+    ],
+    [ // Wed
+      { t:'09:00–10:00', k:'study', c:'math', w:'Math homework — final check & submit', n:'ISIS, group PDF, before 12:00', until:'2026-11-25' },
+      { t:'10:00–12:00', k:'class', c:'py', w:'Python für Ingenieure (Group 2)', n:'HFT-TA 125' },
+      { t:'12:15–13:45', k:'class', c:'math', w:'Math Foundations for ML', n:'SG04 501', until:'2026-11-25' },
+      { t:'14:30–16:30', k:'study', c:'py', w:'Python homework / PA', n:'Deadlines are on Sundays' },
+      { t:'16:30–18:00', k:'study', c:'agents', w:'AI Agents — reading / hands-on', n:'Prepare for Thursday' },
+    ],
+    [ // Thu
+      { t:'08:30–09:45', k:'study', c:'ml1', w:'ML1 — look at this week\'s sheet', n:'Grade-improvement retake: keep it light' },
+      { t:'10:00–12:00', k:'class', c:'agents', w:'AI Agents', n:'EW 015' },
+      { t:'12:00–14:00', k:'class', c:'ml1', w:'ML1 Exercise', n:'MA 001' },
+      { t:'14:00–16:00', k:'class', c:'ml1', w:'Machine Learning 1', n:'HE 101' },
+      { t:'16:00–18:00', k:'class', c:'dl1', w:'Deep Learning 1', n:'EW 203 · DIA runs at the same time → watch its recording Fri' },
+    ],
+    [ // Fri
+      { t:'10:00–12:00', k:'class', c:'mle', w:'MLE Tutorial', n:'SG04 501' },
+      { t:'12:30–14:00', k:'study', c:'dia', w:'DIA — watch Thursday\'s lecture recording', n:'Zoom recording, link on course website' },
+      { t:'14:15–15:45', k:'class', c:'math', w:'Math Foundations exercise', n:'SG04 501', until:'2026-11-27' },
+      { t:'14:15–15:45', k:'study', c:'dia', w:'DIA exercise', from:'2026-11-28' },
+      { t:'16:00–17:30', k:'study', c:'math', w:'Math — start the new homework sheet', until:'2026-11-20' },
+    ],
+    [ // Sat
+      { t:'10:00–13:00', k:'study', c:'dia', w:'DIA exercise', n:'Main weekly block for the project' },
+      { t:'14:00–16:00', k:'study', c:'ml1', w:'ML1 + DL1 — week review', n:'Summary sheet per lecture for the exams' },
+    ],
+    [ // Sun
+      { t:'10:00–12:00', k:'study', c:'py', w:'Python — check & submit Sunday deadlines', n:'HA 08 Nov · MOSES 22 Nov · PAs Dec/Jan' },
+      { t:'17:00–18:00', k:'study', c:'misc', w:'Weekly review', n:'Log hours in Study Log, check next week\'s deadlines below' },
+    ],
+  ];
+  const WP_DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  (function weeklyPlan() {
+    const tabs = document.getElementById('wp-tabs');
+    const list = document.getElementById('wp-list');
+    const sum  = document.getElementById('wp-sum');
+    const today = new Date();
+    const todayIdx = (today.getDay() + 6) % 7;
+
+    function dateOf(idx) {
+      const d = new Date(today); d.setHours(0,0,0,0);
+      d.setDate(d.getDate() - todayIdx + idx);
+      return d;
+    }
+    function iso(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    function mins(t) { const [a,b] = t.split('–').map(x => x.split(':').map(Number)); return (b[0]*60+b[1]) - (a[0]*60+a[1]); }
+
+    function show(idx) {
+      const day = iso(dateOf(idx));
+      const items = WEEK_PLAN[idx].filter(it => (!it.from || day >= it.from) && (!it.until || day <= it.until));
+      list.innerHTML = items.map(it => `
+        <div class="wp-item ${it.k}" style="--c:${WP_C[it.c]}">
+          <div class="wp-time">${it.t}</div>
+          <div class="wp-what"><span class="wp-kind ${it.k}">${it.k === 'class' ? 'Class' : 'Study'}</span>${it.w}${it.n ? `<small>${it.n}</small>` : ''}</div>
+        </div>`).join('') || '<div class="wp-sum">Free day</div>';
+      const h = k => (items.filter(i => i.k === k).reduce((a,i) => a + mins(i.t), 0) / 60).toFixed(1).replace('.0','');
+      sum.textContent = `${WP_DAYS[idx]} ${dateOf(idx).getDate()}.${dateOf(idx).getMonth()+1}. · ${h('class')} h class · ${h('study')} h self-study`;
+      [...tabs.children].forEach((b,i) => b.classList.toggle('is-active', i === idx));
+    }
+
+    WP_DAYS.forEach((d,i) => {
+      const b = document.createElement('button');
+      b.className = 'wp-tab' + (i === todayIdx ? ' is-today' : '');
+      b.textContent = i === todayIdx ? `${d} · today` : d;
+      b.addEventListener('click', () => show(i));
+      tabs.appendChild(b);
+    });
+    show(todayIdx);
+
+    // deadlines in the next 7 days, from the exam countdown list
+    const now = new Date(), in7 = new Date(now.getTime() + 7*86400000);
+    const due = EXAMS.filter(e => { const d = new Date(e.date); return d >= now && d <= in7; });
+    document.getElementById('wp-due').innerHTML = '<h4>⏰ Due in the next 7 days</h4>' + (due.length
+      ? '<ul>' + due.map(e => `<li><strong>${new Date(e.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</strong> — ${e.course}: ${e.label}</li>`).join('') + '</ul>'
+      : 'Nothing in the countdown — check ISIS for weekly sheets.');
   })();
 
   // ── Auth guard ──
