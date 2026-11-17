@@ -1253,9 +1253,11 @@
         📅 <strong>Mon 14:00–16:00</strong> · MA 001 · starts 12 Oct 2026<br>
         📅 <strong>Thu 16:00–18:00</strong> · EW 203<br>
         👨‍🏫 Dr. Oliver Eberle · Dr. Niklas Gebauer · 🔗 ISIS 50013<br>
-        📝 Written exam · ML 1 &amp; ML 2 recommended<br>
-        🗓 Exam 1: Thu 18 Feb 2027, 11:00–14:00, A 151 / MA 001<br>
-        🗓 Exam 2: Thu 08 Apr 2027, 14:00–17:00, H 0104
+        📝 Homework: weekly sheet in groups of 4–6, one PDF per group on ISIS, due <strong>Tue 23:55</strong> the week after (no late or email submissions)<br>
+        📝 Closed-book written exam (5 × 20 points), grade = exam only<br>
+        ⏰ <strong>Exam registration opens in January</strong> via MOSES — see the ISIS page "Prerequisites / registration / exams"<br>
+        🗓 Exam 1: Thu 18 Feb 2027, 11:30–13:30, MA 001<br>
+        🗓 Exam 2: Thu 08 Apr 2027, 14:30–16:30, H 0104
       </p>
       <span class="credits">6 ECTS</span>
     </div>
@@ -1703,7 +1705,7 @@
   // ── Timetable popup ──
   const TT_INFO = {
     'Data Integration & Large-scale Analysis': { time:'Thu 16:00–18:00 · from 15 Oct', room:'MA 041', note:'Prof. Matthias Böhm (DAMS) · ⚠ Same slot as Deep Learning 1 (Thu) · Exam: 04 Feb / 25 Feb / 18 Mar 2027, 16:00' },
-    'Deep Learning 1':                     { time:'Mon 14:00–16:00 & Thu 16:00–18:00', room:'MA 001 (Mon) · EW 203 (Thu)', note:'Dr. Oliver Eberle · Dr. Niklas Gebauer · ISIS 50013 · Exam 1: Thu 18 Feb 2027, 11:00' },
+    'Deep Learning 1':                     { time:'Mon 14:00–16:00 & Thu 16:00–18:00', room:'MA 001 (Mon) · EW 203 (Thu)', note:'Dr. Oliver Eberle · Dr. Niklas Gebauer · ISIS 50013 · Homework due Tue 23:55 · Exam 1: Thu 18 Feb 2027, 11:30, MA 001' },
     'Machine Learning Engineering':        { time:'Tue 16:00–18:00', room:'MA 043', note:'Jannik Wolff et al. · ISIS 49700 · Exam 1: Tue 16 Feb 2027, 14:00, HE 101' },
     'MLE Tutorial':                        { time:'Fri 10:00–12:00', room:'SG04 501', note:'Machine Learning Engineering tutorial · Wed session clashes with Python für Ingenieure' },
     'Python für Ingenieure':               { time:'Wed 10:00–12:00 (Group 2) · from 21 Oct', room:'HFT-TA 125', note:'FG Technische Akustik · Homework due 08 Nov · Final test: Mon 18 Jan 2027, 17:00, HE 101' },
@@ -1803,6 +1805,7 @@
 
   // ── Exam countdown ──
   const EXAMS = [
+    { course:'Deep Learning 1', label:'MOSES exam registration opens (January)', date:'2027-01-01T00:00', room:'MOSES', color:'#c0392b', deadline:'Exact date on ISIS: Prerequisites / registration / exams' },
     { course:'AI Agents & Privacy', label:'MOSES exam registration opens', date:'2027-01-04T00:00', room:'MOSES', color:'#0097a7', deadline:'Window 04–15 Jan' },
     { course:'AI Agents & Privacy', label:'MOSES exam registration closes', date:'2027-01-15T23:59', room:'MOSES', color:'#0097a7', deadline:'Mandatory — no registration, no exam' },
     { course:'AI Agents & Privacy', label:'Oral exam window starts', date:'2027-02-15T00:00', room:'TBA', color:'#0097a7', deadline:'15–26 Feb 2027' },
@@ -1821,15 +1824,14 @@
     { course:'Python für Ingenieure', label:'Final test (1st date)', date:'2027-01-18T17:00', room:'HE 101', color:'#27ae60', deadline:'' },
     { course:'Python für Ingenieure', label:'Final test (2nd date)', date:'2027-01-25T17:00', room:'HE 101', color:'#27ae60', deadline:'' },
     { course:'Python für Ingenieure', label:'PA3 due', date:'2027-01-31T23:59', room:'ISIS', color:'#27ae60', deadline:'' },
-    { course:'Math Foundations for ML', label:'Homework 1 due', date:'2026-10-28T12:00', room:'ISIS', color:'#2980b9', deadline:'Group PDF' },
-    { course:'Math Foundations for ML', label:'Test', date:'2026-12-02T12:15', room:'TBA', color:'#2980b9', deadline:'≥50% homework points required' },
+    { course:'Math Foundations for ML', label:'Test', date:'2026-12-02T12:15', room:'TBA', color:'#2980b9', deadline:'90 min · needs ≥50% homework points' },
     { course:'Math Foundations for ML', label:'Test (retake)', date:'2026-12-16T12:15', room:'TBA', color:'#2980b9', deadline:'' },
     { course:'Machine Learning Engineering', label:'Exam 1', date:'2027-02-16T14:00', room:'HE 101', color:'#8e44ad', deadline:'' },
-    { course:'Deep Learning 1', label:'Exam 1', date:'2027-02-18T11:00', room:'A 151 / MA 001', color:'#c0392b', deadline:'' },
+    { course:'Deep Learning 1', label:'Exam 1', date:'2027-02-18T11:30', room:'MA 001', color:'#c0392b', deadline:'Closed book · 11:30–13:30' },
     { course:'Machine Learning 1', label:'Exam 1', date:'2027-03-04T10:30', room:'HE 101', color:'#2980b9', deadline:'Retake' },
     { course:'Machine Learning Engineering', label:'Exam 2', date:'2027-03-31T14:00', room:'HE 101', color:'#8e44ad', deadline:'' },
     { course:'Machine Learning 1', label:'Exam 2', date:'2027-03-25T14:30', room:'HE 101 / MA 042', color:'#2980b9', deadline:'' },
-    { course:'Deep Learning 1', label:'Exam 2', date:'2027-04-08T14:00', room:'H 0104', color:'#c0392b', deadline:'' },
+    { course:'Deep Learning 1', label:'Exam 2', date:'2027-04-08T14:30', room:'H 0104', color:'#c0392b', deadline:'14:30–16:30' },
   ];
   EXAMS.sort((a, b) => a.date.localeCompare(b.date));
 
@@ -1877,7 +1879,7 @@
       { t:'10:00–12:00', k:'class', c:'privacy', w:'Privacy Fundamentals', n:'HFT-TA 125' },
       { t:'13:00–14:00', k:'study', c:'privacy', w:'Privacy — rewrite today\'s notes', n:'Oral exam in Feb: summarise each lecture in 5 bullet points' },
       { t:'14:00–16:00', k:'class', c:'dl1', w:'Deep Learning 1', n:'MA 001' },
-      { t:'16:00–18:00', k:'study', c:'dl1', w:'DL1 exercise sheet / review', n:'Same day as the lecture while it is fresh' },
+      { t:'16:00–18:00', k:'study', c:'dl1', w:'DL1 exercise sheet / review', n:'Group PDF due Tue 23:55 on ISIS' },
       { t:'20:00–20:30', k:'study', c:'py', w:'Python quiz of the week', until:'2026-11-29' },
       { t:'20:00–21:00', k:'study', c:'py', w:'Python PA — small chunk', from:'2026-11-30' },
     ],
@@ -2017,7 +2019,7 @@
         { name: 'Machine Learning Engineering', rooms: 'MA 043', time: 'Tue 16:00–18:00' },
         { name: 'Machine Learning 1 Exercise', rooms: 'MA 001', time: 'Thu 12:00–14:00' },
         { name: 'Data Integration & Large-scale Analysis', rooms: 'MA 041', time: 'Thu 16:00–18:00' },
-        { name: 'Deep Learning 1 Exam 1', rooms: 'MA 001', time: '18 Feb 2027, 11:00–14:00 (with A 151)' },
+        { name: 'Deep Learning 1 Exam 1', rooms: 'MA 001', time: '18 Feb 2027, 11:30–13:30' },
         { name: 'Machine Learning 1 Exam 2', rooms: 'MA 042', time: '25 Mar 2027, 14:30–17:30 (with HE 101)' },
       ]
     },
@@ -2056,23 +2058,13 @@
       ]
     },
     {
-      id: 'A',
-      name: 'Architektur­gebäude (A)',
-      abbr: 'A',
-      lat: 52.51337, lng: 13.324,
-      color: '#c0392b',
-      courses: [
-        { name: 'Deep Learning 1 Exam 1', rooms: 'A 151', time: '18 Feb 2027, 11:00–14:00 (with MA 001)' },
-      ]
-    },
-    {
       id: 'H',
       name: 'Hauptgebäude (H)',
       abbr: 'H',
       lat: 52.51212, lng: 13.327,
       color: '#c0392b',
       courses: [
-        { name: 'Deep Learning 1 Exam 2', rooms: 'H 0104', time: '08 Apr 2027, 14:00–17:00' },
+        { name: 'Deep Learning 1 Exam 2', rooms: 'H 0104', time: '08 Apr 2027, 14:30–16:30' },
       ]
     },
   ];
